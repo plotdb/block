@@ -1,0 +1,41 @@
+{
+  "author": "zbryikt",
+  "name": "block",
+  "license": "MIT",
+  "description": "block",
+  "version": "0.0.1",
+  "homepage": "https://github.com/plotdb/block",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plotdb/block"
+  },
+  "engines": {
+    "node": ">=0.12.6",
+    "npm": ">=1.2.2"
+  },
+  "scripts": {
+    "postinstall": "./node_modules/.bin/fedep",
+    "start": "cd web; ../node_modules/.bin/lsc ../node_modules/template/server.ls"
+  },
+  "devDependencies": {
+    "LiveScript": ">=1.2.0",
+    "stylus": "^0.54.5",
+    "uglify-js": "=3.2.0",
+    "uglifycss": "0.0.29",
+    "template": "github:zbryikt/template#v2"
+  },
+  "dependencies": {
+    "bootstrap": "^4.5.2",
+    "fedep": "github:plotdb/fedep",
+    "jsoneditor": "^9.1.1",
+    "sharedb-wrapper": "github:zbryikt/sharedb-wrapper"
+  },
+  "frontendDependencies": {
+    "root": "web/static/assets/lib",
+    "modules": [
+      "bootstrap",
+      "jsoneditor",
+      "sharedb-wrapper"
+    ]
+  }
+}

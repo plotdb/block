@@ -2,29 +2,44 @@
 
 exchangable web building block ( block ) 規格制定.
 
- * 進入點: index.html, index.css, index.js ( 或者, index.html )
-   - 允許任何形式的 transpiling
-     - pug, styl 做為特例特別支援? html / css / js 要替他生成嗎？
-     - 感覺是編輯器才有這個需要.
-   - 引入檔案?
- * 打包格式?
-   - json: {files: {'index.html': "...", 'index.css': ..., 'somefile': {type: 'base64', content: ...}}}
-   - zip? 其它 binary format?
- * 版本控制: 使用 git?
-   - 取得 block: get git://someurl/sompath/
- * npm?
+ * 目標
+   - cross-expertise / 三方編輯 ( editor, developer, designer )
+   - modularized / 可重用、元件化
+   - collaborative / 協作
+   - flexibility / 靜態、動態頁面均能開發.
+
+ * 開發規格
+   * block 中不可包含任何 id
+   * 進入點: index.html, index.css, index.js ( 或者, index.html )
+     - 允許任何形式的 transpiling
+       - pug, styl 做為特例特別支援? html / css / js 要替他生成嗎？
+       - 感覺是編輯器才有這個需要.
+     - 引入檔案?
+   * sanity checker? 檢查 id 或其它限制
+
+ * 套件規格
+   * 打包格式?
+     - json: {files: {'index.html': "...", 'index.css': ..., 'somefile': {type: 'base64', content: ...}}}
+     - zip? 其它 binary format?
+   * 版本控制: 使用 git?
+     - 取得 block: get git://someurl/sompath/
+   * 區塊可以來自任何地方. 
+     - 非認證區塊要顯示警語
+     - 也可以提供區塊列表
+     - 可以自建常用區塊清單
+     - 可以當場自行編輯區塊
+   * npm?
+   * 一旦在編輯器中客製 block, 這個 block 就沒辦法透過 name@version 將引用傳遞給其它用戶, 因為他只在某用戶的本地端/
+     所以我們需要一個取用本地端 block 的機制
+
  * 影響其他 block 的問題?
  * nested block?
  * 假設我有很多個 block, 現在想搬到一個 two column block 中, 該怎麼做? 全選塞入?
-   - 感覺需要一個獨立的 tree-style block list viewer
- * 區塊可以來自任何地方. 
-   - 非認證區塊要顯示警語
-   - 也可以提供區塊列表
-   - 可以自建常用區塊清單
-   - 可以當場自行編輯區塊
- * 若非明確定義可以編輯的部份, 都不應該讓視覺編輯介面改到. 但是, 樣式可以.
+   - 編輯器中選取的問題
+   - 感覺需要一個獨立的 tree-style block list viewer?
+
+ * 若非明確定義可以編輯的部份, 都不應該讓視覺編輯介面改到. 但是, 樣式可以?
  * 可編輯的區塊若包含 repeat-item, 可以用 mixin 來定義, 以利變數的套用
- * block 中不可包含任何 id
  * 需要指定使用的 library
    - 得想辦法定義 id & version syntax
  * 各個 block 可以自行定義編輯時可做的動作, 例如
@@ -145,6 +160,4 @@ registry
          - 若展開至其它服務, 則會有服務基於他者的問題
          - 若展開至自己, 則可能得基於 cloudflare 類的服務, 有成本的潛在風險
            - 需要精算?
-            
-
 

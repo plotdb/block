@@ -1,0 +1,27 @@
+doctype html
+html
+  include /../../static/assets/lib/ldui/pug/ldui.pug
+  head
+    +css("/assets/lib/bootstrap/main/css/bootstrap.min.css")
+    +css("/assets/lib/jsoneditor/main/jsoneditor.min.css")
+    style(style="text/css"): :stylus
+      html,body { width: 100%; height: 100%}
+
+
+  body
+    .d-flex.w-100.h-100
+      .row.w-100.no-gutters
+        .col-md.border.p-2
+          div(block)
+            h1(style="color:red") hello
+            span.text-lg friend
+            button(list,data-name="btn1") click me
+            button(list,data-name="btn2") click me
+        .col-md.border.p-2#out
+        .col-md
+          #editor.w-100.h-100
+
+    +script("/assets/lib/ldui/ldui.min.js")
+    +script("/assets/lib/jsoneditor/main/jsoneditor.min.js")
+    +script("/assets/lib/sharedb-wrapper/main/client.bundle.min.js")
+    +script("/js/index.js")
