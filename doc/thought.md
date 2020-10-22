@@ -31,6 +31,9 @@ exchangable web building block ( block ) 規格制定.
    * npm?
    * 一旦在編輯器中客製 block, 這個 block 就沒辦法透過 name@version 將引用傳遞給其它用戶, 因為他只在某用戶的本地端/
      所以我們需要一個取用本地端 block 的機制
+   * nested package 可參考 npm workspace 怎麼設計:
+     - https://github.com/npm/rfcs/blob/latest/accepted/0026-workspaces.md
+     - https://blog.npmjs.org/post/626173315965468672/npm-v7-series-beta-release-and-semver-major
 
  * 影響其他 block 的問題?
  * nested block?
@@ -89,6 +92,7 @@ registry
      - attr: base-block="block名字" ( 應該要改成某種 uid? )
      - attr: id - 每個區塊都有獨立 id, 方便使用者指涉
      - attr: eid - ?
+   * 考慮到 block 樣板 可能正在載入, 會需要 loading / load fail 的 ui, 也就需要額外定義特殊的 DOM, 避免被 serialize 同時方便顯示
 
 
 ## 參數定義 ( 當前設計 )

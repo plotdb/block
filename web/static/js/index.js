@@ -3,6 +3,7 @@
 do
   name: "..."
   type: "..."
+  version: ..." ( block only )
   value: "..."
   attr: [[name, value], ...]
   style: [[name, value], ...]
@@ -101,39 +102,74 @@ serialize = function(n){
   return node;
 };
 deserialize = function(n){
-  var node, i$, ref$, len$, c, ret;
-  if (n.type === 'text') {
-    return document.createTextNode(n.value);
-  } else if (n.type === 'block') {
-    return deserialize(n.tree);
-  }
-  node = document.createElement(n.name);
-  n.attr.filter(function(it){
-    return it && it[0];
-  }).map(function(p){
-    return node.setAttribute(p[0], p[1]);
+  var queue;
+  queue = [];
+  return Promise.resolve().then(function(){
+    var _;
+    _ = function(n){
+      var node, i$, ref$, len$, c, ret;
+      if (n.type === 'text') {
+        return document.createTextNode(n.value);
+      } else if (n.type === 'block') {
+        return function(){
+          var node;
+          node = document.createElement('div');
+          node.textContent = "loading...";
+          queue.push(debounce(2000).then(function(){
+            return blocks.get(n.name);
+          }).then(function(b){
+            return b.instantiate().then(function(ret){
+              var that, x$;
+              if (that = node.parentNode) {
+                x$ = that;
+                x$.insertBefore(ret.node, node);
+                x$.removeChild(node);
+                return x$;
+              } else {
+                return ret;
+              }
+            });
+          })['catch'](function(){
+            return node.innerText = "load fail.";
+          }));
+          return node;
+        }();
+      }
+      node = document.createElement(n.name);
+      n.attr.filter(function(it){
+        return it && it[0];
+      }).map(function(p){
+        return node.setAttribute(p[0], p[1]);
+      });
+      n.style.filter(function(it){
+        return it && it[0];
+      }).map(function(p){
+        return node.style[p[0]] = p[1];
+      });
+      if (n.cls && n.cls.length) {
+        node.classList.add.apply(node.classList, n.cls.filter(function(it){
+          return it;
+        }));
+      }
+      for (i$ = 0, len$ = (ref$ = n.child || []).length; i$ < len$; ++i$) {
+        c = ref$[i$];
+        ret = _(c);
+        if (ret) {
+          node.appendChild(ret);
+        }
+      }
+      return node;
+    };
+    return _(n);
+  }).then(function(node){
+    return {
+      node: node,
+      promise: Promise.all(queue)
+    };
   });
-  n.style.filter(function(it){
-    return it && it[0];
-  }).map(function(p){
-    return node.style[p[0]] = p[1];
-  });
-  if (n.cls && n.cls.length) {
-    node.classList.add.apply(node.classList, n.cls.filter(function(it){
-      return it;
-    }));
-  }
-  for (i$ = 0, len$ = (ref$ = n.child || []).length; i$ < len$; ++i$) {
-    c = ref$[i$];
-    ret = deserialize(c);
-    if (ret) {
-      node.appendChild(ret);
-    }
-  }
-  return node;
 };
 locate = function(op, data, root){
-  var n, obj, dd, i$, i, ref$, to$, j, p, newNode;
+  var n, obj, dd, i$, i, ref$, to$, j, p;
   n = obj = root;
   dd = data;
   console.log(op.p, op);
@@ -153,9 +189,12 @@ locate = function(op, data, root){
   case 'name':
   case 'value':
   case 'type':
-    newNode = deserialize(dd);
-    obj.parentNode.insertBefore(newNode, obj);
-    return obj.parentNode.removeChild(obj);
+    return deserialize(dd).then(function(arg$){
+      var node, promise;
+      node = arg$.node, promise = arg$.promise;
+      obj.parentNode.insertBefore(node, obj);
+      return obj.parentNode.removeChild(obj);
+    });
   case 'style':
     obj.setAttribute('style', '');
     return dd.style.map(function(it){
@@ -178,18 +217,23 @@ locate = function(op, data, root){
       obj.removeChild(obj.childNodes[op.p[i + 1]]);
     }
     if (op.li) {
-      newNode = deserialize(op.li);
-      return obj.insertBefore(newNode, obj.childNodes[op.p[i + 1]]);
+      return deserialize(op.li).then(function(arg$){
+        var node, promise;
+        node = arg$.node, promise = arg$.promise;
+        return obj.insertBefore(node, obj.childNodes[op.p[i + 1]]);
+      });
     }
   }
 };
 update = function(ops){
-  var dup;
   ops == null && (ops = []);
   if (!ops.length) {
-    dup = deserialize(lc.json);
-    out.innerHTML = "";
-    return out.appendChild(dup);
+    return deserialize(lc.json).then(function(arg$){
+      var node, promise;
+      node = arg$.node, promise = arg$.promise;
+      out.innerHTML = "";
+      return out.appendChild(node);
+    });
   } else {
     return ops.map(function(o){
       return locate(o, lc.json, out.childNodes[0]);
@@ -212,7 +256,7 @@ blocks = {
     return this.hash[name] = block;
   },
   get: function(name){
-    return this.hash[name];
+    return Promise.resolve(this.hash[name]);
   }
 };
 block = function(opt){
@@ -222,10 +266,16 @@ block = function(opt){
   blocks.add(name, this);
   return this;
 };
+block.prototype = import$(Object.create(Object.prototype), {
+  instantiate: function(){
+    return deserialize(this.tree);
+  }
+});
 b = new block({
   name: 'two-button',
   root: ld$.find('[block]', 0)
 });
+blocks.add("two-button", b);
 lc.json = nt = JSON.parse(JSON.stringify(b.tree));
 nt2 = JSON.parse(JSON.stringify(b.tree));
 ops = [
@@ -233,7 +283,7 @@ ops = [
     p: ['child', 4],
     li: {
       type: 'block',
-      tree: nt2
+      name: "two-button"
     }
   }, {
     p: ['style', 0],
@@ -284,3 +334,8 @@ debounce(1000).then(function(){
 }).then(function(){
   return debounce(1000);
 });
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}

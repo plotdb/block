@@ -2,6 +2,7 @@
 do
   name: "..."
   type: "..."
+  version: ..." ( block only )
   value: "..."
   attr: [[name, value], ...]
   style: [[name, value], ...]
@@ -27,6 +28,7 @@ locate -
 lc = {json: {}}
 
 Array.from(document.querySelectorAll('button')).map -> it.addEventListener \click, -> alert \ok
+
 wrap = (n) ->
   name = n.nodeName.toLowerCase!
   if name == \#text =>
@@ -48,18 +50,48 @@ serialize = (n) ->
   node.child = child
   node
 
+
+# return {node, promise}:
+#  - node: deserialized DOM tree or placeholder div for being replaced by instantiated block.
+#  - promise: resolve to all pending block retrieval.
+#             for placeholder div, the first element is meant to replace the placeholder.
 deserialize = (n) ->
-  if n.type == \text => return document.createTextNode n.value
-  else if n.type == \block => return deserialize n.tree
-  node = document.createElement n.name
-  n.attr.filter(->it and it.0).map (p) -> node.setAttribute p.0, p.1
-  n.style.filter(->it and it.0).map (p) -> node.style[p.0] = p.1
-  if n.cls and n.cls.length =>
-    node.classList.add.apply node.classList, n.cls.filter(->it)
-  for c in (n.child or []) =>
-    ret = deserialize c
-    if ret => node.appendChild ret
-  return node
+  queue = []
+  Promise.resolve!
+    .then ->
+      _ = (n) ->
+        if n.type == \text => return document.createTextNode n.value
+        else if n.type == \block =>
+          return (->
+            node = document.createElement \div
+            node.textContent = "loading..."
+            queue.push(
+              debounce 2000
+                .then -> blocks.get(n.name)
+                .then (b) ->
+                  b.instantiate!
+                    .then (ret) ->
+                      if node.parentNode =>
+                        that
+                          ..insertBefore ret.node, node
+                          ..removeChild node
+                      else return ret
+                .catch -> node.innerText = "load fail." # TODO update error info in node?
+            )
+            return node
+          )!
+        node = document.createElement n.name
+        n.attr.filter(->it and it.0).map (p) -> node.setAttribute p.0, p.1
+        n.style.filter(->it and it.0).map (p) -> node.style[p.0] = p.1
+        if n.cls and n.cls.length =>
+          node.classList.add.apply node.classList, n.cls.filter(->it)
+        for c in (n.child or []) =>
+          ret = _ c
+          if ret => node.appendChild ret
+        return node
+      _(n)
+    .then (node) ->
+      return {node, promise: Promise.all(queue)}
 
 locate = (op, data, root) ->
   n = obj = root
@@ -74,9 +106,10 @@ locate = (op, data, root) ->
 
   switch op.p[i]
   | <[name value type]>
-    new-node = deserialize dd
-    obj.parentNode.insertBefore new-node, obj
-    obj.parentNode.removeChild obj
+    deserialize dd
+      .then ({node, promise}) ->
+        obj.parentNode.insertBefore node, obj
+        obj.parentNode.removeChild obj
   | \style
     obj.setAttribute \style, ''
     dd.style.map -> obj.style[it.0] = it.1
@@ -90,15 +123,17 @@ locate = (op, data, root) ->
     # other case?
     if op.ld => obj.removeChild obj.childNodes[op.p[i + 1]]
     if op.li =>
-      new-node = deserialize op.li
-      obj.insertBefore new-node, obj.childNodes[op.p[i + 1]]
+      deserialize op.li
+        .then ({node, promise}) ->
+          obj.insertBefore node, obj.childNodes[op.p[i + 1]]
 
 
 update = (ops = []) ->
   if !ops.length =>
-    dup = deserialize lc.json
-    out.innerHTML = ""
-    out.appendChild dup
+    deserialize lc.json
+      .then ({node, promise}) ->
+        out.innerHTML = ""
+        out.appendChild node
   else
     ops.map (o) -> locate o, lc.json, out.childNodes.0
 
@@ -114,19 +149,23 @@ je = new JSONEditor editor, opt
 blocks = do
   hash: {}
   add: (name, block) -> @hash[name] = block
-  get: (name) -> return @hash[name]
+  get: (name) -> Promise.resolve(@hash[name])
 block = (opt = {}) ->
   @name = opt.name
   @tree = serialize opt.root
   blocks.add name, @
   @
+block.prototype = Object.create(Object.prototype) <<< do
+  instantiate: -> deserialize @tree
 
 b = new block {name: 'two-button', root: ld$.find('[block]', 0)}
+blocks.add "two-button", b
+
 lc.json = nt = JSON.parse(JSON.stringify(b.tree))
 nt2 = JSON.parse(JSON.stringify(b.tree))
 
 ops = [
-  {p: ['child', 4], li: {type: \block, tree: nt2}}
+  {p: ['child', 4], li: {type: \block, name: "two-button"}}
   {p: ['style', 0], li: ["background", "yellow"]}
   {p: ['cls', 0], li: "text-danger"}
   {p: ['attr', 0], li: ["data-name", "blah"]}
