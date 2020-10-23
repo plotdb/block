@@ -26,13 +26,13 @@ exchangable web building block ( block ) 規格制定.
          - lib dependency
          - 入口檔案 ( html, css, js )
        - 確認套件名跟版本 (name, version )
- 
+
    * 打包格式?
      - json: {files: {'index.html': "...", 'index.css': ..., 'somefile': {type: 'base64', content: ...}}}
      - zip? 其它 binary format?
    * 版本控制: 使用 git?
      - 取得 block: get git://someurl/sompath/
-   * 區塊可以來自任何地方. 
+   * 區塊可以來自任何地方.
      - 非認證區塊要顯示警語
      - 也可以提供區塊列表
      - 可以自建常用區塊清單
@@ -93,7 +93,7 @@ registry
 
 
 ## 結構定義 ( 當前設計 )
- 
+
 利用 HTML 定義基本的 block 結構.
 
  * 自動生成的結構 ( 製作 block 時不需寫 )
@@ -122,11 +122,11 @@ registry
    - 此設定會讓此節點形成一獨立 contenteditable. ( TODO: 另外用一個方式描述這個行為? )
    * 確認?
      - 因為 contenteditable 的行為, 在 content 中有 block 時, 游標無法出現在 block 之後, 一定會在之後的第一個字後面
-       刪除文字時, 若在之後的第一個字往前刪, 會接著刪除 block 的內容. 
+       刪除文字時, 若在之後的第一個字往前刪, 會接著刪除 block 的內容.
        如果 block 是像按鈕一樣的自成單位, 應該要設計成按 backspace 時直接刪掉整個按鈕.
        目前確認是只要將 block 設定 contenteditable = false 即可達成這個效果.
    * 有些地方不適合放區塊, 要禁止 subblock
-有些區塊不適合跟內容混在一起編, 
+有些區塊不適合跟內容混在一起編,
  * attr: image
    - 指定此區塊為圖片, 在適當時機彈出圖片上傳介面
    - 設定 image="bk" 時, 在適當時機可以讓用戶額外設定 repeat, position, size, attachment 等
@@ -162,15 +162,17 @@ registry
    - 怎麼想都不可能直接用檔名來用
      1. sandbox 中無法建立目錄結構
      2. 不同 block 中會衝到, 一定得 scope
-     3. 可能的解法是用 stylus / pug mixin, 但這樣就只能用在 stylus & pug 中
-       - 比方說, block blank 用到 sample/1.jpg
-         - pug: 
-           +asset("sample/1.jpg")
-         - 展開成:
-           "https://assets.block/blank/<version>/sample/1.jpg"
-           ( 也許可以參考 jsdelivr 的規則? )
-       - 但這樣做有幾個問題
-         - 若展開至其它服務, 則會有服務基於他者的問題
-         - 若展開至自己, 則可能得基於 cloudflare 類的服務, 有成本的潛在風險
-           - 需要精算?
-
+     3. 可能的解法:
+       - 用 stylus / pug mixin, 但這樣就只能用在 stylus & pug 中
+         - 比方說, block blank 用到 sample/1.jpg
+           - pug:
+             +asset("sample/1.jpg")
+           - 展開成:
+             "https://assets.block/blank/<version>/sample/1.jpg"
+             ( 也許可以參考 jsdelivr 的規則? )
+         - 但這樣做有幾個問題
+           - 若展開至其它服務, 則會有服務基於他者的問題
+           - 若展開至自己, 則可能得基於 cloudflare 類的服務, 有成本的潛在風險
+             - 需要精算?
+       - 使用 service worker?
+       - 針對 src / href 做過濾? 再提供 API 讓 JS 呼叫?
