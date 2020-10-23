@@ -10,6 +10,16 @@ do
   cls: [c1, c2, ... ]
   child: [...]
 
+node <-> json 互存資料
+
+(node / json)._block: runtime data. should not be serialized / stored
+ - store block item directly, or store an uuid for identifying / looking up block item, which contains:
+   - obj: block instance, if applicable
+   - cls: block class, if applicable
+   - node: node counterpart for json
+   - json: json counterpart for node
+      
+
 serialize - html to json
 deserialize - json to html
 locate - 
@@ -25,7 +35,7 @@ locate -
        - 刪除 / 新增標籤
    - 由於元素可能會隨時新增或刪除, block js 需要妥善處理這一塊.
 */
-var lc, wrap, serialize, deserialize, locate, update, opt, je, blocks, block, b, nt, nt2, ops, opsIn;
+var lc, wrap, serialize, deserialize, locate, update, opt, je, b, nt, nt2, ops, opsIn;
 lc = {
   json: {}
 };
@@ -116,7 +126,10 @@ deserialize = function(n){
           node = document.createElement('div');
           node.textContent = "loading...";
           queue.push(debounce(2000).then(function(){
-            return blocks.get(n.name);
+            return blockManager.get({
+              name: n.name,
+              version: n.version
+            });
           }).then(function(b){
             return b.instantiate().then(function(ret){
               var that, x$;
@@ -130,6 +143,7 @@ deserialize = function(n){
               }
             });
           })['catch'](function(){
+            console.log("block-manager.get failed in deserialize ( " + n.name + "@" + n.version + " )");
             return node.innerText = "load fail.";
           }));
           return node;
@@ -250,32 +264,24 @@ opt = {
   }
 };
 je = new JSONEditor(editor, opt);
-blocks = {
-  hash: {},
-  add: function(name, block){
-    return this.hash[name] = block;
-  },
-  get: function(name){
-    return Promise.resolve(this.hash[name]);
-  }
-};
-block = function(opt){
-  opt == null && (opt = {});
-  this.name = opt.name;
-  this.tree = serialize(opt.root);
-  blocks.add(name, this);
-  return this;
-};
-block.prototype = import$(Object.create(Object.prototype), {
-  instantiate: function(){
-    return deserialize(this.tree);
-  }
-});
+/*
+block = (opt = {}) ->
+  @name = opt.name
+  @tree = serialize opt.root
+  block-manager.add name, @
+  @
+block.prototype = Object.create(Object.prototype) <<< do
+  instantiate: (data) -> deserialize(if data? => data else @tree)
+*/
 b = new block({
   name: 'two-button',
   root: ld$.find('[block]', 0)
 });
-blocks.add("two-button", b);
+blockManager.add({
+  name: "two-button",
+  version: "0.0.1",
+  block: b
+});
 lc.json = nt = JSON.parse(JSON.stringify(b.tree));
 nt2 = JSON.parse(JSON.stringify(b.tree));
 ops = [
@@ -283,7 +289,15 @@ ops = [
     p: ['child', 4],
     li: {
       type: 'block',
-      name: "two-button"
+      name: "two-button",
+      version: "0.0.1"
+    }
+  }, {
+    p: ['child', 5],
+    li: {
+      type: 'block',
+      name: "sample",
+      version: "0.0.1"
     }
   }, {
     p: ['style', 0],
@@ -334,8 +348,3 @@ debounce(1000).then(function(){
 }).then(function(){
   return debounce(1000);
 });
-function import$(obj, src){
-  var own = {}.hasOwnProperty;
-  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
-  return obj;
-}

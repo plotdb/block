@@ -18,6 +18,15 @@ exchangable web building block ( block ) 規格制定.
    * sanity checker? 檢查 id 或其它限制
 
  * 套件規格
+   * 檔案架構
+     - 最少只要有 /index.html 即可運作. 但若滿足其它條件, 則 index.html 不一定要有.
+     - 其次, 一定會檢查有無 /package.json, 若有則會從中取得套件資料
+       - block 相關資訊放在 blockinfo 物件中 ( 或者其它名稱? ) 其中包含:
+         - block dependency
+         - lib dependency
+         - 入口檔案 ( html, css, js )
+       - 確認套件名跟版本 (name, version )
+ 
    * 打包格式?
      - json: {files: {'index.html': "...", 'index.css': ..., 'somefile': {type: 'base64', content: ...}}}
      - zip? 其它 binary format?

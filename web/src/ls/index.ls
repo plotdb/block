@@ -9,6 +9,16 @@ do
   cls: [c1, c2, ... ]
   child: [...]
 
+node <-> json 互存資料
+
+(node / json)._block: runtime data. should not be serialized / stored
+ - store block item directly, or store an uuid for identifying / looking up block item, which contains:
+   - obj: block instance, if applicable
+   - cls: block class, if applicable
+   - node: node counterpart for json
+   - json: json counterpart for node
+      
+
 serialize - html to json
 deserialize - json to html
 locate - 
@@ -67,7 +77,8 @@ deserialize = (n) ->
             node.textContent = "loading..."
             queue.push(
               debounce 2000
-                .then -> blocks.get(n.name)
+                .then ->
+                  block-manager.get(n{name,version})
                 .then (b) ->
                   b.instantiate!
                     .then (ret) ->
@@ -76,7 +87,9 @@ deserialize = (n) ->
                           ..insertBefore ret.node, node
                           ..removeChild node
                       else return ret
-                .catch -> node.innerText = "load fail." # TODO update error info in node?
+                .catch ->
+                  console.log "block-manager.get failed in deserialize ( #{n.name}@#{n.version} )"
+                  node.innerText = "load fail." # TODO update error info in node?
             )
             return node
           )!
@@ -146,26 +159,25 @@ opt = do
 
 je = new JSONEditor editor, opt
 
-blocks = do
-  hash: {}
-  add: (name, block) -> @hash[name] = block
-  get: (name) -> Promise.resolve(@hash[name])
+/*
 block = (opt = {}) ->
   @name = opt.name
   @tree = serialize opt.root
-  blocks.add name, @
+  block-manager.add name, @
   @
 block.prototype = Object.create(Object.prototype) <<< do
-  instantiate: -> deserialize @tree
+  instantiate: (data) -> deserialize(if data? => data else @tree)
+*/
 
 b = new block {name: 'two-button', root: ld$.find('[block]', 0)}
-blocks.add "two-button", b
+block-manager.add {name: "two-button", version: "0.0.1", block: b}
 
 lc.json = nt = JSON.parse(JSON.stringify(b.tree))
 nt2 = JSON.parse(JSON.stringify(b.tree))
 
 ops = [
-  {p: ['child', 4], li: {type: \block, name: "two-button"}}
+  {p: ['child', 4], li: {type: \block, name: "two-button", version: "0.0.1"}}
+  {p: ['child', 5], li: {type: \block, name: "sample", version: "0.0.1"}}
   {p: ['style', 0], li: ["background", "yellow"]}
   {p: ['cls', 0], li: "text-danger"}
   {p: ['attr', 0], li: ["data-name", "blah"]}
