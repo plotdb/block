@@ -199,6 +199,7 @@ locate = function(op, data, root){
     obj = p === 'child' ? obj.childNodes : obj;
     dd = dd[p];
   }
+  console.log(op.p[i], op.p[i + 1], i);
   switch (op.p[i]) {
   case 'name':
   case 'value':
@@ -228,6 +229,7 @@ locate = function(op, data, root){
     });
   case 'child':
     if (op.ld) {
+      console.log(op.ld, i);
       obj.removeChild(obj.childNodes[op.p[i + 1]]);
     }
     if (op.li) {
@@ -311,6 +313,13 @@ ops = [
   }, {
     p: ['attr', 0],
     ld: ["data-name", "blah"]
+  }, {
+    p: ['child', 5],
+    ld: {
+      type: 'block',
+      name: "sample",
+      version: "0.0.1"
+    }
   }
 ];
 je.set(lc.json);
@@ -345,6 +354,14 @@ debounce(1000).then(function(){
   return debounce(1000);
 }).then(function(){
   return opsIn([ops[4]]);
+}).then(function(){
+  return debounce(1000);
+}).then(function(){
+  return opsIn([ops[5]]);
+}).then(function(){
+  return debounce(1000);
+}).then(function(){
+  return opsIn([ops[6]]);
 }).then(function(){
   return debounce(1000);
 });

@@ -116,6 +116,7 @@ locate = (op, data, root) ->
     p = op.p[i]
     obj = if p == \child => obj.childNodes else obj
     dd = dd[p]
+  console.log op.p[i], op.p[i + 1], i
 
   switch op.p[i]
   | <[name value type]>
@@ -134,7 +135,9 @@ locate = (op, data, root) ->
     dd.attr.map -> obj.setAttribute it.0, it.1
   | \child
     # other case?
-    if op.ld => obj.removeChild obj.childNodes[op.p[i + 1]]
+    if op.ld =>
+      console.log op.ld, i
+      obj.removeChild obj.childNodes[op.p[i + 1]]
     if op.li =>
       deserialize op.li
         .then ({node, promise}) ->
@@ -182,6 +185,7 @@ ops = [
   {p: ['cls', 0], li: "text-danger"}
   {p: ['attr', 0], li: ["data-name", "blah"]}
   {p: ['attr', 0], ld: ["data-name", "blah"]}
+  {p: ['child', 5], ld: {type: \block, name: "sample", version: "0.0.1"}}
 ]
 je.set lc.json
 update!
@@ -202,4 +206,8 @@ debounce 1000
   .then -> ops-in [ops.3]
   .then -> debounce 1000
   .then -> ops-in [ops.4]
+  .then -> debounce 1000
+  .then -> ops-in [ops.5]
+  .then -> debounce 1000
+  .then -> ops-in [ops.6]
   .then -> debounce 1000
