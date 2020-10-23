@@ -186,7 +186,6 @@ locate = function(op, data, root){
   var n, obj, dd, i$, i, ref$, to$, j, p;
   n = obj = root;
   dd = data;
-  console.log(op.p, op);
   for (i$ = op.p.length - 1; i$ >= 0; --i$) {
     i = i$;
     if ((ref$ = op.p[i]) === 'attr' || ref$ === 'style' || ref$ === 'cls' || ref$ === 'child' || ref$ === 'name' || ref$ === 'value' || ref$ === 'type') {
@@ -199,7 +198,6 @@ locate = function(op, data, root){
     obj = p === 'child' ? obj.childNodes : obj;
     dd = dd[p];
   }
-  console.log(op.p[i], op.p[i + 1], i);
   switch (op.p[i]) {
   case 'name':
   case 'value':
@@ -229,7 +227,6 @@ locate = function(op, data, root){
     });
   case 'child':
     if (op.ld) {
-      console.log(op.ld, i);
       obj.removeChild(obj.childNodes[op.p[i + 1]]);
     }
     if (op.li) {

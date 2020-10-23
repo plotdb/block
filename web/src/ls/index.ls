@@ -109,14 +109,12 @@ deserialize = (n) ->
 locate = (op, data, root) ->
   n = obj = root
   dd = data
-  console.log op.p, op
   for i from op.p.length - 1 to 0 by -1 =>
     if op.p[i] in <[attr style cls child name value type]> => break
   for j from 0 til i - 1 =>
     p = op.p[i]
     obj = if p == \child => obj.childNodes else obj
     dd = dd[p]
-  console.log op.p[i], op.p[i + 1], i
 
   switch op.p[i]
   | <[name value type]>
@@ -135,9 +133,7 @@ locate = (op, data, root) ->
     dd.attr.map -> obj.setAttribute it.0, it.1
   | \child
     # other case?
-    if op.ld =>
-      console.log op.ld, i
-      obj.removeChild obj.childNodes[op.p[i + 1]]
+    if op.ld => obj.removeChild obj.childNodes[op.p[i + 1]]
     if op.li =>
       deserialize op.li
         .then ({node, promise}) ->
