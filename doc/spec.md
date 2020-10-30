@@ -1,26 +1,29 @@
 # block specification
 
-node 定義
+## Document Node JSON Spec
 
-{
-  name - node name.
-    - such as 'div' for tags, or 'list' for block
-    - all lower cases # might cause problem with SVG tags
-    - optional, dependning on type.
-  type - node type. such as 'tag', 'block', 'text'
-    - tag - html tag
-    - block - just block
-    - text - just text
-  version - block version, only applicable to block type node
-  value - node value. textContent for text type node.
-  attr - node attributes
-  style - node styles
-  cls - node classes
-  data - node data
-  child - child nodes.
-}
+document tree is converted into json representation. Following is the member of each node in json:
+
+ - `type` - node type. such as `tag`, `block`, `text`
+    - `tag` - markup language tags
+    - `block` - block
+    - `text` - plain text
+ - `name` - node name. ( optional, dependning on type )
+    - such as `div` for tags, or `my-list` for block
+    - all lower cases for block type and html in tag type
+      - allow case sensitive for svg tags? check how createElementNS works
+ - `version` - block version, ( only applicable to `block` type node )
+ - `attr` - node attributes
+ - `style` - node styles
+ - `cls` - node classes
+ - `data` - node data. ( optional, depending on type )
+   - for `text` type: string for `textContent`
+   - for `block` type: custom data following block data spec.
+   - for `tag` type: not applicable.
+ - `child` - array of child nodes. not applicable for `text` type node.
 
 
+## Block Data Spec
 
 ## draft
 
