@@ -63,3 +63,6 @@
 highlight - 滑鼠hover 時提示用戶目前 hover 區塊範圍. 可用來做進階功能
  - 編輯會影響 div bounding box, 所以 highlight 要嘛跟著更新, 不然就要自動隱藏
    - 更新方式: 1. watch, 2. polling
+
+transport ( deserialize -> serialize )
+ - 速度是個問題. debounce 後體驗有好一些, 但 node 一多一樣很費時.

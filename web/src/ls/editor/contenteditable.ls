@@ -17,16 +17,22 @@ transport = (opt={}) ->
   @ <<< opt{root, output}
   @state = {old: {}, cur: {}, tree: {}}
   if !json0 => json0 = require("ot-json0")
-  root.addEventListener \input, ~>
+  update = debounce 500, ~>
+    t1 = Date.now!
     ret = serialize(root)
     @state.old = @state.cur
     @state.cur = ret
     ret = json0-ot-diff @state.old, @state.cur
     ret = json0.type.apply @state.tree, ret
     deserialize @state.tree
-      .then ({node}) ->
+      .then ({node}) ~>
         @output.innerHTML = ""
         @output.appendChild node
+        t2 = Date.now!
+        console.log "elapsed: ", (t2 - t1)
+
+  root.addEventListener \input, ~> update!
+
   @
 
 transport root: ld$.find('#input', 0), output: ld$.find(\#output,0)

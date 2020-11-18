@@ -28,7 +28,7 @@ document.addEventListener('click', function(e){
   return setCaret(range.range);
 });
 transport = function(opt){
-  var json0, this$ = this;
+  var json0, update, this$ = this;
   opt == null && (opt = {});
   this.opt = opt;
   this.root = opt.root;
@@ -41,19 +41,25 @@ transport = function(opt){
   if (!json0) {
     json0 = require("ot-json0");
   }
-  root.addEventListener('input', function(){
-    var ret;
+  update = debounce(500, function(){
+    var t1, ret;
+    t1 = Date.now();
     ret = serialize(root);
     this$.state.old = this$.state.cur;
     this$.state.cur = ret;
     ret = json0OtDiff(this$.state.old, this$.state.cur);
     ret = json0.type.apply(this$.state.tree, ret);
     return deserialize(this$.state.tree).then(function(arg$){
-      var node;
+      var node, t2;
       node = arg$.node;
-      this.output.innerHTML = "";
-      return this.output.appendChild(node);
+      this$.output.innerHTML = "";
+      this$.output.appendChild(node);
+      t2 = Date.now();
+      return console.log("elapsed: ", t2 - t1);
     });
+  });
+  root.addEventListener('input', function(){
+    return update();
   });
   return this;
 };
