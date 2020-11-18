@@ -28,8 +28,12 @@
   },
   "dependencies": {
     "bootstrap": "^4.5.2",
+    "bootstrap.ldui": "github:loadingio/bootstrap.ldui",
+    "bootstrap.native": "^3.0.13",
     "fedep": "0.0.7",
     "jsoneditor": "^9.1.1",
+    "ldcover": "^1.1.0",
+    "ldview": "0.0.2",
     "ot-json0": "github:ottypes/json0",
     "sharedb-wrapper": "github:zbryikt/sharedb-wrapper"
   },
@@ -37,6 +41,10 @@
     "root": "web/static/assets/lib",
     "modules": [
       "bootstrap",
+      "bootstrap.ldui",
+      "bootstrap.native",
+      "ldcover",
+      "ldview",
       "jsoneditor",
       "ldiconfont",
       "sharedb-wrapper",
