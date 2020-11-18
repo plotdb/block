@@ -1,7 +1,6 @@
 require! <[fs path body-parser template]>
 
 template.server.init do
-  port: 4000
   api: ({app}) ->
 
     app.use body-parser.json do
