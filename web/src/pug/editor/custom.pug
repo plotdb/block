@@ -63,6 +63,16 @@ html
           hr
           #output
 
+        .col-md
+          h2 custom editor
+          hr
+          .position-relative
+            div(customeditable="true")
+              h3 hello
+              p#pp this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph 
+            div#mask(style="background:rgba(0,0,0,.1);width:100%;height:100%;position:absolute;top:0;left:0")
+          p this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph 
+    #vrcaret(style="position:absolute;border-left:1px solid #000")
     +nbr(50)
     +script("/assets/lib/sharedb-wrapper/main/client.bundle.min.js")
     +script("/assets/lib/bootstrap.native/main/bootstrap-native.min.js")
@@ -75,5 +85,6 @@ html
     +script("/assets/lib/ot-json0/main/ot-json0.js")
     +script("/js/editor/caret.js")
     +script("/js/editor/contenteditable.js")
+    +script("/js/editor/custom/customeditable.js")
     +script("/js/editor/highlight.js")
 

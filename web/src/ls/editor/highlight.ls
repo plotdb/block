@@ -1,14 +1,19 @@
-highlight-handler = ->
+# option
+#  - menu - context menu dom
+#  - target - root node where highlight works
+highlight-handler = (opt = {}) ->
+  @opt = opt
   @ <<< box: null, tgt: null
+  @ <<< opt{menu, target}
   @
 
 highlight-handler.prototype = Object.create(Object.prototype) <<< do
   is-toggled: -> return @toggled
   toggle: (v,e) ->
     @toggled = v = if v? => v else !@is-toggled!
-    if !v => return @root.style <<< opacity: 0, pointerEvents: \none
-    box = @root.getBoundingClientRect!
-    @root.style <<<
+    if !v => return @menu.style <<< opacity: 0, pointerEvents: \none
+    box = @menu.getBoundingClientRect!
+    @menu.style <<<
       opacity: 1
       pointerEvents: \auto
       left: "#{(e.clientX - box.width/2) >? 0 <? window.innerWidth - box.width}px"
@@ -20,7 +25,6 @@ highlight-handler.prototype = Object.create(Object.prototype) <<< do
 
   init: ->
     setInterval (~> @render @tgt), 500
-    @root = ld$.find('[ld-scope=highlight]',0)
     @box = document.createElement \div
     @tgt = null
     @box.style <<< do
@@ -35,6 +39,7 @@ highlight-handler.prototype = Object.create(Object.prototype) <<< do
 
     document.body.appendChild @box
     document.addEventListener \mouseover, (e) ~>
+      if !(ld$.parent e.target, null, @target) => return
       # dont change focus when context menu is on
       if @is-toggled! => return
       if !(node = ld$.parent e.target, '[editable]') => return
@@ -46,7 +51,7 @@ highlight-handler.prototype = Object.create(Object.prototype) <<< do
       e.preventDefault!
 
     @view = new ldView do
-      root: @root
+      root: @menu
       action: click: do
         'highlight-delete': ~>
           tgt = @tgt
@@ -81,6 +86,9 @@ highlight-handler.prototype = Object.create(Object.prototype) <<< do
       border: '3px solid #2be'
       borderRadius: \5px
 
-hlh = new highlight-handler!
+hlh = new highlight-handler do
+  target: ld$.find('#input',0)
+  menu: ld$.find('[ld-scope=highlight]',0)
+
 hlh.init!
 

@@ -11,15 +11,21 @@ document.addEventListener \click, (e) ->
   range = caret-range {node: p, x: e.clientX, y: e.clientY}
   set-caret range.range
 
+json0 = require("ot-json0")
 # 把 contenteditable 內容 複製/傳輸 ( serialize - deserialize) 到另一個 div 中
 transport = (opt={}) ->
   @opt = opt
   @ <<< opt{root, output}
   @state = {old: {}, cur: {}, tree: {}}
-  if !json0 => json0 = require("ot-json0")
-  update = debounce 500, ~>
+
+  @root.addEventListener \input, debounce 500, ~> @update!
+
+  @
+
+transport.prototype = Object.create(Object.prototype) <<< do
+  update: ->
     t1 = Date.now!
-    ret = serialize(root)
+    ret = serialize(@root)
     @state.old = @state.cur
     @state.cur = ret
     ret = json0-ot-diff @state.old, @state.cur
@@ -31,8 +37,7 @@ transport = (opt={}) ->
         t2 = Date.now!
         console.log "elapsed: ", (t2 - t1)
 
-  root.addEventListener \input, ~> update!
 
-  @
+tp = new transport root: ld$.find('#input', 0), output: ld$.find(\#output,0)
+tp.update!
 
-transport root: ld$.find('#input', 0), output: ld$.find(\#output,0)

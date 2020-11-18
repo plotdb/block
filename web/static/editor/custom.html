@@ -1,0 +1,123 @@
+<!DOCTYPE html><html><head><link rel="stylesheet" type="text/css" href="/assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css"><style type="text/css">*[contenteditable=true] {
+  outline: none;
+}
+#caret {
+  animation: 1s linear blink infinite;
+}
+*[editable]:empty:before {
+  display: inline;
+  opacity: 0.5;
+  content: "_";
+}
+.highlighttoolbar {
+  z-index: 99999;
+  position: fixed;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 0.25em;
+  padding: 0.5em 1em;
+  opacity: 0;
+  background: #fff;
+  transition: opacity 0.15s ease-in-out;
+}
+@-moz-keyframes highlight {
+  0% {
+    border-color: #1cf;
+  }
+  50% {
+    border-color: #2be;
+  }
+  100% {
+    border-color: #1cf;
+  }
+}
+@-webkit-keyframes highlight {
+  0% {
+    border-color: #1cf;
+  }
+  50% {
+    border-color: #2be;
+  }
+  100% {
+    border-color: #1cf;
+  }
+}
+@-o-keyframes highlight {
+  0% {
+    border-color: #1cf;
+  }
+  50% {
+    border-color: #2be;
+  }
+  100% {
+    border-color: #1cf;
+  }
+}
+@keyframes highlight {
+  0% {
+    border-color: #1cf;
+  }
+  50% {
+    border-color: #2be;
+  }
+  100% {
+    border-color: #1cf;
+  }
+}
+@-moz-keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  71% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@-webkit-keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  71% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@-o-keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  71% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  71% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+</style></head><body><div class="highlighttoolbar" ld-scope="highlight"><div class="btn btn-sm btn-secondary mr-2" ld="highlight-delete">Delete</div><div class="btn btn-sm btn-secondary" ld="highlight-clone">Clone</div></div><div class="w-1024 mx-auto my-4"><div class="row"><div class="col-md"><div id="input"><h2>contenteditable</h2><hr><div editable><h3 editable>Hello</h3><div editable><div class="d-inline-block">blah</div><div class="btn btn-outline-secondary" editable>hello</div><div class="d-inline-block">bhalh</div><div class="btn btn-outline-secondary" editable>hello</div></div></div></div></div><div class="col-md"><h2>output</h2><hr><div id="output"></div></div><div class="col-md"><h2>custom editor</h2><hr><div class="position-relative"><div customeditable="true"><h3>hello</h3><p id="pp">this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph </p></div><div id="mask" style="background:rgba(0,0,0,.1);width:100%;height:100%;position:absolute;top:0;left:0"></div></div><p>this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph this is a paragraph </p></div></div></div><div id="vrcaret" style="position:absolute;border-left:1px solid #000"></div><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><script type="text/javascript" src="/assets/lib/sharedb-wrapper/main/client.bundle.min.js"></script><script type="text/javascript" src="/assets/lib/bootstrap.native/main/bootstrap-native.min.js"></script><script type="text/javascript" src="/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js"></script><script type="text/javascript" src="/assets/lib/@loadingio/debounce.js/main/debounce.min.js"></script><script type="text/javascript" src="/assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="/assets/lib/ldview/main/ldview.min.js"></script><script type="text/javascript" src="/assets/lib/ldcover/main/ldcv.min.js"></script><script type="text/javascript" src="/js/domtool.js"></script><script type="text/javascript" src="/assets/lib/ot-json0/main/ot-json0.js"></script><script type="text/javascript" src="/js/editor/caret.js"></script><script type="text/javascript" src="/js/editor/contenteditable.js"></script><script type="text/javascript" src="/js/editor/custom/customeditable.js"></script><script type="text/javascript" src="/js/editor/highlight.js"></script></body></html>
