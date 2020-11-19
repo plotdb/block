@@ -19,6 +19,11 @@ highlight-handler.prototype = Object.create(Object.prototype) <<< do
       left: "#{(e.clientX - box.width/2) >? 0 <? window.innerWidth - box.width}px"
       top: "#{(e.clientY - box.height/2) >? 0 <? window.innerHeight - box.height}px"
 
+  mode: ->
+    name = "highlight-#it"
+    @box.style <<< animation: "#name 1s infinite"
+    @blend.style.opacity = if it == \edit => 1 else 0
+    @mask.style.opacity = if it == \edit => 1 else 0
   poll: ->
     @render @tgt
     setTimeout (~> @poll!), 500
@@ -26,8 +31,23 @@ highlight-handler.prototype = Object.create(Object.prototype) <<< do
   init: ->
     setInterval (~> @render @tgt), 500
     @box = document.createElement \div
+    @blend = document.createElement \div
+    @mask = document.createElement \div
     @tgt = null
-    @box.style <<< do
+    @mask.style <<< do
+      position: \fixed
+      top: 0
+      left: 0
+      width: \100%
+      height: \100%
+      background: 'rgba(255,255,255,.8)'
+      mix-blend-mode: \hard-light
+      z-index: 5
+      pointer-events: \none
+      opacity: 0
+      transition: 'opacity .15s ease-in-out'
+
+    style = do
       position: \fixed
       top: 0
       left: 0
@@ -35,9 +55,13 @@ highlight-handler.prototype = Object.create(Object.prototype) <<< do
       pointerEvents: \none
       opacity: 0
       transition: "all .15s ease-in-out"
-      animation: "highlight 1s infinite"
+    @box.style <<< style
+    @blend.style <<< style
 
     document.body.appendChild @box
+    document.body.appendChild @mask
+    @mask.appendChild @blend
+    @mode \hover
     document.addEventListener \mouseover, (e) ~>
       if !(ld$.parent e.target, null, @target) => return
       # dont change focus when context menu is on
@@ -74,10 +98,13 @@ highlight-handler.prototype = Object.create(Object.prototype) <<< do
   update: -> @render @tgt
   render: (n) ->
     @tgt = n
-    if !n => return @box.style <<< opacity: 0
+    if !n =>
+      @box.style <<< opacity: 0
+      @blend.style <<< opacity: 0
+      return
     box = n.getBoundingClientRect!
     p = 6
-    @box.style <<<
+    style = do
       left: "#{box.x - p}px"
       top: "#{box.y - p}px"
       width: "#{box.width + p * 2}px"
@@ -85,10 +112,20 @@ highlight-handler.prototype = Object.create(Object.prototype) <<< do
       opacity: 0.5
       border: '3px solid #2be'
       borderRadius: \5px
+    @box.style <<< style 
+    @blend.style <<< do
+      left: "#{box.x}px"
+      top: "#{box.y}px"
+      width: "#{box.width}px"
+      height: "#{box.height}px"
+      opacity: 1
+      border: '3px solid transparent'
+      background: '#999'
 
 hlh = new highlight-handler do
   target: ld$.find('#input',0)
   menu: ld$.find('[ld-scope=highlight]',0)
 
+editor.set-highlight hlh
 hlh.init!
 

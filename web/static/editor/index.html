@@ -1,4 +1,9 @@
-<!DOCTYPE html><html><head><link rel="stylesheet" type="text/css" href="/assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css"><style type="text/css">*[contenteditable=true] {
+<!DOCTYPE html><html><head><link rel="stylesheet" type="text/css" href="/assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css"><style type="text/css">html,
+body {
+  width: 100%;
+  height: 100%;
+}
+*[contenteditable=true] {
   outline: none;
 }
 #caret {
@@ -20,48 +25,92 @@
   background: #fff;
   transition: opacity 0.15s ease-in-out;
 }
-@-moz-keyframes highlight {
+@-moz-keyframes highlight-edit {
   0% {
-    border-color: #1cf;
+    border-color: #1fc;
   }
   50% {
-    border-color: #2be;
+    border-color: #2eb;
   }
   100% {
-    border-color: #1cf;
+    border-color: #1fc;
   }
 }
-@-webkit-keyframes highlight {
+@-webkit-keyframes highlight-edit {
   0% {
-    border-color: #1cf;
+    border-color: #1fc;
   }
   50% {
-    border-color: #2be;
+    border-color: #2eb;
   }
   100% {
-    border-color: #1cf;
+    border-color: #1fc;
   }
 }
-@-o-keyframes highlight {
+@-o-keyframes highlight-edit {
   0% {
-    border-color: #1cf;
+    border-color: #1fc;
   }
   50% {
-    border-color: #2be;
+    border-color: #2eb;
   }
   100% {
-    border-color: #1cf;
+    border-color: #1fc;
   }
 }
-@keyframes highlight {
+@keyframes highlight-edit {
   0% {
-    border-color: #1cf;
+    border-color: #1fc;
   }
   50% {
-    border-color: #2be;
+    border-color: #2eb;
   }
   100% {
-    border-color: #1cf;
+    border-color: #1fc;
+  }
+}
+@-moz-keyframes highlight-hover {
+  0% {
+    border-color: #1af;
+  }
+  50% {
+    border-color: #28e;
+  }
+  100% {
+    border-color: #1af;
+  }
+}
+@-webkit-keyframes highlight-hover {
+  0% {
+    border-color: #1af;
+  }
+  50% {
+    border-color: #28e;
+  }
+  100% {
+    border-color: #1af;
+  }
+}
+@-o-keyframes highlight-hover {
+  0% {
+    border-color: #1af;
+  }
+  50% {
+    border-color: #28e;
+  }
+  100% {
+    border-color: #1af;
+  }
+}
+@keyframes highlight-hover {
+  0% {
+    border-color: #1af;
+  }
+  50% {
+    border-color: #28e;
+  }
+  100% {
+    border-color: #1af;
   }
 }
 @-moz-keyframes blink {
@@ -120,4 +169,4 @@
     opacity: 0;
   }
 }
-</style></head><body><div class="highlighttoolbar" ld-scope="highlight"><div class="btn btn-sm btn-secondary mr-2" ld="highlight-delete">Delete</div><div class="btn btn-sm btn-secondary" ld="highlight-clone">Clone</div></div><div class="d-none" id="sample"><div><div editable><h3 editable>Hello</h3><div editable><div class="d-inline-block">blah</div><div class="btn btn-outline-secondary" editable draggable>hello</div><div class="d-inline-block">bhalh</div><div class="btn btn-outline-secondary" editable draggable>hello</div></div></div></div></div><div class="w-1024 rwd mx-auto my-4"><div class="row"><div class="col-md"><h2>editor 1</h2><hr><div id="editor1"></div></div><div class="col-md"><h2>editor 2</h2><hr><div id="editor2"></div></div></div></div><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><script type="text/javascript" src="/assets/lib/sharedb-wrapper/main/client.bundle.min.js"></script><script type="text/javascript" src="/assets/lib/bootstrap.native/main/bootstrap-native.min.js"></script><script type="text/javascript" src="/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js"></script><script type="text/javascript" src="/assets/lib/@loadingio/debounce.js/main/debounce.min.js"></script><script type="text/javascript" src="/assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="/assets/lib/ldview/main/ldview.min.js"></script><script type="text/javascript" src="/assets/lib/ldcover/main/ldcv.min.js"></script><script type="text/javascript" src="/js/domtool.js"></script><script type="text/javascript" src="/assets/lib/ot-json0/main/ot-json0.js"></script><script type="text/javascript" src="/js/editor/caret.js"></script><script type="text/javascript" src="/js/editor/contenteditable.js"></script><script type="text/javascript" src="/js/editor/highlight.js"></script><script type="text/javascript" src="/js/editor/copy-paste.js"></script><script type="text/javascript" src="/js/editor/drag.js"></script></body></html>
+</style></head><body><div class="highlighttoolbar" ld-scope="highlight"><div class="btn btn-sm btn-secondary mr-2" ld="highlight-delete">Delete</div><div class="btn btn-sm btn-secondary" ld="highlight-clone">Clone</div></div><div class="d-none" id="sample"><div><div editable><h3 editable>Hello</h3><div editable><div class="d-inline-block">blah</div><div class="btn btn-outline-secondary" editable draggable>hello</div><div class="d-inline-block">bhalh</div><div class="btn btn-outline-secondary" editable draggable>hello</div></div></div></div></div><div class="w-1024 rwd mx-auto my-4 bg-white h-100"><div class="row"><div class="col-md"><h2>editor 1</h2><hr><div id="editor1"></div></div><div class="col-md"><h2>editor 2</h2><hr><div id="editor2"></div></div></div></div><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><script type="text/javascript" src="/assets/lib/sharedb-wrapper/main/client.bundle.min.js"></script><script type="text/javascript" src="/assets/lib/bootstrap.native/main/bootstrap-native.min.js"></script><script type="text/javascript" src="/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js"></script><script type="text/javascript" src="/assets/lib/@loadingio/debounce.js/main/debounce.min.js"></script><script type="text/javascript" src="/assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="/assets/lib/ldview/main/ldview.min.js"></script><script type="text/javascript" src="/assets/lib/ldcover/main/ldcv.min.js"></script><script type="text/javascript" src="/js/domtool.js"></script><script type="text/javascript" src="/assets/lib/ot-json0/main/ot-json0.js"></script><script type="text/javascript" src="/js/editor/caret.js"></script><script type="text/javascript" src="/js/editor/contenteditable.js"></script><script type="text/javascript" src="/js/editor/highlight.js"></script><script type="text/javascript" src="/js/editor/copy-paste.js"></script><script type="text/javascript" src="/js/editor/drag.js"></script></body></html>

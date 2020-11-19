@@ -63,6 +63,7 @@
 highlight - 滑鼠hover 時提示用戶目前 hover 區塊範圍. 可用來做進階功能
  - 編輯會影響 div bounding box, 所以 highlight 要嘛跟著更新, 不然就要自動隱藏
    - 更新方式: 1. watch, 2. polling
+ - 如果整個框都是 contenteditable, 沒辦法點旁邊取消 focus.
 
 transport ( deserialize -> serialize )
  - 速度是個問題. debounce 後體驗有好一些, 但 node 一多一樣很費時.
@@ -76,3 +77,6 @@ drag & drop
    這時用戶想拖動, 就會變成選取. 我們可以在點擊 blur 時取消所有 contenteditable
    - 當 contenteditable on 時, 我們也許可以設計一個特殊模式 ( 其它東西虛化? )
      來暗示用戶現在在編輯模式 ( 用戶比較不會想拖動他? )
+
+cut hole with blending 
+ - https://stackoverflow.com/questions/30732695/css3-blending-mode-between-different-html-elements

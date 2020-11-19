@@ -31,11 +31,15 @@ editor <<< do
     @inited = true
   list: []
   add: -> @[]list.push it
+  set-highlight: -> @highlight = it
   onclick: (e) ->
     ret = @[]list
       .map -> it.onclick e
       .reduce(((a,b) -> a or b), false)
-    if ret => return
+    if ret =>
+      @highlight.mode \edit
+      return
+    @highlight.mode \hover
     @list.map -> it.toggle false
 
 editor.prototype = Object.create(Object.prototype) <<< do
@@ -58,8 +62,7 @@ editor.prototype = Object.create(Object.prototype) <<< do
   onclick: (e) ->
     p = ld$.parent(e.target, '[editable]')
     if !ld$.parent(p,null,@root) => return
-    if @active == p => return !!p
-    if @active => @active.setAttribute \contenteditable, false
+    if @active and @active != p => @active.setAttribute \contenteditable, false
     @active = p
     if !p => return
     p.setAttribute \contenteditable, true

@@ -64,6 +64,9 @@ import$(editor, {
   add: function(it){
     return (this.list || (this.list = [])).push(it);
   },
+  setHighlight: function(it){
+    return this.highlight = it;
+  },
   onclick: function(e){
     var ret;
     ret = (this.list || (this.list = [])).map(function(it){
@@ -72,8 +75,10 @@ import$(editor, {
       return a || b;
     }, false);
     if (ret) {
+      this.highlight.mode('edit');
       return;
     }
+    this.highlight.mode('hover');
     return this.list.map(function(it){
       return it.toggle(false);
     });
@@ -100,10 +105,7 @@ editor.prototype = import$(Object.create(Object.prototype), {
     if (!ld$.parent(p, null, this.root)) {
       return;
     }
-    if (this.active === p) {
-      return !!p;
-    }
-    if (this.active) {
+    if (this.active && this.active !== p) {
       this.active.setAttribute('contenteditable', false);
     }
     this.active = p;

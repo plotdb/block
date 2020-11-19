@@ -24,6 +24,13 @@ highlightHandler.prototype = import$(Object.create(Object.prototype), {
     box = this.menu.getBoundingClientRect();
     return ref$ = this.menu.style, ref$.opacity = 1, ref$.pointerEvents = 'auto', ref$.left = ((ref1$ = (ref3$ = e.clientX - box.width / 2) > 0 ? ref3$ : 0) < (ref2$ = window.innerWidth - box.width) ? ref1$ : ref2$) + "px", ref$.top = ((ref1$ = (ref3$ = e.clientY - box.height / 2) > 0 ? ref3$ : 0) < (ref2$ = window.innerHeight - box.height) ? ref1$ : ref2$) + "px", ref$;
   },
+  mode: function(it){
+    var name;
+    name = "highlight-" + it;
+    this.box.style.animation = name + " 1s infinite";
+    this.blend.style.opacity = it === 'edit' ? 1 : 0;
+    return this.mask.style.opacity = it === 'edit' ? 1 : 0;
+  },
   poll: function(){
     var this$ = this;
     this.render(this.tgt);
@@ -32,23 +39,42 @@ highlightHandler.prototype = import$(Object.create(Object.prototype), {
     }, 500);
   },
   init: function(){
-    var this$ = this;
+    var style, this$ = this;
     setInterval(function(){
       return this$.render(this$.tgt);
     }, 500);
     this.box = document.createElement('div');
+    this.blend = document.createElement('div');
+    this.mask = document.createElement('div');
     this.tgt = null;
-    import$(this.box.style, {
+    import$(this.mask.style, {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      background: 'rgba(255,255,255,.8)',
+      mixBlendMode: 'hard-light',
+      zIndex: 5,
+      pointerEvents: 'none',
+      opacity: 0,
+      transition: 'opacity .15s ease-in-out'
+    });
+    style = {
       position: 'fixed',
       top: 0,
       left: 0,
       zIndex: 9999,
       pointerEvents: 'none',
       opacity: 0,
-      transition: "all .15s ease-in-out",
-      animation: "highlight 1s infinite"
-    });
+      transition: "all .15s ease-in-out"
+    };
+    import$(this.box.style, style);
+    import$(this.blend.style, style);
     document.body.appendChild(this.box);
+    document.body.appendChild(this.mask);
+    this.mask.appendChild(this.blend);
+    this.mode('hover');
     document.addEventListener('mouseover', function(e){
       var node;
       if (!ld$.parent(e.target, null, this$.target)) {
@@ -107,20 +133,41 @@ highlightHandler.prototype = import$(Object.create(Object.prototype), {
     return this.render(this.tgt);
   },
   render: function(n){
-    var ref$, box, p;
+    var box, p, style;
     this.tgt = n;
     if (!n) {
-      return ref$ = this.box.style, ref$.opacity = 0, ref$;
+      this.box.style.opacity = 0;
+      this.blend.style.opacity = 0;
+      return;
     }
     box = n.getBoundingClientRect();
     p = 6;
-    return ref$ = this.box.style, ref$.left = (box.x - p) + "px", ref$.top = (box.y - p) + "px", ref$.width = (box.width + p * 2) + "px", ref$.height = (box.height + p * 2) + "px", ref$.opacity = 0.5, ref$.border = '3px solid #2be', ref$.borderRadius = '5px', ref$;
+    style = {
+      left: (box.x - p) + "px",
+      top: (box.y - p) + "px",
+      width: (box.width + p * 2) + "px",
+      height: (box.height + p * 2) + "px",
+      opacity: 0.5,
+      border: '3px solid #2be',
+      borderRadius: '5px'
+    };
+    import$(this.box.style, style);
+    return import$(this.blend.style, {
+      left: box.x + "px",
+      top: box.y + "px",
+      width: box.width + "px",
+      height: box.height + "px",
+      opacity: 1,
+      border: '3px solid transparent',
+      background: '#999'
+    });
   }
 });
 hlh = new highlightHandler({
   target: ld$.find('#input', 0),
   menu: ld$.find('[ld-scope=highlight]', 0)
 });
+editor.setHighlight(hlh);
 hlh.init();
 function import$(obj, src){
   var own = {}.hasOwnProperty;
