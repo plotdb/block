@@ -69,3 +69,10 @@ transport ( deserialize -> serialize )
 
 drag & drop
  - 可以拖動的話, 選取文字該怎麼辦呢?
+ - 因為文件會動態更新, 節點可能都會被修改, 所以我們可能會有需要:
+   - 想辦法保留節點
+   - 重新初始化 drag and drop
+ - 進 contenteditable 後, 拖動會變成選取. 點擊空白區域時 contenteditable 會保持, 但 caret 會消失, 
+   這時用戶想拖動, 就會變成選取. 我們可以在點擊 blur 時取消所有 contenteditable
+   - 當 contenteditable on 時, 我們也許可以設計一個特殊模式 ( 其它東西虛化? )
+     來暗示用戶現在在編輯模式 ( 用戶比較不會想拖動他? )

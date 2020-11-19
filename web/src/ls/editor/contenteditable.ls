@@ -31,7 +31,12 @@ editor <<< do
     @inited = true
   list: []
   add: -> @[]list.push it
-  onclick: (e) -> @[]list.map -> it.onclick e
+  onclick: (e) ->
+    ret = @[]list
+      .map -> it.onclick e
+      .reduce(((a,b) -> a or b), false)
+    if ret => return
+    @list.map -> it.toggle false
 
 editor.prototype = Object.create(Object.prototype) <<< do
   init: ->
@@ -42,10 +47,18 @@ editor.prototype = Object.create(Object.prototype) <<< do
     @state.cur = store.get!
     @ops-in!
 
+  # return true if any contenteditable got clicked
+  # if none got clicked, host will ask editors disabling the last enabled contenteditable
+
+  toggle: (v) ->
+    if !@active => return
+    @active.setAttribute \contenteditable, v
+
+
   onclick: (e) ->
     p = ld$.parent(e.target, '[editable]')
     if !ld$.parent(p,null,@root) => return
-    if @active == p => return
+    if @active == p => return !!p
     if @active => @active.setAttribute \contenteditable, false
     @active = p
     if !p => return
@@ -53,9 +66,10 @@ editor.prototype = Object.create(Object.prototype) <<< do
     ld$.find(p, '[editable]').map -> it.setAttribute \contenteditable, false
     range = caret-range {node: p, x: e.clientX, y: e.clientY}
     set-caret range.range
+    return true
 
   ops-out: ->
-    ret = serialize(@root)
+    ret = serialize(@root.childNodes.0)
     @state.old = @state.cur
     @state.cur = ret
     ops = json0-ot-diff @state.old, @state.cur

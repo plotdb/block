@@ -49,7 +49,6 @@ document.addEventListener('copy', function(e){
 document.addEventListener('paste', function(e){
   var data;
   data = e.clipboardData.getData('text/html');
-  console.log(data);
   document.execCommand('insertText', false, data);
   return e.preventDefault();
 });

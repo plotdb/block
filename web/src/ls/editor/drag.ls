@@ -8,21 +8,47 @@ ghost.src = "data:image/svg+xml," + encodeURIComponent("""
 </svg>
 """)
 
-ld$.find('[draggable]').map (n) ->
-  n.setAttribute \draggable, true
-  n.addEventListener \dragstart, (e) ->
-    console.log n
-    dragging-src := n
-    e.dataTransfer.setData(\application/json, JSON.stringify({}))
-    e.dataTransfer.setDragImage(ghost,10,10)
-    dragging := true
-    e.stopPropagation!
-ld$.find('[editable]').map (n) ->
+drop-init = (n) ->
+  if n.drop-inited => return
+  n.drop-inited = true
   n.addEventListener \drop, (e) ->
     data = JSON.parse(e.dataTransfer.getData(\application/json))
     dragging := false
     e.preventDefault!
   n.addEventListener \dragover, (e) -> e.preventDefault!
+
+drag-init = (n) ->
+  if n.drag-inited => return
+  n.drag-inited = true
+  n.setAttribute \draggable, true
+  n.addEventListener \dragstart, (e) ->
+    dragging-src := n
+    e.dataTransfer.setData(\application/json, JSON.stringify({}))
+    e.dataTransfer.setDragImage(ghost,10,10)
+    dragging := true
+    e.stopPropagation!
+
+document.addEventListener \dragover, (e) ->
+  n = e.target
+  while n
+    if n.getAttribute =>
+      if n.hasAttribute \editable => break
+    n = n.parentNode
+  if !n => return
+  drop-init n
+
+
+document.addEventListener \mousedown, (e) ->
+  n = e.target
+  while n
+    if n.getAttribute =>
+      if n.hasAttribute \draggable => break
+    n = n.parentNode
+  if !n => return
+  drag-init n
+
+ld$.find('[draggable]').map (n) -> drag-init n
+ld$.find('[editable]').map (n) -> drop-init n
 
 
 drag-box = document.createElement("div")

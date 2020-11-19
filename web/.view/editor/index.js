@@ -682,7 +682,7 @@ pug_html = pug_html + "\u003Cdiv" + (" class=\"btn btn-outline-secondary\""+pug_
 ;pug_debug_line = 55;pug_debug_filename = "src\u002Fpug\u002Feditor\u002Findex.pug";
 pug_html = pug_html + "hello\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
 ;pug_debug_line = 57;pug_debug_filename = "src\u002Fpug\u002Feditor\u002Findex.pug";
-pug_html = pug_html + "\u003Cdiv class=\"w-1024 mx-auto my-4\"\u003E";
+pug_html = pug_html + "\u003Cdiv class=\"w-1024 rwd mx-auto my-4\"\u003E";
 ;pug_debug_line = 58;pug_debug_filename = "src\u002Fpug\u002Feditor\u002Findex.pug";
 pug_html = pug_html + "\u003Cdiv class=\"row\"\u003E";
 ;pug_debug_line = 59;pug_debug_filename = "src\u002Fpug\u002Feditor\u002Findex.pug";

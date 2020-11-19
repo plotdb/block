@@ -26,7 +26,6 @@ document.addEventListener \copy, (e) ->
 # intercept paste data and remove style
 document.addEventListener \paste, (e) ->
   data = e.clipboardData.getData(\text/html)
-  console.log data
   document.execCommand \insertText, false, data
   e.preventDefault!
 

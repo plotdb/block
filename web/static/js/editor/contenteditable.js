@@ -65,8 +65,17 @@ import$(editor, {
     return (this.list || (this.list = [])).push(it);
   },
   onclick: function(e){
-    return (this.list || (this.list = [])).map(function(it){
+    var ret;
+    ret = (this.list || (this.list = [])).map(function(it){
       return it.onclick(e);
+    }).reduce(function(a, b){
+      return a || b;
+    }, false);
+    if (ret) {
+      return;
+    }
+    return this.list.map(function(it){
+      return it.toggle(false);
     });
   }
 });
@@ -79,6 +88,12 @@ editor.prototype = import$(Object.create(Object.prototype), {
     this.state.cur = store.get();
     return this.opsIn();
   },
+  toggle: function(v){
+    if (!this.active) {
+      return;
+    }
+    return this.active.setAttribute('contenteditable', v);
+  },
   onclick: function(e){
     var p, range;
     p = ld$.parent(e.target, '[editable]');
@@ -86,7 +101,7 @@ editor.prototype = import$(Object.create(Object.prototype), {
       return;
     }
     if (this.active === p) {
-      return;
+      return !!p;
     }
     if (this.active) {
       this.active.setAttribute('contenteditable', false);
@@ -104,11 +119,12 @@ editor.prototype = import$(Object.create(Object.prototype), {
       x: e.clientX,
       y: e.clientY
     });
-    return setCaret(range.range);
+    setCaret(range.range);
+    return true;
   },
   opsOut: function(){
     var ret, ops;
-    ret = serialize(this.root);
+    ret = serialize(this.root.childNodes[0]);
     this.state.old = this.state.cur;
     this.state.cur = ret;
     ops = json0OtDiff(this.state.old, this.state.cur);
