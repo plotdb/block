@@ -1,43 +1,76 @@
-
-lc = {active: null}
-document.addEventListener \click, (e) ->
-  p = ld$.parent(e.target, '[editable]')
-  if lc.active == p => return
-  if lc.active => lc.active.setAttribute \contenteditable, false
-  lc.active = p
-  if !p => return
-  p.setAttribute \contenteditable, true
-  ld$.find(p, '[editable]').map -> it.setAttribute \contenteditable, false
-  range = caret-range {node: p, x: e.clientX, y: e.clientY}
-  set-caret range.range
-
 json0 = require("ot-json0")
-# 把 contenteditable 內容 複製/傳輸 ( serialize - deserialize) 到另一個 div 中
-transport = (opt={}) ->
+
+store = do
+  state: {old: {}, cur: {}, tree: {}}
+  get: -> JSON.parse(JSON.stringify(@state.tree))
+  set: ->
+    @state.tree = JSON.parse(JSON.stringify(it))
+    @state.cur = JSON.parse(JSON.stringify(it))
+  add: -> @[]list.push it
+  notify: (ops, source) -> @[]list.map -> if (source != it) => it.ops-in ops
+  update: (ops, source) ->
+    ret = json0.type.apply @state.tree, ops
+    console.log ops
+    @notify ops, source
+
+store.set serialize(ld$.find('#sample > div', 0))
+
+editor = (opt={}) ->
   @opt = opt
-  @ <<< opt{root, output}
+  @ <<< opt{root}
+  @active = null
   @state = {old: {}, cur: {}, tree: {}}
-
-  @root.addEventListener \input, debounce 500, ~> @update!
-
+  @root.addEventListener \input, debounce 500, ~> @ops-out!
+  @init!
   @
 
-transport.prototype = Object.create(Object.prototype) <<< do
-  update: ->
-    t1 = Date.now!
+editor <<< do
+  inited: false
+  init: ->
+    if @inited => return
+    document.addEventListener \click, (e) ~> @onclick e
+    @inited = true
+  list: []
+  add: -> @[]list.push it
+  onclick: (e) -> @[]list.map -> it.onclick e
+
+editor.prototype = Object.create(Object.prototype) <<< do
+  init: ->
+    editor.init!
+    editor.add @
+    store.add @
+    @state.tree = store.get!
+    @state.cur = store.get!
+    @ops-in!
+
+  onclick: (e) ->
+    p = ld$.parent(e.target, '[editable]')
+    if !ld$.parent(p,null,@root) => return
+    if @active == p => return
+    if @active => @active.setAttribute \contenteditable, false
+    @active = p
+    if !p => return
+    p.setAttribute \contenteditable, true
+    ld$.find(p, '[editable]').map -> it.setAttribute \contenteditable, false
+    range = caret-range {node: p, x: e.clientX, y: e.clientY}
+    set-caret range.range
+
+  ops-out: ->
     ret = serialize(@root)
     @state.old = @state.cur
     @state.cur = ret
-    ret = json0-ot-diff @state.old, @state.cur
-    ret = json0.type.apply @state.tree, ret
+    ops = json0-ot-diff @state.old, @state.cur
+    json0.type.apply @state.tree, ops
+    store.update ops, @
+  ops-in: (ops=[]) ->
+    json0.type.apply @state.cur, ops
+    json0.type.apply @state.tree, ops
     deserialize @state.tree
       .then ({node}) ~>
-        @output.innerHTML = ""
-        @output.appendChild node
-        t2 = Date.now!
-        console.log "elapsed: ", (t2 - t1)
+        @root.innerHTML = ""
+        @root.appendChild node
 
-
-tp = new transport root: ld$.find('#input', 0), output: ld$.find(\#output,0)
-tp.update!
-
+ed1 = new editor root: ld$.find('#editor1', 0)
+debounce 1000
+  .then -> 
+    ed2 = new editor root: ld$.find('#editor2', 0)

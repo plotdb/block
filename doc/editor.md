@@ -66,3 +66,6 @@ highlight - 滑鼠hover 時提示用戶目前 hover 區塊範圍. 可用來做�
 
 transport ( deserialize -> serialize )
  - 速度是個問題. debounce 後體驗有好一些, 但 node 一多一樣很費時.
+
+drag & drop
+ - 可以拖動的話, 選取文字該怎麼辦呢?

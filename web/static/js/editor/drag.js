@@ -38,7 +38,7 @@ import$(dragBox.style, {
   transition: "opacity .15s ease-in-out"
 });
 document.body.appendChild(dragBox);
-node = ld$.find('#input', 0);
+node = ld$.find('#editor1', 0);
 document.addEventListener('drop', function(e){
   var n, sc, so, ta;
   if (!((n = draggingSrc) && draggingCaret)) {

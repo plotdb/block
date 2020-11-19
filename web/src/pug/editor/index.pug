@@ -45,23 +45,26 @@ html
     +scope("highlight").highlighttoolbar
       .btn.btn-sm.btn-secondary.mr-2(ld="highlight-delete") Delete
       .btn.btn-sm.btn-secondary(ld="highlight-clone") Clone
+    #sample.d-none: div
+      div(editable)
+        h3(editable) Hello
+        div(editable)
+          .d-inline-block blah
+          .btn.btn-outline-secondary(editable,draggable) hello
+          .d-inline-block bhalh
+          .btn.btn-outline-secondary(editable,draggable) hello
 
     .w-1024.mx-auto.my-4
       .row
-        .col-md: div#input
-          h2 contenteditable
-          hr
-          div(editable)
-            h3(editable) Hello
-            div(editable)
-              .d-inline-block blah
-              .btn.btn-outline-secondary(editable,draggable) hello
-              .d-inline-block bhalh
-              .btn.btn-outline-secondary(editable,draggable) hello
         .col-md
-          h2 output
+          h2 editor 1
           hr
-          #output
+          #editor1
+
+        .col-md
+          h2 editor 2
+          hr
+          #editor2
 
     +nbr(50)
     +script("/assets/lib/sharedb-wrapper/main/client.bundle.min.js")
@@ -76,5 +79,7 @@ html
     +script("/js/editor/caret.js")
     +script("/js/editor/contenteditable.js")
     +script("/js/editor/highlight.js")
+    //- 預計: 處理 1. 從外部貼上時轉為純文字.  2. 從內部複製時, 拷貝完整結構.
+    +script("/js/editor/copy-paste.js")
     +script("/js/editor/drag.js")
 

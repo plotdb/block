@@ -37,7 +37,7 @@ drag-box.style <<< do
 document.body.appendChild drag-box
 
 
-node = ld$.find \#input, 0
+node = ld$.find \#editor1, 0
 document.addEventListener \drop, (e) ->
   if !((n = dragging-src) and dragging-caret) => return
   sc = dragging-caret.startContainer
