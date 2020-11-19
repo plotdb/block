@@ -27,7 +27,6 @@ store = {
   update: function(ops, source){
     var ret;
     ret = json0.type.apply(this.state.tree, ops);
-    console.log(ops);
     return this.notify(ops, source);
   }
 };

@@ -10,7 +10,6 @@ store = do
   notify: (ops, source) -> @[]list.map -> if (source != it) => it.ops-in ops
   update: (ops, source) ->
     ret = json0.type.apply @state.tree, ops
-    console.log ops
     @notify ops, source
 
 store.set serialize(ld$.find('#sample > div', 0))
