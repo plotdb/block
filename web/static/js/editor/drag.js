@@ -188,7 +188,7 @@ dragger.prototype = import$(Object.create(Object.prototype), {
     return this.render(ret.range);
   },
   drop: function(arg$){
-    var evt, range, sc, so, ta, n, data, json, nn, text;
+    var evt, range, sc, so, ta, n, data, json, text, this$ = this;
     evt = arg$.evt;
     range = this.caret.range;
     this.render(null);
@@ -205,11 +205,16 @@ dragger.prototype = import$(Object.create(Object.prototype), {
         ? JSON.parse(json)
         : {};
       if (data.type === 'block') {
-        nn = document.createTextNode("bravo!");
-        nn = new Image();
-        nn.src = 'https://i.pinimg.com/236x/d3/91/7d/d3917d9b9e29f236e3138b491f9189ab.jpg';
-        ta.parentNode.insertBefore(nn, ta);
-        return this.fire('change');
+        return blocktmp.get({
+          name: data.data.name
+        }).then(function(dom){
+          return deserialize(dom);
+        }).then(function(ret){
+          ta.parentNode.insertBefore(ret.node, ta);
+          return this$.fire('change');
+        })['catch'](function(it){
+          return console.log(it);
+        });
       }
     } else {
       if (ld$.parent(ta, null, n)) {

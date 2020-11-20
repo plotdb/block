@@ -125,11 +125,13 @@ dragger.prototype = Object.create(Object.prototype) <<< do
       # not inner drag - check data. any better way?
       data = if (json = evt.dataTransfer.getData \application/json) => JSON.parse json else {}
       if data.type == \block =>
-        nn = document.createTextNode("bravo!")
-        nn = new Image!
-        nn.src = 'https://i.pinimg.com/236x/d3/91/7d/d3917d9b9e29f236e3138b491f9189ab.jpg'
-        ta.parentNode.insertBefore nn, ta
-        @fire \change
+        blocktmp.get {name: data.data.name}
+          .then (dom) ~> deserialize dom
+          .then (ret) ~>
+            ta.parentNode.insertBefore ret.node, ta
+            @fire \change
+          .catch -> console.log it
+
     else
       if ld$.parent ta, null, n => return
       if ta.nodeType == Element.TEXT_NODE

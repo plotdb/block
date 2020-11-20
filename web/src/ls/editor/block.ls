@@ -14,3 +14,13 @@ ld$.find '[block]' .map (n) ->
     evt.dataTransfer.setDragImage(ghost,10,10)
 
 
+blocktmp = do
+  get: ({name,version}) ->
+    new Promise (res, rej) ->
+      if !(n = ld$.find "[ld=block-sample][data-name=#name]", 0) => return rej new Error("no block found")
+      n = n.cloneNode true
+      n.removeAttribute \block-sample
+      n.setAttribute \editable, true
+      n.setAttribute \draggable, true
+      data = serialize(n)
+      res data

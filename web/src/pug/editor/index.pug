@@ -57,6 +57,25 @@ html
     +scope("highlight").highlighttoolbar
       .btn.btn-sm.btn-secondary.mr-2(ld="highlight-delete") Delete
       .btn.btn-sm.btn-secondary(ld="highlight-clone") Clone
+    #blocktmp.d-none
+      div(ld="block-sample",data-name="list")
+        .list-group
+          each name,$index in ["John","Joe","Jack","Jenny"]
+            .list-group-item.d-flex #[.flex-grow-1= name]#[span= $index]
+      div(ld="block-sample",data-name="image")
+        img(src="https://i.pinimg.com/236x/d3/91/7d/d3917d9b9e29f236e3138b491f9189ab.jpg")
+      div(ld="block-sample",data-name="table")
+        table.table
+          tr
+            th ID
+            th Name
+            th Score
+          each name,$index in ["John","Joe","Jack","Jenny"]
+            tr
+              td= $index
+              td= name
+              td= (Math.random() * 100).toFixed(2)
+
     #sample.d-none: div
       div(editable)
         h3(editable) Hello
@@ -70,9 +89,9 @@ html
       .row
         .col-md-2
           h2 Blocks
-          .card.mb-2(block,draggable="true",data-name="columns@0.0.1"): .card-body.p-2 columns
+          .card.mb-2(block,draggable="true",data-name="table@0.0.1"): .card-body.p-2 table
           .card.mb-2(block,draggable="true",data-name="image@0.0.1"): .card-body.p-2 image
-          .card.mb-2(block,draggable="true",data-name="github:zbryikt/table@0.0.1"): .card-body.p-2 table
+          .card.mb-2(block,draggable="true",data-name="list@0.0.1"): .card-body.p-2 list
 
         .col-md-5
           h2 editor 1
