@@ -67,7 +67,16 @@ editor.prototype = Object.create(Object.prototype) <<< do
     if @active and @active != p => @active.setAttribute \contenteditable, false
     @active = p
     if !p => return
+
     p.setAttribute \contenteditable, true
+    # since we set caret manually, we have to take care of selection otherwise user wont be able to select text.
+    sel = window.getSelection!
+    if sel.rangeCount =>
+      r = sel.getRangeAt 0
+      # this is a selection inside editor so we simply let it go
+      # do we have to set range again, due to selection update?
+      if !sel.isCollapsed and ld$.parent(r.commonAncestorContainer, null, @active) => return true
+
     ld$.find(p, '[editable]').map -> it.setAttribute \contenteditable, false
     range = caret-range {node: p, x: e.clientX, y: e.clientY}
     set-caret range.range

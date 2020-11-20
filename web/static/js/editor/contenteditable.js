@@ -106,7 +106,7 @@ editor.prototype = import$(Object.create(Object.prototype), {
     return this.active.setAttribute('contenteditable', v);
   },
   onclick: function(e){
-    var p, range;
+    var p, sel, r, range;
     p = ld$.parent(e.target, '[editable]');
     if (!ld$.parent(p, null, this.root)) {
       return;
@@ -119,6 +119,13 @@ editor.prototype = import$(Object.create(Object.prototype), {
       return;
     }
     p.setAttribute('contenteditable', true);
+    sel = window.getSelection();
+    if (sel.rangeCount) {
+      r = sel.getRangeAt(0);
+      if (!sel.isCollapsed && ld$.parent(r.commonAncestorContainer, null, this.active)) {
+        return true;
+      }
+    }
     ld$.find(p, '[editable]').map(function(it){
       return it.setAttribute('contenteditable', false);
     });

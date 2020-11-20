@@ -45,6 +45,7 @@ highlight.prototype = import$(Object.create(Object.prototype), {
   },
   mode: function(it){
     var name;
+    this.curMode = it;
     name = "highlight-" + it;
     this.box.style.animation = name + " 1s infinite";
     this.blend.style.opacity = it === 'edit' ? 1 : 0;
@@ -96,6 +97,9 @@ highlight.prototype = import$(Object.create(Object.prototype), {
     this.mode('hover');
     document.addEventListener('mouseover', function(e){
       var i$, to$, i, n;
+      if (this$.curMode === 'edit') {
+        return;
+      }
       if (this$.isToggled()) {
         return;
       }

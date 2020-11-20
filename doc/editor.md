@@ -59,7 +59,22 @@
    - header in contenteditable 可以設成 editable 可以避免混亂的編輯行為
      - 但是這樣就無法用方向鍵控制游標進出 header.
      - 或者我們可以另外針對 contenteditable 做方向鍵控制游標進出時的行為?
- - table 標籤即便是在 contenteditable 中, 也無法簡單刪除. 不曉得跨瀏覽器的行為是否有所不同
+ - table / input 標籤即便是在 contenteditable 中, 也無法簡單刪除. 見 contenteditable/index.pug, 有相關 fix
+   - 簡單的 test case:
+    .p-4(contenteditable="true") #[| before]#[input.form-control]#[| after]
+    .p-4(contenteditable="true") #[| before]#[input(contenteditable="false")]#[| after]
+    .p-4(contenteditable="true") #[| before]#[table(contenteditable="false"): tr: td hi]#[| after]
+   - table 在未設定 contenteditable="false" / input 為 inline 時, 則不會有這個問題
+   - 跨瀏覽器的行為可能也會有所不同
+   - 夾在另一個 contenteditable 中好像可行, 但會跟後方有沒有文字有關:
+     - 從 after 前刪除可以:
+       .p-4(contenteditable="true") #[div(contenteditable="false"): input.form-control]#[| after]
+     - 從最後刪除不行:
+       .p-4(contenteditable="true") #[div(contenteditable="false"): input.form-control]
+     - 而且, 不只是 input/table, 任何 block div(contenteditable="false") 都不行.
+       - inline-block 可以但是 caret 位置會很怪
+ - 多個 contenteditable="false" 元件併排時, 刪除(backspace) 會一次往前全部刪除.
+ 
 
 highlight - 滑鼠hover 時提示用戶目前 hover 區塊範圍. 可用來做進階功能
  - 編輯會影響 div bounding box, 所以 highlight 要嘛跟著更新, 不然就要自動隱藏

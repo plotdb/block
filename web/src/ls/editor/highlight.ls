@@ -28,6 +28,7 @@ highlight.prototype = Object.create(Object.prototype) <<< do
       top: "#{(e.clientY - box.height/2) >? 0 <? window.innerHeight - box.height}px"
 
   mode: ->
+    @cur-mode = it
     name = "highlight-#it"
     @box.style <<< animation: "#name 1s infinite"
     @blend.style.opacity = if it == \edit => 1 else 0
@@ -71,6 +72,7 @@ highlight.prototype = Object.create(Object.prototype) <<< do
     @mask.appendChild @blend
     @mode \hover
     document.addEventListener \mouseover, (e) ~>
+      if @cur-mode == \edit => return
       if @is-toggled! => return
       for i from 0 til @targets.length =>
         if ld$.parent(e.target, null, @targets[i]) =>

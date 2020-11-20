@@ -1,0 +1,43 @@
+doctype html
+include /../../static/assets/lib/ldui/pug/ldui.pug
+html
+  head
+    +css("/assets/lib/bootstrap/main/css/bootstrap.min.css")
+    +css("/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css")
+    style(type="text/css"): :stylus
+      html,body
+        font-size: 24px
+      .x
+        background: #f99
+      .y
+        background: #fc9
+
+
+  body
+    #blah.p-4(contenteditable="true")
+      | foo
+      .x(contenteditable="false") test text
+      | bar
+    .p-4(contenteditable="true") #[| before]#[input.x(contenteditable="false")]#[| after]
+    .p-4(contenteditable="true") #[| before]#[table.x(contenteditable="false"): tr: td hi]#[| after]
+
+    .p-4(contenteditable="true")
+      | brfore
+      div(contenteditable="false")
+        table.y(contenteditable="false"): tr: td hi
+        | &nbsp;
+      | after
+
+    .p-4(contenteditable="true")
+      | brfore
+      div(contenteditable="false")
+        input.y(contenteditable="false")
+      | after
+
+    .p-4(contenteditable="true")
+      | brfore
+      div.y(contenteditable="false") hi
+      | after
+
+    +script("/js/contenteditable/index.js")
+
