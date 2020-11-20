@@ -29,8 +29,7 @@ blocktmp = {
       }
       n = n.cloneNode(true);
       n.removeAttribute('block-sample');
-      n.setAttribute('editable', true);
-      n.setAttribute('contenteditable', true);
+      n.setAttribute('contenteditable', false);
       n.setAttribute('draggable', true);
       data = serialize(n);
       return res(data);

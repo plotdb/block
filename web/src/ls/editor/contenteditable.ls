@@ -33,6 +33,7 @@ editor <<< do
     @inited = true
   list: []
   add: -> @[]list.push it
+  get-mode: -> @highlight.cur-mode
   set-highlight: -> @highlight = it
   onclick: (e) ->
     ret = @[]list
@@ -60,10 +61,13 @@ editor.prototype = Object.create(Object.prototype) <<< do
     if !@active => return
     @active.setAttribute \contenteditable, v
 
-
+  # clicking on some editable.
+  # if possible, focus on the editable and tell editor that we want to edit by returning true.
   onclick: (e) ->
     p = ld$.parent(e.target, '[editable]')
     if !ld$.parent(p,null,@root) => return
+    # we are already in editing mode. clicking on any other editable should not enable them.
+    if editor.get-mode! == \edit => return true
     if @active and @active != p => @active.setAttribute \contenteditable, false
     @active = p
     if !p => return

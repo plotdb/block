@@ -70,6 +70,9 @@ import$(editor, {
   add: function(it){
     return (this.list || (this.list = [])).push(it);
   },
+  getMode: function(){
+    return this.highlight.curMode;
+  },
   setHighlight: function(it){
     return this.highlight = it;
   },
@@ -110,6 +113,9 @@ editor.prototype = import$(Object.create(Object.prototype), {
     p = ld$.parent(e.target, '[editable]');
     if (!ld$.parent(p, null, this.root)) {
       return;
+    }
+    if (editor.getMode() === 'edit') {
+      return true;
     }
     if (this.active && this.active !== p) {
       this.active.setAttribute('contenteditable', false);
