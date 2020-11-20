@@ -10,7 +10,7 @@ document.addEventListener \keydown, (evt) ->
   if !(sel.isCollapsed and sel.rangeCount) => return
   range = sel.getRangeAt sel.rangeCount - 1
   # deleting plain text -> return
-  if range.commonAncestorContainer.nodeType == 3 and range.startOffset > 0 => return
+  if range.commonAncestorContainer.nodeType == Element.TEXT_NODE and range.startOffset > 0 => return
   range = document.createRange!
   # char mode
   if sel.anchorNode != target => 
@@ -20,7 +20,21 @@ document.addEventListener \keydown, (evt) ->
     range.setEnd target, sel.anchorOffset
   # reach beginning
   else return
-  range.setStart target, range.endOffset - 1
+
+  # somewhat endContainer on an empty object.
+  # in order to find the next item to delete, we need to go up.
+  if !range.endOffset =>
+    n = range.endContainer
+    while n and n.parentNode
+      offset = Array.from(n.parentNode.childNodes).indexOf(n)
+      if offset > 0 => break
+      n = n.parentNode
+    if !n => return
+    range.setStart n.parentNode, offset - 1
+    range.setEnd n.parentNode, offset
+  else
+    range.setStart target, range.endOffset - 1
+
   prev = range.cloneContents!lastChild
   if prev and prev.contentEditable == \false =>
     range.deleteContents!
