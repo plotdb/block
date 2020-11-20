@@ -19,8 +19,13 @@ blocktmp = do
     new Promise (res, rej) ->
       if !(n = ld$.find "[ld=block-sample][data-name=#name]", 0) => return rej new Error("no block found")
       n = n.cloneNode true
+      lc = {}
+      ld$.find(n, 'script').map ->
+        if it.getAttribute(\type) == \application/json =>
+          lc <<< JSON.parse(it.textContent)
+        it.parentNode.removeChild it
       n.removeAttribute \block-sample
-      n.setAttribute \contenteditable, false
+      if lc.editable => n.setAttribute \editable, true
       n.setAttribute \draggable, true
       data = serialize(n)
       res data

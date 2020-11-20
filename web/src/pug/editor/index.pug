@@ -58,6 +58,16 @@ html
       .btn.btn-sm.btn-secondary.mr-2(ld="highlight-delete") Delete
       .btn.btn-sm.btn-secondary(ld="highlight-clone") Clone
     #blocktmp.d-none
+      div(ld="block-sample",data-name="content")
+        h2(editable) Heading
+        p(editable): +lorem(200)
+        script(type="application/json"): :lson
+          {
+            editable: false
+          }
+
+
+
       div(ld="block-sample",data-name="list")
         .list-group
           each name,$index in ["John","Joe","Jack","Jenny"]
@@ -96,6 +106,7 @@ html
           .card.mb-2(block,draggable="true",data-name="table@0.0.1"): .card-body.p-2 table
           .card.mb-2(block,draggable="true",data-name="image@0.0.1"): .card-body.p-2 image
           .card.mb-2(block,draggable="true",data-name="list@0.0.1"): .card-body.p-2 list
+          .card.mb-2(block,draggable="true",data-name="content@0.0.1"): .card-body.p-2 content
 
         .col-md-5
           h2 editor 1

@@ -1,4 +1,10 @@
 
+# 插入的 block 需要做好 editable 的設定
+# editable 應該要改成能吃 "editable=false" 屬性
+# 現在插入的 block 似乎無法直接被刪除.
+# 需要一個可以往上選一層的方式
+#  - 比方說 content block, 滑鼠不管怎麼動, 都是 focus 在 header 跟 p 上
+
 block-manager = do
   hash: {}
   add: ({name, version, block}) -> @hash{}[name][version] = block
