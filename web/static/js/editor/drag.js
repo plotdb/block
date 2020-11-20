@@ -80,32 +80,42 @@ import$(dragBox.style, {
   opacity: 0,
   border: '2px solid #f0f',
   pointerEvents: 'none',
-  transition: "opacity .15s ease-in-out"
+  transition: "opacity .15s ease-in-out",
+  animation: "blink .4s linear infinite"
 });
 document.body.appendChild(dragBox);
 node = ld$.find('#editor1', 0);
 document.addEventListener('drop', function(e){
-  var n, sc, so, ta;
+  var n, sc, so, ta, text;
   if (!((n = draggingSrc) && draggingCaret)) {
     return;
   }
   sc = draggingCaret.startContainer;
   so = draggingCaret.startOffset;
+  draggingRender(null);
   ta = sc.nodeType === Element.TEXT_NODE
     ? sc
     : sc.childNodes[so];
   if (ld$.parent(ta, null, n)) {
     return;
   }
-  n.parentNode.removeChild(n);
-  ta.parentNode.insertBefore(n, ta);
-  return draggingRender(null);
+  if (ta.nodeType === Element.TEXT_NODE) {
+    n.parentNode.removeChild(n);
+    text = ta.textContent;
+    [document.createTextNode(text.substring(0, so)), n, document.createTextNode(text.substring(so))].map(function(it){
+      return ta.parentNode.insertBefore(it, ta);
+    });
+    return ta.parentNode.removeChild(ta);
+  } else {
+    n.parentNode.removeChild(n);
+    return ta.parentNode.insertBefore(n, ta);
+  }
 });
 draggingRender = function(range){
   var ref$, box;
   draggingCaret = range;
   if (!range) {
-    return ref$ = dragBox.style, ref$.opacity = 0, ref$;
+    return ref$ = dragBox.style, ref$.display = 'none', ref$.opacity = 0, ref$;
   } else {
     box = range.getBoundingClientRect();
     return import$(dragBox.style, {
@@ -113,6 +123,7 @@ draggingRender = function(range){
       top: box.y + "px",
       width: '1px',
       height: box.height + "px",
+      display: 'block',
       opacity: 1
     });
   }

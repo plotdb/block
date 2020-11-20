@@ -60,6 +60,7 @@ drag-box.style <<< do
   border: '2px solid #f0f'
   pointerEvents: \none
   transition: "opacity .15s ease-in-out"
+  animation: "blink .4s linear infinite"
 document.body.appendChild drag-box
 
 
@@ -68,16 +69,26 @@ document.addEventListener \drop, (e) ->
   if !((n = dragging-src) and dragging-caret) => return
   sc = dragging-caret.startContainer
   so = dragging-caret.startOffset
+  dragging-render null
   ta = if sc.nodeType == Element.TEXT_NODE => sc else sc.childNodes[so]
   if ld$.parent ta, null, n => return
-  n.parentNode.removeChild n
-  ta.parentNode.insertBefore n, ta
-  dragging-render null
+  if ta.nodeType == Element.TEXT_NODE
+    n.parentNode.removeChild n
+    text = ta.textContent
+    [
+      document.createTextNode text.substring(0,so)
+      n
+      document.createTextNode text.substring(so)
+    ].map -> ta.parentNode.insertBefore it, ta
+    ta.parentNode.removeChild ta
+  else
+    n.parentNode.removeChild n
+    ta.parentNode.insertBefore n, ta
 
 dragging-render = (range) ->
   dragging-caret := range
   if !range =>
-    drag-box.style <<< opacity: 0
+    drag-box.style <<< display: \none, opacity: 0
   else 
     box = range.getBoundingClientRect!
     drag-box.style <<< do
@@ -85,6 +96,7 @@ dragging-render = (range) ->
       top: "#{box.y}px"
       width: \1px
       height: "#{box.height}px"
+      display: \block
       opacity: 1
 
 
