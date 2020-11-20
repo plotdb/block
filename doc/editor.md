@@ -59,6 +59,7 @@
    - header in contenteditable 可以設成 editable 可以避免混亂的編輯行為
      - 但是這樣就無法用方向鍵控制游標進出 header.
      - 或者我們可以另外針對 contenteditable 做方向鍵控制游標進出時的行為?
+ - table 標籤即便是在 contenteditable 中, 也無法簡單刪除. 不曉得跨瀏覽器的行為是否有所不同
 
 highlight - 滑鼠hover 時提示用戶目前 hover 區塊範圍. 可用來做進階功能
  - 編輯會影響 div bounding box, 所以 highlight 要嘛跟著更新, 不然就要自動隱藏
