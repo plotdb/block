@@ -22,25 +22,28 @@ blocktmp = {
     var name, version;
     name = arg$.name, version = arg$.version;
     return new Promise(function(res, rej){
-      var n, lc, data;
+      var n, config, data;
       if (!(n = ld$.find("[ld=block-sample][data-name=" + name + "]", 0))) {
         return rej(new Error("no block found"));
       }
       n = n.cloneNode(true);
-      lc = {};
+      config = {};
       ld$.find(n, 'script').map(function(it){
         if (it.getAttribute('type') === 'application/json') {
-          import$(lc, JSON.parse(it.textContent));
+          import$(config, JSON.parse(it.textContent));
         }
         return it.parentNode.removeChild(it);
       });
       n.removeAttribute('block-sample');
-      if (lc.editable) {
+      if (config.editable) {
         n.setAttribute('editable', true);
       }
       n.setAttribute('draggable', true);
       data = serialize(n);
-      return res(data);
+      return res({
+        tree: tree,
+        config: config
+      });
     });
   }
 };
