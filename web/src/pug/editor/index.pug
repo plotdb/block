@@ -68,15 +68,21 @@ html
 
     .w-1024.rwd.mx-auto.my-4.bg-white.h-100
       .row
-        .col-md
+        .col-md-2
+          h2 Blocks
+          .card.mb-2(block,draggable="true",data-name="columns@0.0.1"): .card-body.p-2 columns
+          .card.mb-2(block,draggable="true",data-name="image@0.0.1"): .card-body.p-2 image
+          .card.mb-2(block,draggable="true",data-name="github:zbryikt/table@0.0.1"): .card-body.p-2 table
+
+        .col-md-5
           h2 editor 1
           hr
-          #editor1
+          #editor1.editor
 
-        .col-md
+        .col-md-5
           h2 editor 2
           hr
-          #editor2
+          #editor2.editor
 
     +nbr(50)
     +script("/assets/lib/sharedb-wrapper/main/client.bundle.min.js")
@@ -89,9 +95,10 @@ html
     +script("/js/domtool.js")
     +script("/assets/lib/ot-json0/main/ot-json0.js")
     +script("/js/editor/caret.js")
+    +script("/js/editor/drag.js")
+    +script("/js/editor/block.js")
     +script("/js/editor/contenteditable.js")
     +script("/js/editor/highlight.js")
     //- 預計: 處理 1. 從外部貼上時轉為純文字.  2. 從內部複製時, 拷貝完整結構.
     +script("/js/editor/copy-paste.js")
-    +script("/js/editor/drag.js")
 

@@ -20,6 +20,8 @@ editor = (opt={}) ->
   @active = null
   @state = {old: {}, cur: {}, tree: {}}
   @root.addEventListener \input, debounce 500, ~> @ops-out!
+  @dragger = new dragger root: opt.root
+  @dragger.on \change, debounce 350, ~> @ops-out!
   @init!
   @
 

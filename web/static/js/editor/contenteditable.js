@@ -45,6 +45,12 @@ editor = function(opt){
   this.root.addEventListener('input', debounce(500, function(){
     return this$.opsOut();
   }));
+  this.dragger = new dragger({
+    root: opt.root
+  });
+  this.dragger.on('change', debounce(350, function(){
+    return this$.opsOut();
+  }));
   this.init();
   return this;
 };

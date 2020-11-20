@@ -1,13 +1,21 @@
+
 # option
 #  - menu - context menu dom
-#  - target - root node where highlight works
-highlight-handler = (opt = {}) ->
+#  - target - root node(s) where highlight works
+highlight = (opt = {}) ->
   @opt = opt
   @ <<< box: null, tgt: null
   @ <<< opt{menu, target}
+  @targets = []
+  @add-target opt.target
   @
 
-highlight-handler.prototype = Object.create(Object.prototype) <<< do
+highlight.prototype = Object.create(Object.prototype) <<< do
+  add-target: (input) -> 
+    tgts = (if Array.isArray(input) => input else [input])
+      .map -> if typeof(it) == \string => document.querySelector(it) else if it => it else null
+      .filter -> it
+    @targets = @targets ++ tgts
   is-toggled: -> return @toggled
   toggle: (v,e) ->
     @toggled = v = if v? => v else !@is-toggled!
@@ -63,11 +71,13 @@ highlight-handler.prototype = Object.create(Object.prototype) <<< do
     @mask.appendChild @blend
     @mode \hover
     document.addEventListener \mouseover, (e) ~>
-      if !(ld$.parent e.target, null, @target) => return
-      # dont change focus when context menu is on
       if @is-toggled! => return
-      if !(node = ld$.parent e.target, '[editable]') => return
-      @render node
+      for i from 0 til @targets.length =>
+        if ld$.parent(e.target, null, @targets[i]) =>
+          # dont change focus when context menu is on
+          if !(n = ld$.parent e.target, '[editable]', @targets[i]) => return
+          @render n
+          break
 
     document.addEventListener \click, (e) ~> @toggle false
     document.addEventListener \contextmenu, (e) ~>
@@ -122,8 +132,8 @@ highlight-handler.prototype = Object.create(Object.prototype) <<< do
       border: '3px solid transparent'
       background: '#999'
 
-hlh = new highlight-handler do
-  target: ld$.find('#input',0)
+hlh = new highlight do
+  target: ld$.find('.editor')
   menu: ld$.find('[ld-scope=highlight]',0)
 
 editor.set-highlight hlh

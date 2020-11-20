@@ -64,6 +64,9 @@ highlight - 滑鼠hover 時提示用戶目前 hover 區塊範圍. 可用來做�
  - 編輯會影響 div bounding box, 所以 highlight 要嘛跟著更新, 不然就要自動隱藏
    - 更新方式: 1. watch, 2. polling
  - 如果整個框都是 contenteditable, 沒辦法點旁邊取消 focus.
+ - 內容變化可能導致滑鼠雖然沒有動卻移到別的區塊上，導致重新hover. 即便如此, focus 仍然沒有換.
+   - 應該要設計成在編輯模式下, 除非有動滑鼠不然不會重新 hover
+     - touch device 怎辦?
 
 transport ( deserialize -> serialize )
  - 速度是個問題. debounce 後體驗有好一些, 但 node 一多一樣很費時.
