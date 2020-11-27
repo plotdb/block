@@ -2,26 +2,7 @@
 
 ## Document Node JSON Spec
 
-document tree is converted into json representation. Following is the member of each node in json:
-
- - `type` - node type. such as `tag`, `block`, `text`
-    - `tag` - markup language tags
-    - `block` - block
-    - `text` - plain text
- - `name` - node name. ( optional, dependning on type )
-    - such as `div` for tags, or `my-list` for block
-    - all lower cases for block type and html in tag type
-      - allow case sensitive for svg tags? check how createElementNS works
- - `version` - block version, ( only applicable to `block` type node )
- - `attr` - node attributes
- - `style` - node styles
- - `cls` - node classes
- - `data` - node data. ( optional, depending on type )
-   - for `text` type: string for `textContent`
-   - for `block` type: custom data following block data spec.
-   - for `tag` type: not applicable.
- - `child` - array of child nodes. not applicable for `text` type node.
-
+moved to @plotdb/datadom.
 
 ## Block Data Spec
 
