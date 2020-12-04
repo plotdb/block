@@ -97,6 +97,14 @@ html
           .d-inline-block bhalh
           .btn.btn-outline-secondary(editable,draggable) hello
 
+        div#d2(editable)
+          p 
+            span nested
+            span.btn.btn-primary(editable="true") Hi
+            span editable
+          div#d3(editable) nested ( lv2 )
+
+
     .w-1024.rwd.mx-auto.my-4.bg-white.h-100
       .row
         .col-md-2

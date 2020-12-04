@@ -86,8 +86,6 @@ dragger.prototype = Object.create(Object.prototype) <<< do
       @dragging = true
       e.stopPropagation!
 
-
-
   render: (range) ->
     @caret.range = range
     if !range =>
