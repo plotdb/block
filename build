@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+echo "prepare..."
+rm -rf dist
+mkdir -p dist
+
+echo "building block.ls -> block.js ..."
+npx lsc -cp src/block.ls > dist/block.js
+echo "minify block.js -> block.min.js ..."
+npx uglifyjs dist/block.js > dist/block.min.js
+
+echo "copy dist to web ..."
+rm -rf web/static/assets/lib/block/dev/
+mkdir -p web/static/assets/lib/block/dev/
+cp -R dist/* web/static/assets/lib/block/dev/
+

@@ -8,10 +8,8 @@ var pug_has_own_property=Object.prototype.hasOwnProperty;
 var pug_match_html=/["&<>]/;
 function pug_merge(e,r){if(1===arguments.length){for(var t=e[0],g=1;g<e.length;g++)t=pug_merge(t,e[g]);return t}for(var l in r)if("class"===l){var n=e[l]||[];e[l]=(Array.isArray(n)?n:[n]).concat(r[l]||[])}else if("style"===l){var n=pug_style(e[l]);n=n&&";"!==n[n.length-1]?n+";":n;var a=pug_style(r[l]);a=a&&";"!==a[a.length-1]?a+";":a,e[l]=n+a}else e[l]=r[l];return e}
 function pug_rethrow(n,e,r,t){if(!(n instanceof Error))throw n;if(!("undefined"==typeof window&&e||t))throw n.message+=" on line "+r,n;try{t=t||require("fs").readFileSync(e,"utf8")}catch(e){pug_rethrow(n,null,r)}var i=3,a=t.split("\n"),o=Math.max(r-i,0),h=Math.min(a.length,r+i),i=a.slice(o,h).map(function(n,e){var t=e+o+1;return(t==r?"  > ":"    ")+t+"| "+n}).join("\n");throw n.path=e,n.message=(e||"Pug")+":"+r+"\n"+i+"\n\n"+n.message,n}
-function pug_style(r){if(!r)return"";if("object"==typeof r){var t="";for(var e in r)pug_has_own_property.call(r,e)&&(t=t+e+":"+r[e]+";");return t}return r+""}function template(locals) {var pug_html = "", pug_mixins = {}, pug_interp;var pug_debug_filename, pug_debug_line;try {;var locals_for_with = (locals || {});(function (Array, JSON, blockLoader, cssLoader, decache, escape, prefix, scriptLoader, version) {;pug_debug_line = 1;pug_debug_filename = "src\u002Fpug\u002Fblock.pug";
+function pug_style(r){if(!r)return"";if("object"==typeof r){var t="";for(var e in r)pug_has_own_property.call(r,e)&&(t=t+e+":"+r[e]+";");return t}return r+""}function template(locals) {var pug_html = "", pug_mixins = {}, pug_interp;var pug_debug_filename, pug_debug_line;try {;var locals_for_with = (locals || {});(function (Array, JSON, Math, blockLoader, cssLoader, decache, escape, parentName, prefix, scriptLoader, version) {;pug_debug_line = 1;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
 pug_html = pug_html + "\u003C!DOCTYPE html\u003E";
-;pug_debug_line = 2;pug_debug_filename = "src\u002Fpug\u002Fblock.pug";
-pug_html = pug_html + "\u003Chtml\u003E";
 ;pug_debug_line = 2;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fldui.pug";
 if(!ctrl) var ctrl = {};
 ;pug_debug_line = 2;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fcore\u002Fchevron-down.pug";
@@ -31,15 +29,15 @@ var escjson = function(obj) { return 'JSON.parse(unescape("' + escape(JSON.strin
 ;pug_debug_line = 5;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fcore\u002Futil.pug";
 var eschtml = (function() { var MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&#34;', "'": '&#39;' }; var repl = function(c) { return MAP[c]; }; return function(s) { return s.replace(/[&<>'"]/g, repl); }; })();
 ;pug_debug_line = 7;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fcore\u002Futil.pug";
-
-
-
-
-
-
-
-
-
+pug_mixins["nbr"] = pug_interp = function(count){
+var block = (this && this.block), attributes = (this && this.attributes) || {};
+;pug_debug_line = 8;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fcore\u002Futil.pug";
+for (var i = 0; i < count; i++)
+{
+;pug_debug_line = 9;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fcore\u002Futil.pug";
+pug_html = pug_html + "\u003Cbr\u003E";
+}
+};
 ;pug_debug_line = 12;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fcore\u002Futil.pug";
 if(!scriptLoader) { scriptLoader = {url: {}, config: {}}; }
 ;pug_debug_line = 13;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fcore\u002Futil.pug";
@@ -103,13 +101,13 @@ var loremtext = {
 };
 
 ;pug_debug_line = 45;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fcore\u002Futil.pug";
-
-
-
-
-
-
-
+pug_mixins["lorem"] = pug_interp = function(len,ln){
+var block = (this && this.block), attributes = (this && this.attributes) || {};
+;pug_debug_line = 46;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fcore\u002Futil.pug";
+pug_html = pug_html + "\u003Cspan\u003E";
+;pug_debug_line = 46;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fcore\u002Futil.pug";
+pug_html = pug_html + (pug_escape(null == (pug_interp = loremtext[ln || 'en'].substring(0,len)) ? "" : pug_interp)) + "\u003C\u002Fspan\u003E";
+};
 ;pug_debug_line = 47;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fcore\u002Futil.pug";
 
 
@@ -587,27 +585,27 @@ var anikit = {"groupName":["No Animation","Popular Animation","Repeat Animation"
 ;pug_debug_line = 117;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fext\u002Findex.pug";
 prefix = function(n) { return (!n?[]:(Array.isArray(n)?n:[n])).map(function(it){ return `${prefix.currentName}$${it}`; }).join(' ');}
 ;pug_debug_line = 118;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fext\u002Findex.pug";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+pug_mixins["scope"] = pug_interp = function(name){
+var block = (this && this.block), attributes = (this && this.attributes) || {};
+;pug_debug_line = 119;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fext\u002Findex.pug";
+var prentName = prefix.currentName;
+;pug_debug_line = 120;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fext\u002Findex.pug";
+prefix.currentName = name;
+;pug_debug_line = 121;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fext\u002Findex.pug";
+if (attributes.class && /naked-scope/.exec(attributes.class)) {
+;pug_debug_line = 122;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fext\u002Findex.pug";
+block && block();
+}
+else {
+;pug_debug_line = 124;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fext\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv" + (pug_attrs(pug_merge([{"ld-scope": pug_escape(name || '')},attributes]), true)) + "\u003E";
+;pug_debug_line = 125;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fext\u002Findex.pug";
+block && block();
+pug_html = pug_html + "\u003C\u002Fdiv\u003E";
+}
+;pug_debug_line = 126;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fext\u002Findex.pug";
+prefix.currentName = parentName;
+};
 ;pug_debug_line = 127;pug_debug_filename = "\u002FUsers\u002Ftkirby\u002Fworkspace\u002Fzbryikt\u002Fplotdb\u002Fprojects\u002Fblock\u002Fweb\u002Fstatic\u002Fassets\u002Flib\u002Fldui\u002Fpug\u002Fext\u002Findex.pug";
 
 
@@ -627,18 +625,321 @@ prefix = function(n) { return (!n?[]:(Array.isArray(n)?n:[n])).map(function(it){
 
 
 
-;pug_debug_line = 4;pug_debug_filename = "src\u002Fpug\u002Fblock.pug";
+;pug_debug_line = 3;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Chtml\u003E";
+;pug_debug_line = 4;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
 pug_html = pug_html + "\u003Chead\u003E";
-;pug_debug_line = 5;pug_debug_filename = "src\u002Fpug\u002Fblock.pug";
+;pug_debug_line = 5;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
 pug_mixins["css"]("/assets/lib/bootstrap/main/css/bootstrap.min.css");
-;pug_debug_line = 6;pug_debug_filename = "src\u002Fpug\u002Fblock.pug";
-pug_html = pug_html + "\u003Cstyle style=\"text\u002Fcss\"\u003E";
-;pug_debug_line = 6;pug_debug_filename = "src\u002Fpug\u002Fblock.pug";
-pug_html = pug_html + "html,\nbody {\n  width: 100%;\n  height: 100%;\n}\n\u003C\u002Fstyle\u003E\u003C\u002Fhead\u003E";
-;pug_debug_line = 8;pug_debug_filename = "src\u002Fpug\u002Fblock.pug";
+;pug_debug_line = 6;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["css"]("/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css");
+;pug_debug_line = 7;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cstyle type=\"text\u002Fcss\"\u003E";
+;pug_debug_line = 7;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "html,\nbody {\n  width: 100%;\n  height: 100%;\n}\n*[contenteditable=true] {\n  outline: none;\n}\n#caret {\n  animation: 1s linear blink infinite;\n}\n*[editable]:empty:before {\n  display: inline;\n  opacity: 0.5;\n  content: \"_\";\n}\n.highlighttoolbar {\n  z-index: 99999;\n  position: fixed;\n  border: 1px solid #ddd;\n  box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n  border-radius: 0.25em;\n  padding: 0.5em 1em;\n  opacity: 0;\n  background: #fff;\n  transition: opacity 0.15s ease-in-out;\n}\n@-moz-keyframes highlight-edit {\n  0% {\n    border-color: #1fc;\n  }\n  50% {\n    border-color: #2eb;\n  }\n  100% {\n    border-color: #1fc;\n  }\n}\n@-webkit-keyframes highlight-edit {\n  0% {\n    border-color: #1fc;\n  }\n  50% {\n    border-color: #2eb;\n  }\n  100% {\n    border-color: #1fc;\n  }\n}\n@-o-keyframes highlight-edit {\n  0% {\n    border-color: #1fc;\n  }\n  50% {\n    border-color: #2eb;\n  }\n  100% {\n    border-color: #1fc;\n  }\n}\n@keyframes highlight-edit {\n  0% {\n    border-color: #1fc;\n  }\n  50% {\n    border-color: #2eb;\n  }\n  100% {\n    border-color: #1fc;\n  }\n}\n@-moz-keyframes highlight-hover {\n  0% {\n    border-color: #1af;\n  }\n  50% {\n    border-color: #28e;\n  }\n  100% {\n    border-color: #1af;\n  }\n}\n@-webkit-keyframes highlight-hover {\n  0% {\n    border-color: #1af;\n  }\n  50% {\n    border-color: #28e;\n  }\n  100% {\n    border-color: #1af;\n  }\n}\n@-o-keyframes highlight-hover {\n  0% {\n    border-color: #1af;\n  }\n  50% {\n    border-color: #28e;\n  }\n  100% {\n    border-color: #1af;\n  }\n}\n@keyframes highlight-hover {\n  0% {\n    border-color: #1af;\n  }\n  50% {\n    border-color: #28e;\n  }\n  100% {\n    border-color: #1af;\n  }\n}\n@-moz-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  70% {\n    opacity: 1;\n  }\n  71% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n@-webkit-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  70% {\n    opacity: 1;\n  }\n  71% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n@-o-keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  70% {\n    opacity: 1;\n  }\n  71% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n@keyframes blink {\n  0% {\n    opacity: 1;\n  }\n  70% {\n    opacity: 1;\n  }\n  71% {\n    opacity: 0;\n  }\n  100% {\n    opacity: 0;\n  }\n}\n\u003C\u002Fstyle\u003E\u003C\u002Fhead\u003E";
+;pug_debug_line = 56;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
 pug_html = pug_html + "\u003Cbody\u003E";
-;pug_debug_line = 9;pug_debug_filename = "src\u002Fpug\u002Fblock.pug";
-pug_mixins["script"]("/assets/lib/ldui/ldui.min.js");
-;pug_debug_line = 10;pug_debug_filename = "src\u002Fpug\u002Fblock.pug";
-pug_mixins["script"]("/js/bm.js");
-pug_html = pug_html + "\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";}.call(this,"Array" in locals_for_with?locals_for_with.Array:typeof Array!=="undefined"?Array:undefined,"JSON" in locals_for_with?locals_for_with.JSON:typeof JSON!=="undefined"?JSON:undefined,"blockLoader" in locals_for_with?locals_for_with.blockLoader:typeof blockLoader!=="undefined"?blockLoader:undefined,"cssLoader" in locals_for_with?locals_for_with.cssLoader:typeof cssLoader!=="undefined"?cssLoader:undefined,"decache" in locals_for_with?locals_for_with.decache:typeof decache!=="undefined"?decache:undefined,"escape" in locals_for_with?locals_for_with.escape:typeof escape!=="undefined"?escape:undefined,"prefix" in locals_for_with?locals_for_with.prefix:typeof prefix!=="undefined"?prefix:undefined,"scriptLoader" in locals_for_with?locals_for_with.scriptLoader:typeof scriptLoader!=="undefined"?scriptLoader:undefined,"version" in locals_for_with?locals_for_with.version:typeof version!=="undefined"?version:undefined));} catch (err) {pug_rethrow(err, pug_debug_filename, pug_debug_line);};return pug_html;}; module.exports = template; })() 
+;pug_debug_line = 57;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["scope"].call({
+block: function(){
+;pug_debug_line = 58;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"btn btn-sm btn-secondary mr-2\" ld=\"highlight-delete\"\u003E";
+;pug_debug_line = 58;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "Delete\u003C\u002Fdiv\u003E";
+;pug_debug_line = 59;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"btn btn-sm btn-secondary\" ld=\"highlight-clone\"\u003E";
+;pug_debug_line = 59;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "Clone\u003C\u002Fdiv\u003E";
+},
+attributes: {"class": "highlighttoolbar"}
+}, "highlight");
+;pug_debug_line = 60;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"d-none\" id=\"blocktmp\"\u003E";
+;pug_debug_line = 61;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv ld=\"block-sample\" data-name=\"content\"\u003E";
+;pug_debug_line = 62;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ch2" + (pug_attr("editable", true, true, true)) + "\u003E";
+;pug_debug_line = 62;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "Heading\u003C\u002Fh2\u003E";
+;pug_debug_line = 63;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cp" + (pug_attr("editable", true, true, true)) + "\u003E";
+;pug_debug_line = 63;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["lorem"](200);
+pug_html = pug_html + "\u003C\u002Fp\u003E";
+;pug_debug_line = 64;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cscript type=\"application\u002Fjson\"\u003E";
+;pug_debug_line = 64;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "{\n  \"editable\": false\n}\n\u003C\u002Fscript\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 71;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv ld=\"block-sample\" data-name=\"list\"\u003E";
+;pug_debug_line = 72;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"list-group\"\u003E";
+;pug_debug_line = 73;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+// iterate ["John","Joe","Jack","Jenny"]
+;(function(){
+  var $$obj = ["John","Joe","Jack","Jenny"];
+  if ('number' == typeof $$obj.length) {
+      for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+        var name = $$obj[$index];
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"list-group-item d-flex\"\u003E";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"flex-grow-1\"\u003E";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + (pug_escape(null == (pug_interp = name) ? "" : pug_interp)) + "\u003C\u002Fdiv\u003E";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cspan\u003E";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + (pug_escape(null == (pug_interp = $index) ? "" : pug_interp)) + "\u003C\u002Fspan\u003E";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003C\u002Fdiv\u003E";
+      }
+  } else {
+    var $$l = 0;
+    for (var $index in $$obj) {
+      $$l++;
+      var name = $$obj[$index];
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"list-group-item d-flex\"\u003E";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"flex-grow-1\"\u003E";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + (pug_escape(null == (pug_interp = name) ? "" : pug_interp)) + "\u003C\u002Fdiv\u003E";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cspan\u003E";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + (pug_escape(null == (pug_interp = $index) ? "" : pug_interp)) + "\u003C\u002Fspan\u003E";
+;pug_debug_line = 74;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003C\u002Fdiv\u003E";
+    }
+  }
+}).call(this);
+
+pug_html = pug_html + "\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 75;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv ld=\"block-sample\" data-name=\"image\"\u003E";
+;pug_debug_line = 76;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cimg src=\"https:\u002F\u002Fi.pinimg.com\u002F236x\u002Fd3\u002F91\u002F7d\u002Fd3917d9b9e29f236e3138b491f9189ab.jpg\"\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 77;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv ld=\"block-sample\" data-name=\"table\"\u003E";
+;pug_debug_line = 78;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctable class=\"table\"\u003E";
+;pug_debug_line = 79;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctr\u003E";
+;pug_debug_line = 80;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cth\u003E";
+;pug_debug_line = 80;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "ID\u003C\u002Fth\u003E";
+;pug_debug_line = 81;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cth\u003E";
+;pug_debug_line = 81;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "Name\u003C\u002Fth\u003E";
+;pug_debug_line = 82;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cth\u003E";
+;pug_debug_line = 82;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "Score\u003C\u002Fth\u003E\u003C\u002Ftr\u003E";
+;pug_debug_line = 83;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+// iterate ["John","Joe","Jack","Jenny"]
+;(function(){
+  var $$obj = ["John","Joe","Jack","Jenny"];
+  if ('number' == typeof $$obj.length) {
+      for (var $index = 0, $$l = $$obj.length; $index < $$l; $index++) {
+        var name = $$obj[$index];
+;pug_debug_line = 84;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctr\u003E";
+;pug_debug_line = 85;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctd\u003E";
+;pug_debug_line = 85;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + (pug_escape(null == (pug_interp = $index) ? "" : pug_interp)) + "\u003C\u002Ftd\u003E";
+;pug_debug_line = 86;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctd\u003E";
+;pug_debug_line = 86;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + (pug_escape(null == (pug_interp = name) ? "" : pug_interp)) + "\u003C\u002Ftd\u003E";
+;pug_debug_line = 87;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctd\u003E";
+;pug_debug_line = 87;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + (pug_escape(null == (pug_interp = (Math.random() * 100).toFixed(2)) ? "" : pug_interp)) + "\u003C\u002Ftd\u003E\u003C\u002Ftr\u003E";
+      }
+  } else {
+    var $$l = 0;
+    for (var $index in $$obj) {
+      $$l++;
+      var name = $$obj[$index];
+;pug_debug_line = 84;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctr\u003E";
+;pug_debug_line = 85;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctd\u003E";
+;pug_debug_line = 85;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + (pug_escape(null == (pug_interp = $index) ? "" : pug_interp)) + "\u003C\u002Ftd\u003E";
+;pug_debug_line = 86;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctd\u003E";
+;pug_debug_line = 86;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + (pug_escape(null == (pug_interp = name) ? "" : pug_interp)) + "\u003C\u002Ftd\u003E";
+;pug_debug_line = 87;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctd\u003E";
+;pug_debug_line = 87;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + (pug_escape(null == (pug_interp = (Math.random() * 100).toFixed(2)) ? "" : pug_interp)) + "\u003C\u002Ftd\u003E\u003C\u002Ftr\u003E";
+    }
+  }
+}).call(this);
+
+pug_html = pug_html + "\u003C\u002Ftable\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 89;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"d-none\" id=\"sample\"\u003E";
+;pug_debug_line = 89;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv\u003E";
+;pug_debug_line = 90;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv" + (pug_attr("editable", true, true, true)) + "\u003E";
+;pug_debug_line = 91;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ch3" + (pug_attr("editable", true, true, true)) + "\u003E";
+;pug_debug_line = 91;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "Hello\u003C\u002Fh3\u003E";
+;pug_debug_line = 92;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv" + (pug_attr("editable", true, true, true)) + "\u003E";
+;pug_debug_line = 93;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"d-inline-block\"\u003E";
+;pug_debug_line = 93;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "hihi\u003C\u002Fdiv\u003E";
+;pug_debug_line = 94;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctable" + (" class=\"d-block border\""+" contenteditable=\"false\""+pug_attr("editable", true, true, true)+pug_attr("draggable", true, true, true)) + "\u003E";
+;pug_debug_line = 94;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctr\u003E";
+;pug_debug_line = 94;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ctd\u003E";
+;pug_debug_line = 94;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "HIHI\u003C\u002Ftd\u003E\u003C\u002Ftr\u003E\u003C\u002Ftable\u003E";
+;pug_debug_line = 95;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"d-inline-block\"\u003E";
+;pug_debug_line = 95;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "blah\u003C\u002Fdiv\u003E";
+;pug_debug_line = 96;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv" + (" class=\"btn btn-outline-secondary\""+pug_attr("editable", true, true, true)+pug_attr("draggable", true, true, true)) + "\u003E";
+;pug_debug_line = 96;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "hello\u003C\u002Fdiv\u003E";
+;pug_debug_line = 97;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"d-inline-block\"\u003E";
+;pug_debug_line = 97;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "bhalh\u003C\u002Fdiv\u003E";
+;pug_debug_line = 98;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv" + (" class=\"btn btn-outline-secondary\""+pug_attr("editable", true, true, true)+pug_attr("draggable", true, true, true)) + "\u003E";
+;pug_debug_line = 98;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "hello\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 100;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv" + (" id=\"d2\""+pug_attr("editable", true, true, true)) + "\u003E";
+;pug_debug_line = 101;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cp\u003E";
+;pug_debug_line = 101;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + " ";
+;pug_debug_line = 102;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cspan\u003E";
+;pug_debug_line = 102;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "nested\u003C\u002Fspan\u003E";
+;pug_debug_line = 103;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cspan class=\"btn btn-primary\" editable=\"true\"\u003E";
+;pug_debug_line = 103;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "Hi\u003C\u002Fspan\u003E";
+;pug_debug_line = 104;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cspan\u003E";
+;pug_debug_line = 104;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "editable\u003C\u002Fspan\u003E\u003C\u002Fp\u003E";
+;pug_debug_line = 105;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv" + (" id=\"d3\""+pug_attr("editable", true, true, true)) + "\u003E";
+;pug_debug_line = 105;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "nested ( lv2 )\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 108;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"w-1024 rwd mx-auto my-4 bg-white h-100\"\u003E";
+;pug_debug_line = 109;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"row\"\u003E";
+;pug_debug_line = 110;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"col-md-2\"\u003E";
+;pug_debug_line = 111;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ch2\u003E";
+;pug_debug_line = 111;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "Blocks\u003C\u002Fh2\u003E";
+;pug_debug_line = 112;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv" + (" class=\"card mb-2\""+pug_attr("block", true, true, true)+" draggable=\"true\" data-name=\"table@0.0.1\"") + "\u003E";
+;pug_debug_line = 112;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"card-body p-2\"\u003E";
+;pug_debug_line = 112;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "table\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 113;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv" + (" class=\"card mb-2\""+pug_attr("block", true, true, true)+" draggable=\"true\" data-name=\"image@0.0.1\"") + "\u003E";
+;pug_debug_line = 113;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"card-body p-2\"\u003E";
+;pug_debug_line = 113;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "image\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 114;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv" + (" class=\"card mb-2\""+pug_attr("block", true, true, true)+" draggable=\"true\" data-name=\"list@0.0.1\"") + "\u003E";
+;pug_debug_line = 114;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"card-body p-2\"\u003E";
+;pug_debug_line = 114;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "list\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 115;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv" + (" class=\"card mb-2\""+pug_attr("block", true, true, true)+" draggable=\"true\" data-name=\"content@0.0.1\"") + "\u003E";
+;pug_debug_line = 115;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"card-body p-2\"\u003E";
+;pug_debug_line = 115;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "content\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 117;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"col-md-5\"\u003E";
+;pug_debug_line = 118;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ch2\u003E";
+;pug_debug_line = 118;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "editor 1\u003C\u002Fh2\u003E";
+;pug_debug_line = 119;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Chr\u003E";
+;pug_debug_line = 120;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"editor\" id=\"editor1\"\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 122;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"col-md-5\"\u003E";
+;pug_debug_line = 123;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Ch2\u003E";
+;pug_debug_line = 123;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "editor 2\u003C\u002Fh2\u003E";
+;pug_debug_line = 124;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Chr\u003E";
+;pug_debug_line = 125;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_html = pug_html + "\u003Cdiv class=\"editor\" id=\"editor2\"\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 127;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["nbr"](50);
+;pug_debug_line = 128;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/assets/lib/sharedb-wrapper/main/client.bundle.min.js");
+;pug_debug_line = 129;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/assets/lib/bootstrap.native/main/bootstrap-native.min.js");
+;pug_debug_line = 130;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js");
+;pug_debug_line = 131;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/assets/lib/@loadingio/debounce.js/main/debounce.min.js");
+;pug_debug_line = 132;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/assets/lib/@loadingio/ldquery/main/ldq.min.js");
+;pug_debug_line = 133;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/assets/lib/ldview/main/ldview.min.js");
+;pug_debug_line = 134;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/assets/lib/ldcover/main/ldcv.min.js");
+;pug_debug_line = 135;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/js/domtool.js");
+;pug_debug_line = 136;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/assets/lib/ot-json0/main/ot-json0.js");
+;pug_debug_line = 137;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/js/contenteditable/index.js");
+;pug_debug_line = 138;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/js/editor/caret.js");
+;pug_debug_line = 139;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/js/editor/drag.js");
+;pug_debug_line = 140;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/js/editor/block.js");
+;pug_debug_line = 141;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/js/editor/contenteditable.js");
+;pug_debug_line = 142;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/js/editor/highlight.js");
+;pug_debug_line = 144;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Feditor\u002Findex.pug";
+pug_mixins["script"]("/js/editor/copy-paste.js");
+pug_html = pug_html + "\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";}.call(this,"Array" in locals_for_with?locals_for_with.Array:typeof Array!=="undefined"?Array:undefined,"JSON" in locals_for_with?locals_for_with.JSON:typeof JSON!=="undefined"?JSON:undefined,"Math" in locals_for_with?locals_for_with.Math:typeof Math!=="undefined"?Math:undefined,"blockLoader" in locals_for_with?locals_for_with.blockLoader:typeof blockLoader!=="undefined"?blockLoader:undefined,"cssLoader" in locals_for_with?locals_for_with.cssLoader:typeof cssLoader!=="undefined"?cssLoader:undefined,"decache" in locals_for_with?locals_for_with.decache:typeof decache!=="undefined"?decache:undefined,"escape" in locals_for_with?locals_for_with.escape:typeof escape!=="undefined"?escape:undefined,"parentName" in locals_for_with?locals_for_with.parentName:typeof parentName!=="undefined"?parentName:undefined,"prefix" in locals_for_with?locals_for_with.prefix:typeof prefix!=="undefined"?prefix:undefined,"scriptLoader" in locals_for_with?locals_for_with.scriptLoader:typeof scriptLoader!=="undefined"?scriptLoader:undefined,"version" in locals_for_with?locals_for_with.version:typeof version!=="undefined"?version:undefined));} catch (err) {pug_rethrow(err, pug_debug_filename, pug_debug_line);};return pug_html;}; module.exports = template; })() 
