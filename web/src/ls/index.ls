@@ -23,3 +23,18 @@ manager.get {name: "test", version: "0.0.1"}
     lc.test = it
     it.attach document.body
   .then -> lc.test.update [{p: ['style',0], li: ['background', 'yellow']}]
+
+code = """
+@keyframes test {
+  0% { background: red; }
+  100% { background: green; }
+}
+@media (max-width: 1024px) {
+  .nest1 { animation: 1s test infinite }
+  @media (max-height: 1024px) {
+    .nest2 { animation: infinite 1s test }
+  }
+}
+"""
+ret = csscope 'test', code
+console.log ret
