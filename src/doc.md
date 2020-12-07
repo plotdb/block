@@ -23,7 +23,7 @@ block.instance
  - before insert ( 編輯用 )
  - init
  - after insert ( 編輯用 )
- - before remove ( 編輯用 )
+ - before destroy ( 編輯用 )
  - destroy
- - after remove ( 編輯用 )
+ - after destroy ( 編輯用 )
  - update ( 編輯用, 或者...開放跨模組溝通時用來更新用? )
