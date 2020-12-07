@@ -13,10 +13,16 @@ lc = {}
 manager = new block.manager registry: "/"
 manager.add {name: "test", version: "0.0.1", block: new block.class {code}}
 
+manager.get {name: "landing-col2", version: "0.0.1"}
+  .then -> it.create!
+  .then ->
+    lc.land2 = it
+    it.attach document.body
+  .then ->
 manager.get {name: "landing", version: "0.0.1"}
   .then -> it.create!
   .then ->
-    lc.test = it
+    lc.land1 = it
     it.attach document.body
   .then ->
     manager.get {name: "sample", version: "0.0.1"}
@@ -31,6 +37,8 @@ manager.get {name: "landing", version: "0.0.1"}
     lc.test = it
     it.attach document.body
   .then -> lc.test.update [{p: ['style',0], li: ['background', 'yellow']}]
+  .then -> lc.land2.update [{p: ['style',0], li: ['opacity', '0.5']}]
+  .then -> console.log lc.land2.get-data!
 
 code = """
 @keyframes test {

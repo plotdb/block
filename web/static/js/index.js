@@ -12,12 +12,21 @@ manager.add({
   })
 });
 manager.get({
+  name: "landing-col2",
+  version: "0.0.1"
+}).then(function(it){
+  return it.create();
+}).then(function(it){
+  lc.land2 = it;
+  return it.attach(document.body);
+}).then(function(){});
+manager.get({
   name: "landing",
   version: "0.0.1"
 }).then(function(it){
   return it.create();
 }).then(function(it){
-  lc.test = it;
+  lc.land1 = it;
   return it.attach(document.body);
 }).then(function(){
   return manager.get({
@@ -44,6 +53,13 @@ manager.get({
     p: ['style', 0],
     li: ['background', 'yellow']
   }]);
+}).then(function(){
+  return lc.land2.update([{
+    p: ['style', 0],
+    li: ['opacity', '0.5']
+  }]);
+}).then(function(){
+  return console.log(lc.land2.getData());
 });
 code = "@keyframes test {\n  0% { background: red; }\n  100% { background: green; }\n}\n@media (max-width: 1024px) {\n  .nest1 { animation: 1s test infinite }\n  @media (max-height: 1024px) {\n    .nest2 { animation: infinite 1s test }\n  }\n}";
 ret = csscope('test', code);
