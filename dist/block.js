@@ -55,7 +55,7 @@
     }
   });
   block['class'] = function(opt){
-    var code, style, this$ = this;
+    var code, ret, this$ = this;
     opt == null && (opt = {});
     this.opt = opt;
     this.name = opt.name;
@@ -74,6 +74,7 @@
     } else {
       this.dom = document.createElement("div");
     }
+    this.scope = Math.random().toString(36).substring(2);
     ['script', 'style', 'link'].map(function(n){
       return this$[n] = Array.from(this$.dom.querySelectorAll(n)).map(function(it){
         it.parentNode.removeChild(it);
@@ -82,12 +83,11 @@
     });
     this.datadom = datadom.serialize(this.dom);
     this['interface'] = eval(this.script);
-    style = document.createElement("style");
-    style.textContent = csscope.convert({
-      scope: ".scope",
+    document.body.appendChild(this.styleNode = document.createElement("style"));
+    this.styleNode.textContent = ret = csscope({
+      scope: "[scope=" + this.scope + "]",
       css: this.style
     });
-    document.body.appendChild(style);
     this.factory = function(){
       var args;
       args = slice$.call(arguments);
@@ -126,6 +126,7 @@
       var root, this$ = this;
       root = arg$.root;
       return this.getDom().then(function(it){
+        it.setAttribute('scope', this$.block.scope);
         document.body.appendChild(it);
         return this$.obj = new this$.block.factory({
           root: it

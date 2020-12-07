@@ -35,6 +35,7 @@ block.class = (opt={}) ->
   # use document fragment ( yet datadom doesn't work with #document-fragment )
   #@frag = document.createRange!.createContextualFragment(@code)
   #@dom = @frag.cloneNode(true)
+  @scope = Math.random!toString(36)substring(2)
 
   <[script style link]>.map (n) ~> 
     @[n] = Array.from(@dom.querySelectorAll(n))
@@ -42,9 +43,8 @@ block.class = (opt={}) ->
       .join \\n
   @datadom = datadom.serialize(@dom)
   @interface = eval(@script)
-  style = document.createElement("style")
-  style.textContent = csscope.convert({scope: ".scope",css: @style})
-  document.body.appendChild style
+  document.body.appendChild(@style-node = document.createElement("style"))
+  @style-node.textContent = ret = csscope {scope: "[scope=#{@scope}]", css: @style}
   @factory = (...args) ->
     if @init =>
       @init.apply(@, args)
@@ -66,6 +66,7 @@ block.instance = (opt = {}) ->
 block.instance.prototype = Object.create(Object.prototype) <<< do
   attach: ({root}) ->
     @get-dom!then ~>
+      it.setAttribute \scope, @block.scope
       document.body.appendChild it
       @obj = new @block.factory {root: it}
 

@@ -20,7 +20,8 @@
   "devDependencies": {
     "@loadingio/debounce.js": "0.0.1",
     "@loadingio/ldquery": "^1.1.1",
-    "@plotdb/datadom": "0.0.1",
+    "@plotdb/csscope": "0.0.1",
+    "@plotdb/datadom": "0.0.3",
     "@plotdb/json0": "0.0.1",
     "LiveScript": ">=1.2.0",
     "body-parser": "^1.19.0",
