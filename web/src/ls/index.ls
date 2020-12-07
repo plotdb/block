@@ -12,12 +12,20 @@ html,body { background: yellow }
 lc = {}
 manager = new block.manager registry: "/"
 manager.add {name: "test", version: "0.0.1", block: new block.class {code}}
-manager.get {name: "sample", version: "0.0.1"}
+
+manager.get {name: "landing", version: "0.0.1"}
+  .then -> it.create!
+  .then ->
+    lc.test = it
+    it.attach document.body
+  .then ->
+    manager.get {name: "sample", version: "0.0.1"}
   .then -> it.create!
   .then ->
     lc.sample = it
     it.attach document.body
-manager.get {name: "test", version: "0.0.1"}
+  .then ->
+    manager.get {name: "test", version: "0.0.1"}
   .then -> it.create!
   .then ->
     lc.test = it

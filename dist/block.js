@@ -62,7 +62,7 @@
     }
   });
   block['class'] = function(opt){
-    var code, ret, this$ = this;
+    var code, div, ret, this$ = this;
     opt == null && (opt = {});
     this.opt = opt;
     this.scope = "_" + Math.random().toString(36).substring(2);
@@ -76,8 +76,10 @@
       this.code = DOMPurify.sanitize(code || '', {
         ADD_TAGS: ['script', 'style']
       });
-      this.dom = document.createElement("div");
-      this.dom.innerHTML = this.code;
+      div = document.createElement("div");
+      div.innerHTML = this.code;
+      this.dom = div.childNodes[0];
+      this.dom.parentNode.removeChild(this.dom);
     } else {
       this.dom = document.createElement("div");
     }

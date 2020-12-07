@@ -31,8 +31,12 @@ block.class = (opt={}) ->
   if opt.root => code = opt.root.innerHTML
   if code =>
     @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style]> }
-    @dom = document.createElement("div")
-    @dom.innerHTML = @code
+    div = document.createElement("div")
+    div.innerHTML = @code
+    @dom = div.childNodes.0
+    @dom.parentNode.removeChild @dom
+    #@dom = document.createElement("div")
+    #@dom.innerHTML = @code
   else @dom = document.createElement("div")
 
   # use document fragment ( yet datadom doesn't work with #document-fragment )

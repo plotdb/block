@@ -12,17 +12,28 @@ manager.add({
   })
 });
 manager.get({
-  name: "sample",
+  name: "landing",
   version: "0.0.1"
+}).then(function(it){
+  return it.create();
+}).then(function(it){
+  lc.test = it;
+  return it.attach(document.body);
+}).then(function(){
+  return manager.get({
+    name: "sample",
+    version: "0.0.1"
+  });
 }).then(function(it){
   return it.create();
 }).then(function(it){
   lc.sample = it;
   return it.attach(document.body);
-});
-manager.get({
-  name: "test",
-  version: "0.0.1"
+}).then(function(){
+  return manager.get({
+    name: "test",
+    version: "0.0.1"
+  });
 }).then(function(it){
   return it.create();
 }).then(function(it){
