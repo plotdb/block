@@ -1,12 +1,22 @@
 block.manager
-  get({name,version}): return block-class
-  set-registry(url)
+ - constructor({registry}): create a block manager.
+   - registry: registry url
+ - add({name,version,block}): add block-class.
+ - get({name,version,force}): return block-class with `name@version`. ignore cache if force is true.
+ - set-registry(url): update registry url
 
 block.class
-  create({ ... }): return block-instance
+ - constructor({name, version, code, root}): create a block class.
+ - create(): create and a block instance.
+ - get-dom():
+ - get-datadom(): 
 
 block.instance
-  get-dom
+ - constructor({block}): create a block instance.
+ - attach({root}):
+ - update(ops):
+ - get-dom(): 
+ - get-data(): 
 
 
 可能的事件:

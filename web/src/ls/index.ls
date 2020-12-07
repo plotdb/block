@@ -10,7 +10,7 @@ html,body { background: yellow }
 """
 
 lc = {}
-manager = new block.manager!
+manager = new block.manager registry: "/"
 manager.add {name: "test", version: "0.0.1", block: new block.class {code}}
 manager.get {name: "sample", version: "0.0.1"}
   .then -> it.create!
@@ -37,4 +37,4 @@ code = """
 }
 """
 ret = csscope 'test', code
-console.log ret
+#console.log ret

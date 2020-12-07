@@ -5,10 +5,17 @@
   block.manager = function(opt){
     opt == null && (opt = {});
     this.hash = {};
-    this.apiUrl = opt.url || "/";
+    this.setRegistry(opt.registry);
     return this;
   };
   block.manager.prototype = import$(Object.create(Object.prototype), {
+    setRegistry: function(it){
+      var ref$;
+      this.reg = it || '';
+      if (this.reg && (ref$ = this.reg)[ref$.length - 1] !== '/') {
+        return this.reg += '/';
+      }
+    },
     add: function(arg$){
       var name, version, block, ref$;
       name = arg$.name, version = arg$.version, block = arg$.block;
@@ -17,7 +24,7 @@
     getUrl: function(arg$){
       var name, version;
       name = arg$.name, version = arg$.version;
-      return this.apiUrl + "block/" + name + "/" + version + "/index.html";
+      return (this.reg || '') + "block/" + name + "/" + version + "/index.html";
     },
     get: function(opt){
       var ref$, n, v, this$ = this;
@@ -58,6 +65,7 @@
     var code, ret, this$ = this;
     opt == null && (opt = {});
     this.opt = opt;
+    this.scope = "_" + Math.random().toString(36).substring(2);
     this.name = opt.name;
     this.version = opt.version;
     code = opt.code;
@@ -69,12 +77,10 @@
         ADD_TAGS: ['script', 'style']
       });
       this.dom = document.createElement("div");
-      this.dom.classList.add('scope');
       this.dom.innerHTML = this.code;
     } else {
       this.dom = document.createElement("div");
     }
-    this.scope = Math.random().toString(36).substring(2);
     ['script', 'style', 'link'].map(function(n){
       return this$[n] = Array.from(this$.dom.querySelectorAll(n)).map(function(it){
         it.parentNode.removeChild(it);
@@ -84,8 +90,9 @@
     this.datadom = datadom.serialize(this.dom);
     this['interface'] = eval(this.script);
     document.body.appendChild(this.styleNode = document.createElement("style"));
+    this.styleNode.setAttribute('type', 'text/css');
     this.styleNode.textContent = ret = csscope({
-      scope: "[scope=" + this.scope + "]",
+      scope: "*[scope=" + this.scope + "]",
       css: this.style
     });
     this.factory = function(){

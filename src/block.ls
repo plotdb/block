@@ -1,14 +1,17 @@
 block = {}
 block.manager = (opt={}) ->
   @hash = {}
-  @api-url = opt.url or "/"
+  @set-registry opt.registry
   @
 
 block.manager.prototype = Object.create(Object.prototype) <<< do
+  set-registry: ->
+    @reg = it or ''
+    if @reg and @reg[* - 1] != \/ => @reg += \/
   add: ({name, version, block}) -> @hash{}[name][version] = block
   # TODO support batch fetch
   # TODO latest -> cache?
-  get-url: ({name, version}) -> "#{@api-url}block/#{name}/#{version}/index.html"
+  get-url: ({name, version}) -> "#{@reg or ''}block/#{name}/#{version}/index.html"
   get: (opt = {}) ->
     [n,v] = [opt.name, opt.version or \latest]
     if !(n and v) => return Promise.reject new ldError(1015)
@@ -22,20 +25,19 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
 
 block.class = (opt={}) ->
   @opt = opt
+  @scope = "_" + Math.random!toString(36)substring(2)
   @ <<< opt{name, version}
   code = opt.code
   if opt.root => code = opt.root.innerHTML
   if code =>
     @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style]> }
     @dom = document.createElement("div")
-    @dom.classList.add \scope
     @dom.innerHTML = @code
   else @dom = document.createElement("div")
 
   # use document fragment ( yet datadom doesn't work with #document-fragment )
   #@frag = document.createRange!.createContextualFragment(@code)
   #@dom = @frag.cloneNode(true)
-  @scope = Math.random!toString(36)substring(2)
 
   <[script style link]>.map (n) ~> 
     @[n] = Array.from(@dom.querySelectorAll(n))
@@ -44,7 +46,8 @@ block.class = (opt={}) ->
   @datadom = datadom.serialize(@dom)
   @interface = eval(@script)
   document.body.appendChild(@style-node = document.createElement("style"))
-  @style-node.textContent = ret = csscope {scope: "[scope=#{@scope}]", css: @style}
+  @style-node.setAttribute \type, 'text/css'
+  @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style}
   @factory = (...args) ->
     if @init =>
       @init.apply(@, args)
