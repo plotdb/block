@@ -7,4 +7,4 @@ pug_html = pug_html + "\u003Chead\u003E\u003C\u002Fhead\u003E";
 ;pug_debug_line = 4;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Fload.pug";
 pug_html = pug_html + "\u003Cbody\u003E";
 ;pug_debug_line = 5;pug_debug_filename = "src\u002Fpug\u002Fdev\u002Fload.pug";
-pug_html = pug_html + "\u003Cscript src=\"\u002Fjs\u002Fload.js\"\u003E\u003C\u002Fscript\u003E\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";} catch (err) {pug_rethrow(err, pug_debug_filename, pug_debug_line);};return pug_html;}; module.exports = template; })() 
+pug_html = pug_html + "\u003Cscript src=\"\u002Fjs\u002Fdev\u002Fload.js\"\u003E\u003C\u002Fscript\u003E\u003C\u002Fbody\u003E\u003C\u002Fhtml\u003E";} catch (err) {pug_rethrow(err, pug_debug_filename, pug_debug_line);};return pug_html;}; module.exports = template; })() 

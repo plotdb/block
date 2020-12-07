@@ -1,59 +1,77 @@
-block-manager = (opt={}) ->
+block = {}
+block.manager = (opt={}) ->
   @hash = {}
-  @api-url = opt.url
+  @api-url = opt.url or "/"
   @
 
-block-manager.prototype = Object.create(Object.prototype) <<< do
+block.manager.prototype = Object.create(Object.prototype) <<< do
   add: ({name, version, block}) -> @hash{}[name][version] = block
   # TODO support batch fetch
   # TODO latest -> cache?
+  get-url: ({name, version}) -> "#{@api-url}block/#{name}/#{version}/index.html"
   get: (opt = {}) ->
     [n,v] = [opt.name, opt.version or \latest]
     if !(n and v) => return Promise.reject new ldError(1015)
     if @hash{}[n][v]? and !opt.force =>
       return if @hash[n][v] => Promise.resolve(@hash[n][v])
       else Promise.reject new Error new ldError(404)
-    ld$.fetch @api-url, {method: \POST}, {json: opt{name,version}, type: \json}
+    ld$.fetch @get-url(opt{name,version}) , {method: \GET}, {type: \text}
       .then (ret = {}) ~>
-        if !(ret.name and ret.version) => return Promise.reject new ldError(1015)
-        @add {name: ret.name, version: ret.version, block: b = new block-class(ret)}
+        @add {name: n, version: v} <<< {block: b = new block.class({code: ret, name: n, version: v})}
         return b
 
-block-class = (opt={}) ->
+block.class = (opt={}) ->
   @opt = opt
-  @name = opt.name
-  # For local block
-  if opt.root => @datadom = datadom.serialize opt.root
-  else if opt.files and opt.files["index.html"] =>
-    div = document.createElement("div")
-    div.innerHTML = opt.files["index.html"]
-    @datadom = datadom.serialize div
+  @ <<< opt{name, version}
+  code = opt.code
+  if opt.root => code = opt.root.innerHTML
+  if code =>
+    @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style]> }
+    @dom = document.createElement("div")
+    @dom.classList.add \scope
+    @dom.innerHTML = @code
+  else @dom = document.createElement("div")
+
+  # use document fragment ( yet datadom doesn't work with #document-fragment )
+  #@frag = document.createRange!.createContextualFragment(@code)
+  #@dom = @frag.cloneNode(true)
+
+  <[script style link]>.map (n) ~> 
+    @[n] = Array.from(@dom.querySelectorAll(n))
+      .map ~> it.parentNode.removeChild(it); it.textContent
+      .join \\n
+  @datadom = datadom.serialize(@dom)
+  @interface = eval(@script)
+  style = document.createElement("style")
+  style.textContent = csscope.convert({scope: ".scope",css: @style})
+  document.body.appendChild style
+  @factory = (...args) ->
+    if @init =>
+      @init.apply(@, args)
+    @
+  @factory.prototype = @interface
   @
 
-block-class.prototype = Object.create(Object.prototype) <<< do
+block.class.prototype = Object.create(Object.prototype) <<< do
   get-dom: -> datadom.deserialize @datadom
   get-datadom: -> JSON.parse(JSON.stringify(@datadom))
-  create: -> new block-instance {block: @}
+  create: -> new block.instance {block: @}
 
-block-instance = (opt = {}) ->
+block.instance = (opt = {}) ->
   @block = opt.block
-  @datadom = @block.get-datadom!
-  @dom = datadom.deserialize @datadom
+  @datadom = new datadom {data: @block.get-datadom!}
+  @_init_promise = @datadom.init!
   @
 
+block.instance.prototype = Object.create(Object.prototype) <<< do
+  attach: ({root}) ->
+    @get-dom!then ~>
+      document.body.appendChild it
+      @obj = new @block.factory {root: it}
 
-block-instance.prototype = Object.create(Object.prototype) <<< do
-  get-dom: -> @dom
-  get-datadom: -> @datadom
+  update: (ops) -> @datadom.update ops
+  get-dom: -> @_init_promise.then ~> ret = @datadom.get-node!
+  get-data: -> @datadom.get-data!
 
-
-/*
-可能的事件:
- - before insert ( 編輯用 )
- - init
- - after insert ( 編輯用 )
- - before remove ( 編輯用 )
- - destroy
- - after remove ( 編輯用 )
- - update ( 編輯用, 或者...開放跨模組溝通時用來更新用? )
-*/
+if module? => module.exports = block
+if window? => window.block = block

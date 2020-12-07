@@ -20,8 +20,11 @@
   "devDependencies": {
     "@loadingio/debounce.js": "0.0.1",
     "@loadingio/ldquery": "^1.1.1",
+    "@plotdb/datadom": "0.0.1",
+    "@plotdb/json0": "0.0.1",
     "LiveScript": ">=1.2.0",
     "body-parser": "^1.19.0",
+    "dompurify": "^2.2.2",
     "ldiconfont": "github:loadingio/ldiconfont",
     "stylus": "^0.54.5",
     "template": "github:zbryikt/template#2.1.4",
@@ -36,7 +39,6 @@
     "jsoneditor": "^9.1.1",
     "ldcover": "^1.1.0",
     "ldview": "0.0.2",
-    "ot-json0": "github:ottypes/json0",
     "sharedb-wrapper": "github:zbryikt/sharedb-wrapper"
   },
   "frontendDependencies": {
@@ -47,15 +49,15 @@
       "bootstrap.native",
       "@loadingio/ldquery",
       "@loadingio/debounce.js",
+      "dompurify",
       "ldview",
       "ldcover",
       "jsoneditor",
       "ldiconfont",
+      "@plotdb/datadom",
+      "@plotdb/csscope",
       "sharedb-wrapper",
-      {
-        "name": "ot-json0",
-        "browserify": true
-      }
+      "@plotdb/json0"
     ]
   }
 }
