@@ -51,7 +51,7 @@ block.class = (opt={}) ->
   @interface = eval(@script)
   document.body.appendChild(@style-node = document.createElement("style"))
   @style-node.setAttribute \type, 'text/css'
-  @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style}
+  @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style, scope-test: "[scope]"}
   @factory = (...args) ->
     if @init =>
       @init.apply(@, args)
