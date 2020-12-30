@@ -32,6 +32,10 @@ manager.set(new block['class']({
 }).then(function(it){
   lc.land1 = it;
   return it.attach(document.body);
+}).then(function(){
+  return debounce(1000);
+}).then(function(){
+  return lc.land1.detach();
 });
 /*
   .then ->

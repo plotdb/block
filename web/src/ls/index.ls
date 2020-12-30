@@ -24,6 +24,9 @@ manager.set new block.class {name: "test", version: "0.0.1", code}
   .then ->
     lc.land1 = it
     it.attach document.body
+  .then ->
+    debounce 1000
+  .then -> lc.land1.detach!
 /*
   .then ->
     manager.get {name: "sample", version: "0.0.1"}

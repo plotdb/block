@@ -77,7 +77,9 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @factory = (...args) ->
           if @init => @init.apply(@, args)
           @
-        @factory.prototype = @interface
+        @factory.prototype = Object.create(Object.prototype) <<< {
+          init: (->), destroy: (->)
+        } <<< @interface
       .then ~> @ <<< inited: true, initing: false
       .then ~> @init.resolve!
 
@@ -111,6 +113,10 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
       it.setAttribute \scope, @block.scope
       document.body.appendChild it
       @obj = new @block.factory {root: it}
+  detach: ->
+    @get-dom-node!then (node) ~>
+      node.parentNode.removeChild node
+      @obj.destroy!
   update: (ops) -> @datadom.update ops
   get-datadom: -> @datadom
   get-dom-node: -> Promise.resolve @datadom.get-node!

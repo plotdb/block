@@ -146,7 +146,7 @@
       }
       this.initing = true;
       return this.datadom.init().then(function(){
-        var ret;
+        var ret, ref$;
         ['script', 'style', 'link'].map(function(n){
           return this$[n] = Array.from(this$.datadom.getNode().querySelectorAll(n)).map(function(it){
             it.parentNode.removeChild(it);
@@ -173,7 +173,7 @@
           }
           return this;
         };
-        return this$.factory.prototype = this$['interface'];
+        return this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$), this$['interface']);
       }).then(function(){
         return this$.inited = true, this$.initing = false, this$;
       }).then(function(){
@@ -238,6 +238,13 @@
         return this$.obj = new this$.block.factory({
           root: it
         });
+      });
+    },
+    detach: function(){
+      var this$ = this;
+      return this.getDomNode().then(function(node){
+        node.parentNode.removeChild(node);
+        return this$.obj.destroy();
       });
     },
     update: function(ops){
