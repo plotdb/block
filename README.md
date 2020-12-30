@@ -99,8 +99,8 @@ For every instantiated block of certain `block.class` type, there will be a corr
  - `constructor(opts)` with following options:
    - `block`: block definition ( `block.class` ) for this instance.
  - `attach({root})`: attach DOM of this instance to a specific node ( `root` ).
-   - *TODO* we may need a `init` for part of what `attach` is doing currently.
    - in the meantime, a block `obj` is created via `block.class`'s factory method and stored in `@obj` member.
+ - `detach()`: detach DOM.
  - `update(ops)`: update `datadom` based on provided ops ( array of operational transformation ).
  - `getDatadom()`: return `@plotdb/datadom` object of this block.
  - `getDomNode()`: return a promise resolving DOM tree root.
