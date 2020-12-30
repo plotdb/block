@@ -175,4 +175,13 @@ registry
            - 若展開至自己, 則可能得基於 cloudflare 類的服務, 有成本的潛在風險
              - 需要精算?
        - 使用 service worker?
+         - 但若要辨識來源, 還是需要在網址中提供 `name@version` ...
+           - 由 js 處理? 要怎麼判斷哪些是 src? background image 怎麼辦?
        - 針對 src / href 做過濾? 再提供 API 讓 JS 呼叫?
+   - 即便透過 base64 embed 也不合理, 因為這樣會混入 DOM tree:
+     - 無法 cache
+     - 可能會讓 block.class 變很大.
+   - 因此還是得透過網址. 網址:
+     - 使用 md5, 製造 unique url?
+     - block.manage 載入時處理掉?
+       - 這樣的話, js 端就必須要提供 api 供用戶做 mapping
