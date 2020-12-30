@@ -34,6 +34,7 @@ These block definitions must be kept somewhere like:
 
 either way we have to provide a way to load, register, cache these blocks - that is, to manage them.
 
+
 ### block.manager
 
 `block.manager` helps us manage blocks by providing following APIs:
@@ -50,6 +51,7 @@ either way we have to provide a way to load, register, cache these blocks - that
  - `get({name,version,force})`: return a `block-class` object corresponding to a block with `name` and `version`.
    - `force`: by default, `block.manager` caches result. set `force` to true to force `block.manager` re-fetch data.
    - `get` also accept an array of `{name,version,force}` tuples for batching `get`. in this case, `get` returns an array of `block.class`.
+
 
 ### block.class
 
