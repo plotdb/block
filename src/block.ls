@@ -8,7 +8,9 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
   set-registry: ->
     @reg = it or ''
     if typeof(@reg) == \string => if @reg and @reg[* - 1] != \/ => @reg += \/
-  set: ({name, version, block}) -> @hash{}[name][version] = block
+  set: (opt = {}) ->
+    opts = if Array.isArray(opt) => opt else [opt]
+    opts.map ({name,version,block}) ~> @hash{}[name][version] = block
   get-url: ({name, version}) ->
     if typeof(@reg) == \function => @reg {name, version}
     else return "#{@reg or ''}/block/#{name}/#{version}"
@@ -40,21 +42,19 @@ block.class = (opt={}) ->
     @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style]> }
     div = document.createElement("div")
     div.innerHTML = @code
-    @dom = div.childNodes.0
-    @dom.parentNode.removeChild @dom
-    #@dom = document.createElement("div")
-    #@dom.innerHTML = @code
-  else @dom = document.createElement("div")
+    if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
+    @datadom = new datadom({node: div.childNodes.0})
+  else @datadom = new datadom({node: document.createElement \div})
+  @datadom.init!
 
   # use document fragment ( yet datadom doesn't work with #document-fragment )
-  #@frag = document.createRange!.createContextualFragment(@code)
-  #@dom = @frag.cloneNode(true)
+  # @frag = document.createRange!.createContextualFragment(@code)
+  # domtree = @frag.cloneNode(true)
 
   <[script style link]>.map (n) ~> 
-    @[n] = Array.from(@dom.querySelectorAll(n))
+    @[n] = Array.from(@datadom.getNode!.querySelectorAll(n))
       .map ~> it.parentNode.removeChild(it); it.textContent
       .join \\n
-  @datadom = datadom.serialize(@dom)
   @interface = eval(@script)
   document.body.appendChild(@style-node = document.createElement("style"))
   @style-node.setAttribute \type, 'text/css'
@@ -67,26 +67,28 @@ block.class = (opt={}) ->
   @
 
 block.class.prototype = Object.create(Object.prototype) <<< do
-  get-dom: -> datadom.deserialize @datadom
-  get-datadom: -> JSON.parse(JSON.stringify(@datadom))
+  get-dom-node: -> @datadom.getNode!
+  get-datadom: -> @datadom
+  get-dom-data: -> @datadom.getData!
   create: -> new block.instance {block: @}
 
+#TODO consider how initialization of datadom work in block.instance and block.class.
 block.instance = (opt = {}) ->
   @block = opt.block
-  @datadom = new datadom {data: @block.get-datadom!}
+  @datadom = new datadom {data: JSON.parse(JSON.stringify(@block.get-dom-data!))}
   @_init_promise = @datadom.init!
   @
 
 block.instance.prototype = Object.create(Object.prototype) <<< do
   attach: ({root}) ->
-    @get-dom!then ~>
+    @get-dom-node!then ~>
       it.setAttribute \scope, @block.scope
       document.body.appendChild it
       @obj = new @block.factory {root: it}
-
-  update: (ops) -> @datadom.update ops
-  get-dom: -> @_init_promise.then ~> ret = @datadom.get-node!
-  get-data: -> @datadom.get-data!
+  update: (ops) -> @_init_promise.then ~> @datadom.update ops
+  get-datadom: -> @datadom
+  get-dom-node: -> @_init_promise.then ~> ret = @datadom.get-node!
+  get-dom-data: -> @_init_promise.then ~> ret = @datadom.get-data!
 
 if module? => module.exports = block
 if window? => window.block = block

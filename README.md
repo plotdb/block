@@ -43,13 +43,13 @@ either way we have to provide a way to load, register, cache these blocks - that
      - `function({name,version})`: return URL for given `name` and `version` of a block.
      - `string`: block.manager will look up blocks in `<registry>/block/<name>/<version>/index.html`.
  - `setRegistry(registry)`: update `registry` dynamically. registry is the same as the one in constructor opts.
- - `add({name,version,block}): register a block with `name` and `version`.
+ - `set({name,version,block}): register a block with `name` and `version`.
    - `block`: a `block-class` object, explained below.
-   - add also accepts Array of {name,version,block} object for batching add.
+   - `set` also accepts Array of {name,version,block} object for batching `set`.
  - `getUrl({name,version})`: get corresponding url for a block with `name` and `version`.
  - `get({name,version,force})`: return a `block-class` object corresponding to a block with `name` and `version`.
    - `force`: by default, `block.manager` caches result. set `force` to true to force `block.manager` re-fetch data.
-   - *TODO* we should also support batch mode in this API.
+   - `get` also accept an array of `{name,version,force}` tuples for batching `get`. in this case, `get` returns an array of `block.class`.
 
 ### block.class
 
@@ -62,8 +62,9 @@ either way we have to provide a way to load, register, cache these blocks - that
    - `version`: block version. mandatory.
    - `code`: string of html code. use to create internal dom tree if provided.
    - `root`: root of a DOM tree. use to create internal dom tree if provided. Overwrite code.
- - `getDom`: simply return a clone of the DOM tree for this block.
- - `getDatadom`: get a cloned `@plotdb/datadom` representation of this block's DOM.
+ - `getDomNode`: simply return a clone of the DOM tree for this block.
+ - `getDomData`: get a JSON representation tree in `@plotdb/datadom` format of this block's DOM.
+ - `getDatadom`: get the `@plotdb/datadom` object of thie block.
  - `create`: create a `block.instance` based on this object.
 
 and following private members:
@@ -99,8 +100,9 @@ For every instantiated block of certain `block.class` type, there will be a corr
    - *TODO* we may need a `init` for part of what `attach` is doing currently.
    - in the meantime, a block `obj` is created via `block.class`'s factory method and stored in `@obj` member.
  - `update(ops)`: update `datadom` based on provided ops ( array of operational transformation ).
- - `getDom()`: get it's DOM tree root.
- - `getData()`: get JSON data of it's DOM tree.
+ - `getDatadom()`: return `@plotdb/datadom` object of this block.
+ - `getDomNode()`: return a promise resolving DOM tree root.
+ - `getDomData()`: return a promise resolving JSON data of it's DOM tree.
 
 and following private members:
 

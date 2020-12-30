@@ -18,10 +18,17 @@
         }
       }
     },
-    set: function(arg$){
-      var name, version, block, ref$;
-      name = arg$.name, version = arg$.version, block = arg$.block;
-      return ((ref$ = this.hash)[name] || (ref$[name] = {}))[version] = block;
+    set: function(opt){
+      var opts, this$ = this;
+      opt == null && (opt = {});
+      opts = Array.isArray(opt)
+        ? opt
+        : [opt];
+      return opts.map(function(arg$){
+        var name, version, block, ref$;
+        name = arg$.name, version = arg$.version, block = arg$.block;
+        return ((ref$ = this$.hash)[name] || (ref$[name] = {}))[version] = block;
+      });
     },
     getUrl: function(arg$){
       var name, version;
@@ -104,18 +111,24 @@
       });
       div = document.createElement("div");
       div.innerHTML = this.code;
-      this.dom = div.childNodes[0];
-      this.dom.parentNode.removeChild(this.dom);
+      if (div.childNodes.length > 1) {
+        console.warn("DOM definition of a block should contain only one root.");
+      }
+      this.datadom = new datadom({
+        node: div.childNodes[0]
+      });
     } else {
-      this.dom = document.createElement("div");
+      this.datadom = new datadom({
+        node: document.createElement('div')
+      });
     }
+    this.datadom.init();
     ['script', 'style', 'link'].map(function(n){
-      return this$[n] = Array.from(this$.dom.querySelectorAll(n)).map(function(it){
+      return this$[n] = Array.from(this$.datadom.getNode().querySelectorAll(n)).map(function(it){
         it.parentNode.removeChild(it);
         return it.textContent;
       }).join('\n');
     });
-    this.datadom = datadom.serialize(this.dom);
     this['interface'] = eval(this.script);
     document.body.appendChild(this.styleNode = document.createElement("style"));
     this.styleNode.setAttribute('type', 'text/css');
@@ -140,11 +153,14 @@
     return this;
   };
   block['class'].prototype = import$(Object.create(Object.prototype), {
-    getDom: function(){
-      return datadom.deserialize(this.datadom);
+    getDomNode: function(){
+      return this.datadom.getNode();
     },
     getDatadom: function(){
-      return JSON.parse(JSON.stringify(this.datadom));
+      return this.datadom;
+    },
+    getDomData: function(){
+      return this.datadom.getData();
     },
     create: function(){
       return new block.instance({
@@ -156,7 +172,7 @@
     opt == null && (opt = {});
     this.block = opt.block;
     this.datadom = new datadom({
-      data: this.block.getDatadom()
+      data: JSON.parse(JSON.stringify(this.block.getDomData()))
     });
     this._init_promise = this.datadom.init();
     return this;
@@ -165,7 +181,7 @@
     attach: function(arg$){
       var root, this$ = this;
       root = arg$.root;
-      return this.getDom().then(function(it){
+      return this.getDomNode().then(function(it){
         it.setAttribute('scope', this$.block.scope);
         document.body.appendChild(it);
         return this$.obj = new this$.block.factory({
@@ -174,17 +190,27 @@
       });
     },
     update: function(ops){
-      return this.datadom.update(ops);
+      var this$ = this;
+      return this._init_promise.then(function(){
+        return this$.datadom.update(ops);
+      });
     },
-    getDom: function(){
+    getDatadom: function(){
+      return this.datadom;
+    },
+    getDomNode: function(){
       var this$ = this;
       return this._init_promise.then(function(){
         var ret;
         return ret = this$.datadom.getNode();
       });
     },
-    getData: function(){
-      return this.datadom.getData();
+    getDomData: function(){
+      var this$ = this;
+      return this._init_promise.then(function(){
+        var ret;
+        return ret = this$.datadom.getData();
+      });
     }
   });
   if (typeof module != 'undefined' && module !== null) {

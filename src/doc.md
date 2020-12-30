@@ -1,17 +1,17 @@
 block.manager
  - `constructor({registry})`: create a block manager.
    - `registry`: registry url
- - `set({name,version,block})`: add block-class.
- - `get({name,version,force})`: return block-class with `name@version`. ignore cache if force is true.
+ - `set({name,version,block})`: bind `name@version` to block ( a `block.class` object ).
+ - `get({name,version,force})`: return block-class with `name@version`. ignore cache if `force` is true.
  - `setRegistry(url)`: update registry url. url can be either:
    - `string`: represent base url of the registry.
    - `function({name, version})`: a function accepting `{name,version}` params and return full path for specific block.
 
 block.class
- - constructor({name, version, code, root}): create a block class.
- - create(): create and a block instance.
- - get-dom():
- - get-datadom(): 
+ - `constructor({name, version, code, root})`: create a block class.
+ - `create()`: create and a block instance.
+ - `get-dom():
+ - `get-datadom(): 
 
 block.instance
  - constructor({block}): create a block instance.

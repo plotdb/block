@@ -63,7 +63,9 @@ manager.get({
     li: ['opacity', '0.5']
   }]);
 }).then(function(){
-  return console.log(lc.land2.getData());
+  return lc.land2.getDomData();
+}).then(function(it){
+  return console.log(it);
 });
 code = "@keyframes test {\n  0% { background: red; }\n  100% { background: green; }\n}\n@media (max-width: 1024px) {\n  .nest1 { animation: 1s test infinite }\n  @media (max-height: 1024px) {\n    .nest2 { animation: infinite 1s test }\n  }\n}";
 ret = csscope('test', code);

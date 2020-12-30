@@ -38,7 +38,8 @@ manager.get {name: "landing", version: "0.0.1"}
     it.attach document.body
   .then -> lc.test.update [{p: ['style',0], li: ['background', 'yellow']}]
   .then -> lc.land2.update [{p: ['style',0], li: ['opacity', '0.5']}]
-  .then -> console.log lc.land2.get-data!
+  .then -> lc.land2.get-dom-data!
+  .then -> console.log it
 
 code = """
 @keyframes test {
