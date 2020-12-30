@@ -24,11 +24,14 @@
       opts = Array.isArray(opt)
         ? opt
         : [opt];
-      return Promise.all(opts.map(function(arg$){
-        var name, version, block, ref$;
-        name = arg$.name, version = arg$.version, block = arg$.block;
-        ((ref$ = this$.hash)[name] || (ref$[name] = {}))[version] = block;
-        return block.init();
+      return Promise.all(opts.map(function(obj){
+        var name, version, b, ref$;
+        name = obj.name, version = obj.version;
+        b = obj instanceof block['class']
+          ? obj
+          : obj.block;
+        ((ref$ = this$.hash)[name] || (ref$[name] = {}))[version] = b;
+        return b.init();
       }));
     },
     getUrl: function(arg$){
@@ -97,11 +100,12 @@
     }
   });
   block['class'] = function(opt){
-    var code, div;
+    var code, div, this$ = this;
     opt == null && (opt = {});
     this.opt = opt;
     this.scope = "_" + Math.random().toString(36).substring(2);
     this.inited = false;
+    this.initing = false;
     this.name = opt.name;
     this.version = opt.version;
     code = opt.code;
@@ -125,14 +129,22 @@
         node: document.createElement('div')
       });
     }
+    this.init = proxise(function(){
+      if (this$.inited) {
+        return Promise.resolve();
+      } else if (!this$.initing) {
+        return this$._init();
+      }
+    });
     return this;
   };
   block['class'].prototype = import$(Object.create(Object.prototype), {
-    init: function(){
+    _init: function(){
       var this$ = this;
       if (this.inited) {
         return Promise.resolve();
       }
+      this.initing = true;
       return this.datadom.init().then(function(){
         var ret;
         ['script', 'style', 'link'].map(function(n){
@@ -163,7 +175,9 @@
         };
         return this$.factory.prototype = this$['interface'];
       }).then(function(){
-        return this$.inited = true;
+        return this$.inited = true, this$.initing = false, this$;
+      }).then(function(){
+        return this$.init.resolve();
       });
     },
     getDomNode: function(){

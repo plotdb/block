@@ -11,7 +11,7 @@ html,body { background: yellow }
 
 lc = {}
 manager = new block.manager registry: ({name, version}) -> "/block/#name/#version/index.html"
-manager.set {name: "test", version: "0.0.1", block: new block.class {code}}
+manager.set new block.class {name: "test", version: "0.0.1", code}
   .then ->
     manager.get {name: "landing-col2", version: "0.0.1"}
   .then -> it.create!
@@ -24,6 +24,7 @@ manager.set {name: "test", version: "0.0.1", block: new block.class {code}}
   .then ->
     lc.land1 = it
     it.attach document.body
+/*
   .then ->
     manager.get {name: "sample", version: "0.0.1"}
   .then -> it.create!
@@ -56,3 +57,4 @@ code = """
 """
 ret = csscope 'test', code
 #console.log ret
+*/

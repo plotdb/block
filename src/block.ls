@@ -10,9 +10,11 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     if typeof(@reg) == \string => if @reg and @reg[* - 1] != \/ => @reg += \/
   set: (opt = {}) ->
     opts = if Array.isArray(opt) => opt else [opt]
-    Promise.all(opts.map ({name,version,block}) ~>
-      @hash{}[name][version] = block
-      block.init!
+    Promise.all(opts.map (obj) ~>
+      {name,version} = obj
+      b = if obj instanceof block.class => obj else obj.block
+      @hash{}[name][version] = b
+      b.init!
     )
   get-url: ({name, version}) ->
     if typeof(@reg) == \function => @reg {name, version}
@@ -38,6 +40,7 @@ block.class = (opt={}) ->
   @opt = opt
   @scope = "_" + Math.random!toString(36)substring(2)
   @inited = false
+  @initing = false
   @ <<< opt{name, version}
   code = opt.code
   if opt.root => code = opt.root.innerHTML
@@ -48,6 +51,9 @@ block.class = (opt={}) ->
     if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
     @datadom = new datadom({node: div.childNodes.0})
   else @datadom = new datadom({node: document.createElement \div})
+  @init = proxise ~>
+    if @inited => return Promise.resolve!
+    else if !@initing => @_init!
   @
 
 # use document fragment ( yet datadom doesn't work with #document-fragment )
@@ -55,8 +61,9 @@ block.class = (opt={}) ->
 # domtree = @frag.cloneNode(true)
 
 block.class.prototype = Object.create(Object.prototype) <<< do
-  init: ->
+  _init: ->
     if @inited => return Promise.resolve!
+    @initing = true
     @datadom.init!
       .then ~>
         <[script style link]>.map (n) ~>
@@ -68,11 +75,11 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @style-node.setAttribute \type, 'text/css'
         @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style, scope-test: "[scope]"}
         @factory = (...args) ->
-          if @init =>
-            @init.apply(@, args)
+          if @init => @init.apply(@, args)
           @
         @factory.prototype = @interface
-      .then ~> @inited = true
+      .then ~> @ <<< inited: true, initing: false
+      .then ~> @init.resolve!
 
 
   get-dom-node: -> @datadom.getNode!

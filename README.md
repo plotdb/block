@@ -112,6 +112,17 @@ and following private members:
  - `datadom` - `@plotdb/datadom` object for retrieving DOM and data representation of DOM.
 
 
+### Events
+
+ - before insert
+ - init
+ - after insert
+ - before destroy
+ - destroy
+ - after destroy
+ - update ( 編輯用, 或者...開放跨模組溝通時用來更新用? )
+
+
 ## License
 
 MIT

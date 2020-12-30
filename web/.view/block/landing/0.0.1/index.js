@@ -15,4 +15,8 @@ pug_html = pug_html + "a little more details about this project, better with one
 ;pug_debug_line = 6;pug_debug_filename = "src\u002Fpug\u002Fblock\u002Flanding\u002F0.0.1\u002Findex.pug";
 pug_html = pug_html + "\u003Cdiv class=\"btn btn-danger\"\u003E";
 ;pug_debug_line = 6;pug_debug_filename = "src\u002Fpug\u002Fblock\u002Flanding\u002F0.0.1\u002Findex.pug";
-pug_html = pug_html + "Get Started Now\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug_rethrow(err, pug_debug_filename, pug_debug_line);};return pug_html;}; module.exports = template; })() 
+pug_html = pug_html + "Get Started Now\u003C\u002Fdiv\u003E\u003C\u002Fdiv\u003E";
+;pug_debug_line = 7;pug_debug_filename = "src\u002Fpug\u002Fblock\u002Flanding\u002F0.0.1\u002Findex.pug";
+pug_html = pug_html + "\u003Cscript\u003E";
+;pug_debug_line = 7;pug_debug_filename = "src\u002Fpug\u002Fblock\u002Flanding\u002F0.0.1\u002Findex.pug";
+pug_html = pug_html + "({\n  init: function(it){\n    return console.log(\"[landing][init]\", it);\n  }\n});\u003C\u002Fscript\u003E\u003C\u002Fdiv\u003E";} catch (err) {pug_rethrow(err, pug_debug_filename, pug_debug_line);};return pug_html;}; module.exports = template; })() 
