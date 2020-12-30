@@ -200,24 +200,34 @@
     }
   });
   block.instance = function(opt){
+    var this$ = this;
     opt == null && (opt = {});
     this.block = opt.block;
     this.datadom = new datadom({
       data: JSON.parse(JSON.stringify(this.block.getDomData()))
     });
     this.inited = false;
+    this.initing = false;
+    this.init = proxise(function(){
+      if (this$.inited) {
+        return Promise.resolve();
+      } else if (!this$.initing) {
+        return this$._init();
+      }
+    });
     return this;
   };
   block.instance.prototype = import$(Object.create(Object.prototype), {
-    init: function(){
+    _init: function(){
       var this$ = this;
       if (this.inited) {
         return Promise.resolve();
-      } else {
-        return this.datadom.init().then(function(){
-          return this$.inited = true;
-        });
       }
+      return this.datadom.init().then(function(){
+        this$.inited = true;
+        this$.initing = false;
+        return this$.init.resolve();
+      });
     },
     attach: function(arg$){
       var root, this$ = this;

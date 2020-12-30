@@ -94,10 +94,18 @@ block.instance = (opt = {}) ->
   @block = opt.block
   @datadom = new datadom {data: JSON.parse(JSON.stringify(@block.get-dom-data!))}
   @inited = false
+  @initing = false
+  @init = proxise ~>
+    if @inited => return Promise.resolve!
+    else if !@initing => @_init!
   @
 
 block.instance.prototype = Object.create(Object.prototype) <<< do
-  init: -> if @inited => return Promise.resolve! else @datadom.init!then ~> @inited = true
+  _init: ->
+    if @inited => return Promise.resolve!
+    @datadom.init!then ~>
+      @ <<< inited: true, initing: false
+      @init.resolve!
   attach: ({root}) ->
     @get-dom-node!then ~>
       it.setAttribute \scope, @block.scope
