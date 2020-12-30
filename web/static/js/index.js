@@ -2,9 +2,13 @@ var code, lc, manager, ret;
 code = "<div style=\"color:red\">11</div>\n<img src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\" onload=\"alert('onload');\"/>\n<script type=\"text/javascript\">\nconsole.log('script tag');\n</script>\n<style type=\"text/css\">\nhtml,body { background: yellow }\n</style>";
 lc = {};
 manager = new block.manager({
-  registry: "/"
+  registry: function(arg$){
+    var name, version;
+    name = arg$.name, version = arg$.version;
+    return "/block/" + name + "/" + version + "/index.html";
+  }
 });
-manager.add({
+manager.set({
   name: "test",
   version: "0.0.1",
   block: new block['class']({

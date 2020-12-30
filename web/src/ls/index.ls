@@ -10,8 +10,8 @@ html,body { background: yellow }
 """
 
 lc = {}
-manager = new block.manager registry: "/"
-manager.add {name: "test", version: "0.0.1", block: new block.class {code}}
+manager = new block.manager registry: ({name, version}) -> "/block/#name/#version/index.html"
+manager.set {name: "test", version: "0.0.1", block: new block.class {code}}
 
 manager.get {name: "landing-col2", version: "0.0.1"}
   .then -> it.create!

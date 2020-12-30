@@ -7,21 +7,28 @@ block.manager = (opt={}) ->
 block.manager.prototype = Object.create(Object.prototype) <<< do
   set-registry: ->
     @reg = it or ''
-    if @reg and @reg[* - 1] != \/ => @reg += \/
-  add: ({name, version, block}) -> @hash{}[name][version] = block
-  # TODO support batch fetch
-  # TODO latest -> cache?
-  get-url: ({name, version}) -> "#{@reg or ''}block/#{name}/#{version}/index.html"
+    if typeof(@reg) == \string => if @reg and @reg[* - 1] != \/ => @reg += \/
+  set: ({name, version, block}) -> @hash{}[name][version] = block
+  get-url: ({name, version}) ->
+    if typeof(@reg) == \function => @reg {name, version}
+    else return "#{@reg or ''}/block/#{name}/#{version}"
+  # TODO parse semantic versioning for better cache performance.
   get: (opt = {}) ->
-    [n,v] = [opt.name, opt.version or \latest]
-    if !(n and v) => return Promise.reject new ldError(1015)
-    if @hash{}[n][v]? and !opt.force =>
-      return if @hash[n][v] => Promise.resolve(@hash[n][v])
-      else Promise.reject new Error new ldError(404)
-    ld$.fetch @get-url(opt{name,version}) , {method: \GET}, {type: \text}
-      .then (ret = {}) ~>
-        @add {name: n, version: v} <<< {block: b = new block.class({code: ret, name: n, version: v})}
-        return b
+    opts = if Array.isArray(opt) => opt else [opt]
+    Promise.all(
+      opts.map (opt = {}) ~>
+        [n,v] = [opt.name, opt.version or \latest]
+        if !(n and v) => return Promise.reject(new ldError 1015)
+        if @hash{}[n][v]? and !opt.force =>
+          return if @hash[n][v] => Promise.resolve(@hash[n][v])
+          else Promise.reject(new ldError 404)
+        ld$.fetch @get-url(opt{name,version}) , {method: \GET}, {type: \text}
+          .then (ret = {}) ~>
+            obj = ({name: n, version: v} <<< {block: b = new block.class({code: ret, name: n, version: v})})
+            @set obj
+            if ret.version and ret.version != v => @set(obj <<< {version: ret.version})
+            return b
+    ).then -> if Array.isArray(opt) => return it else return it.0
 
 block.class = (opt={}) ->
   @opt = opt
