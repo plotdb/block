@@ -10,7 +10,10 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     if typeof(@reg) == \string => if @reg and @reg[* - 1] != \/ => @reg += \/
   set: (opt = {}) ->
     opts = if Array.isArray(opt) => opt else [opt]
-    opts.map ({name,version,block}) ~> @hash{}[name][version] = block
+    Promise.all(opts.map ({name,version,block}) ~>
+      @hash{}[name][version] = block
+      block.init!
+    )
   get-url: ({name, version}) ->
     if typeof(@reg) == \function => @reg {name, version}
     else return "#{@reg or ''}/block/#{name}/#{version}"
@@ -26,15 +29,15 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
           else Promise.reject(new ldError 404)
         ld$.fetch @get-url(opt{name,version}) , {method: \GET}, {type: \text}
           .then (ret = {}) ~>
-            obj = ({name: n, version: v} <<< {block: b = new block.class({code: ret, name: n, version: v})})
-            @set obj
+            @set obj = ({name: n, version: v} <<< {block: b = new block.class({code: ret, name: n, version: v})})
             if ret.version and ret.version != v => @set(obj <<< {version: ret.version})
-            return b
+            b.init!then -> b
     ).then -> if Array.isArray(opt) => return it else return it.0
 
 block.class = (opt={}) ->
   @opt = opt
   @scope = "_" + Math.random!toString(36)substring(2)
+  @inited = false
   @ <<< opt{name, version}
   code = opt.code
   if opt.root => code = opt.root.innerHTML
@@ -45,50 +48,58 @@ block.class = (opt={}) ->
     if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
     @datadom = new datadom({node: div.childNodes.0})
   else @datadom = new datadom({node: document.createElement \div})
-  @datadom.init!
-
-  # use document fragment ( yet datadom doesn't work with #document-fragment )
-  # @frag = document.createRange!.createContextualFragment(@code)
-  # domtree = @frag.cloneNode(true)
-
-  <[script style link]>.map (n) ~> 
-    @[n] = Array.from(@datadom.getNode!.querySelectorAll(n))
-      .map ~> it.parentNode.removeChild(it); it.textContent
-      .join \\n
-  @interface = eval(@script)
-  document.body.appendChild(@style-node = document.createElement("style"))
-  @style-node.setAttribute \type, 'text/css'
-  @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style, scope-test: "[scope]"}
-  @factory = (...args) ->
-    if @init =>
-      @init.apply(@, args)
-    @
-  @factory.prototype = @interface
   @
 
+# use document fragment ( yet datadom doesn't work with #document-fragment )
+# @frag = document.createRange!.createContextualFragment(@code)
+# domtree = @frag.cloneNode(true)
+
 block.class.prototype = Object.create(Object.prototype) <<< do
+  init: ->
+    if @inited => return Promise.resolve!
+    @datadom.init!
+      .then ~>
+        <[script style link]>.map (n) ~>
+          @[n] = Array.from(@datadom.getNode!.querySelectorAll(n))
+            .map ~> it.parentNode.removeChild(it); it.textContent
+            .join \\n
+        @interface = eval(@script)
+        document.body.appendChild(@style-node = document.createElement("style"))
+        @style-node.setAttribute \type, 'text/css'
+        @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style, scope-test: "[scope]"}
+        @factory = (...args) ->
+          if @init =>
+            @init.apply(@, args)
+          @
+        @factory.prototype = @interface
+      .then ~> @inited = true
+
+
   get-dom-node: -> @datadom.getNode!
   get-datadom: -> @datadom
   get-dom-data: -> @datadom.getData!
-  create: -> new block.instance {block: @}
+  create: ->
+    ret = new block.instance {block: @}
+    ret.init!then -> ret
 
 #TODO consider how initialization of datadom work in block.instance and block.class.
 block.instance = (opt = {}) ->
   @block = opt.block
   @datadom = new datadom {data: JSON.parse(JSON.stringify(@block.get-dom-data!))}
-  @_init_promise = @datadom.init!
+  @inited = false
   @
 
 block.instance.prototype = Object.create(Object.prototype) <<< do
+  init: -> if @inited => return Promise.resolve! else @datadom.init!then ~> @inited = true
   attach: ({root}) ->
     @get-dom-node!then ~>
       it.setAttribute \scope, @block.scope
       document.body.appendChild it
       @obj = new @block.factory {root: it}
-  update: (ops) -> @_init_promise.then ~> @datadom.update ops
+  update: (ops) -> @datadom.update ops
   get-datadom: -> @datadom
-  get-dom-node: -> @_init_promise.then ~> ret = @datadom.get-node!
-  get-dom-data: -> @_init_promise.then ~> ret = @datadom.get-data!
+  get-dom-node: -> Promise.resolve @datadom.get-node!
+  get-dom-data: -> Promise.resolve @datadom.get-data!
 
 if module? => module.exports = block
 if window? => window.block = block

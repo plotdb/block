@@ -24,11 +24,12 @@
       opts = Array.isArray(opt)
         ? opt
         : [opt];
-      return opts.map(function(arg$){
+      return Promise.all(opts.map(function(arg$){
         var name, version, block, ref$;
         name = arg$.name, version = arg$.version, block = arg$.block;
-        return ((ref$ = this$.hash)[name] || (ref$[name] = {}))[version] = block;
-      });
+        ((ref$ = this$.hash)[name] || (ref$[name] = {}))[version] = block;
+        return block.init();
+      }));
     },
     getUrl: function(arg$){
       var name, version;
@@ -70,7 +71,7 @@
         }).then(function(ret){
           var obj, b;
           ret == null && (ret = {});
-          obj = {
+          this$.set(obj = {
             name: n,
             version: v,
             block: b = new block['class']({
@@ -78,12 +79,13 @@
               name: n,
               version: v
             })
-          };
-          this$.set(obj);
+          });
           if (ret.version && ret.version !== v) {
             this$.set((obj.version = ret.version, obj));
           }
-          return b;
+          return b.init().then(function(){
+            return b;
+          });
         });
       })).then(function(it){
         if (Array.isArray(opt)) {
@@ -95,10 +97,11 @@
     }
   });
   block['class'] = function(opt){
-    var code, div, ret, this$ = this;
+    var code, div;
     opt == null && (opt = {});
     this.opt = opt;
     this.scope = "_" + Math.random().toString(36).substring(2);
+    this.inited = false;
     this.name = opt.name;
     this.version = opt.version;
     code = opt.code;
@@ -122,37 +125,47 @@
         node: document.createElement('div')
       });
     }
-    this.datadom.init();
-    ['script', 'style', 'link'].map(function(n){
-      return this$[n] = Array.from(this$.datadom.getNode().querySelectorAll(n)).map(function(it){
-        it.parentNode.removeChild(it);
-        return it.textContent;
-      }).join('\n');
-    });
-    this['interface'] = eval(this.script);
-    document.body.appendChild(this.styleNode = document.createElement("style"));
-    this.styleNode.setAttribute('type', 'text/css');
-    this.styleNode.textContent = ret = csscope({
-      scope: "*[scope=" + this.scope + "]",
-      css: this.style,
-      scopeTest: "[scope]"
-    });
-    this.factory = function(){
-      var args, res$, i$, to$;
-      res$ = [];
-      for (i$ = 0, to$ = arguments.length; i$ < to$; ++i$) {
-        res$.push(arguments[i$]);
-      }
-      args = res$;
-      if (this.init) {
-        this.init.apply(this, args);
-      }
-      return this;
-    };
-    this.factory.prototype = this['interface'];
     return this;
   };
   block['class'].prototype = import$(Object.create(Object.prototype), {
+    init: function(){
+      var this$ = this;
+      if (this.inited) {
+        return Promise.resolve();
+      }
+      return this.datadom.init().then(function(){
+        var ret;
+        ['script', 'style', 'link'].map(function(n){
+          return this$[n] = Array.from(this$.datadom.getNode().querySelectorAll(n)).map(function(it){
+            it.parentNode.removeChild(it);
+            return it.textContent;
+          }).join('\n');
+        });
+        this$['interface'] = eval(this$.script);
+        document.body.appendChild(this$.styleNode = document.createElement("style"));
+        this$.styleNode.setAttribute('type', 'text/css');
+        this$.styleNode.textContent = ret = csscope({
+          scope: "*[scope=" + this$.scope + "]",
+          css: this$.style,
+          scopeTest: "[scope]"
+        });
+        this$.factory = function(){
+          var args, res$, i$, to$;
+          res$ = [];
+          for (i$ = 0, to$ = arguments.length; i$ < to$; ++i$) {
+            res$.push(arguments[i$]);
+          }
+          args = res$;
+          if (this.init) {
+            this.init.apply(this, args);
+          }
+          return this;
+        };
+        return this$.factory.prototype = this$['interface'];
+      }).then(function(){
+        return this$.inited = true;
+      });
+    },
     getDomNode: function(){
       return this.datadom.getNode();
     },
@@ -163,8 +176,12 @@
       return this.datadom.getData();
     },
     create: function(){
-      return new block.instance({
+      var ret;
+      ret = new block.instance({
         block: this
+      });
+      return ret.init().then(function(){
+        return ret;
       });
     }
   });
@@ -174,10 +191,20 @@
     this.datadom = new datadom({
       data: JSON.parse(JSON.stringify(this.block.getDomData()))
     });
-    this._init_promise = this.datadom.init();
+    this.inited = false;
     return this;
   };
   block.instance.prototype = import$(Object.create(Object.prototype), {
+    init: function(){
+      var this$ = this;
+      if (this.inited) {
+        return Promise.resolve();
+      } else {
+        return this.datadom.init().then(function(){
+          return this$.inited = true;
+        });
+      }
+    },
     attach: function(arg$){
       var root, this$ = this;
       root = arg$.root;
@@ -190,27 +217,16 @@
       });
     },
     update: function(ops){
-      var this$ = this;
-      return this._init_promise.then(function(){
-        return this$.datadom.update(ops);
-      });
+      return this.datadom.update(ops);
     },
     getDatadom: function(){
       return this.datadom;
     },
     getDomNode: function(){
-      var this$ = this;
-      return this._init_promise.then(function(){
-        var ret;
-        return ret = this$.datadom.getNode();
-      });
+      return Promise.resolve(this.datadom.getNode());
     },
     getDomData: function(){
-      var this$ = this;
-      return this._init_promise.then(function(){
-        var ret;
-        return ret = this$.datadom.getData();
-      });
+      return Promise.resolve(this.datadom.getData());
     }
   });
   if (typeof module != 'undefined' && module !== null) {

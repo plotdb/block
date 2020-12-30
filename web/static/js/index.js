@@ -14,19 +14,21 @@ manager.set({
   block: new block['class']({
     code: code
   })
-});
-manager.get({
-  name: "landing-col2",
-  version: "0.0.1"
+}).then(function(){
+  return manager.get({
+    name: "landing-col2",
+    version: "0.0.1"
+  });
 }).then(function(it){
   return it.create();
 }).then(function(it){
   lc.land2 = it;
   return it.attach(document.body);
-}).then(function(){});
-manager.get({
-  name: "landing",
-  version: "0.0.1"
+}).then(function(){
+  return manager.get({
+    name: "landing",
+    version: "0.0.1"
+  });
 }).then(function(it){
   return it.create();
 }).then(function(it){

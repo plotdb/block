@@ -12,14 +12,14 @@ html,body { background: yellow }
 lc = {}
 manager = new block.manager registry: ({name, version}) -> "/block/#name/#version/index.html"
 manager.set {name: "test", version: "0.0.1", block: new block.class {code}}
-
-manager.get {name: "landing-col2", version: "0.0.1"}
+  .then ->
+    manager.get {name: "landing-col2", version: "0.0.1"}
   .then -> it.create!
   .then ->
     lc.land2 = it
     it.attach document.body
   .then ->
-manager.get {name: "landing", version: "0.0.1"}
+    manager.get {name: "landing", version: "0.0.1"}
   .then -> it.create!
   .then ->
     lc.land1 = it
@@ -32,7 +32,8 @@ manager.get {name: "landing", version: "0.0.1"}
     it.attach document.body
   .then ->
     manager.get {name: "test", version: "0.0.1"}
-  .then -> it.create!
+  .then ->
+    it.create!
   .then ->
     lc.test = it
     it.attach document.body
