@@ -100,7 +100,7 @@
     }
   });
   block['class'] = function(opt){
-    var code, div, this$ = this;
+    var code, div, node, this$ = this;
     opt == null && (opt = {});
     this.opt = opt;
     this.scope = "_" + Math.random().toString(36).substring(2);
@@ -114,21 +114,28 @@
     }
     if (code) {
       this.code = DOMPurify.sanitize(code || '', {
-        ADD_TAGS: ['script', 'style']
+        ADD_TAGS: ['script', 'style'],
+        ADD_ATTR: ['ld']
       });
       div = document.createElement("div");
       div.innerHTML = this.code;
+      console.log(this.code);
       if (div.childNodes.length > 1) {
         console.warn("DOM definition of a block should contain only one root.");
       }
-      this.datadom = new datadom({
-        node: div.childNodes[0]
-      });
+      node = div.childNodes[0];
     } else {
-      this.datadom = new datadom({
-        node: document.createElement('div')
-      });
+      node = document.createElement('div');
     }
+    ['script', 'style', 'link'].map(function(n){
+      return this$[n] = Array.from(node.querySelectorAll(n)).map(function(it){
+        it.parentNode.removeChild(it);
+        return it.textContent;
+      }).join('\n');
+    });
+    this.datadom = new datadom({
+      node: node
+    });
     this.init = proxise(function(){
       if (this$.inited) {
         return Promise.resolve();
@@ -147,12 +154,6 @@
       this.initing = true;
       return this.datadom.init().then(function(){
         var ret, ref$;
-        ['script', 'style', 'link'].map(function(n){
-          return this$[n] = Array.from(this$.datadom.getNode().querySelectorAll(n)).map(function(it){
-            it.parentNode.removeChild(it);
-            return it.textContent;
-          }).join('\n');
-        });
         this$['interface'] = eval(this$.script);
         document.body.appendChild(this$.styleNode = document.createElement("style"));
         this$.styleNode.setAttribute('type', 'text/css');
@@ -233,8 +234,10 @@
       var root, this$ = this;
       root = arg$.root;
       return this.getDomNode().then(function(it){
+        var _root;
         it.setAttribute('scope', this$.block.scope);
-        document.body.appendChild(it);
+        _root = typeof root === 'string' ? document.querySelector(root) : root;
+        _root.appendChild(it);
         return this$.obj = new this$.block.factory({
           root: it
         });

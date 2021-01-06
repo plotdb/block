@@ -9,21 +9,30 @@ html,body { background: yellow }
 </style>
 """
 
+load-sample = ({name}) ->
+  manager.get {name, version: "0.0.1"}
+    .then -> it.create!
+    .then -> it.attach {root: document.getElementById(\container)}
+
 lc = {}
 manager = new block.manager registry: ({name, version}) -> "/block/#name/#version/index.html"
 manager.set new block.class {name: "test", version: "0.0.1", code}
-  .then ->
-    manager.get {name: "landing-col2", version: "0.0.1"}
+  .then -> load-sample name: \long-answer
+  .then -> load-sample name: \cta
+  .then -> load-sample name: \columns
+  .then -> load-sample name: \image-explain
+
+  .then -> manager.get {name: "landing-col2", version: "0.0.1"}
   .then -> it.create!
   .then ->
     lc.land2 = it
-    it.attach document.body
+    it.attach {root: document.body}
   .then ->
     manager.get {name: "landing", version: "0.0.1"}
   .then -> it.create!
   .then ->
     lc.land1 = it
-    it.attach document.body
+    it.attach {root: document.body}
   .then ->
     debounce 1000
   .then -> lc.land1.detach!
@@ -33,14 +42,14 @@ manager.set new block.class {name: "test", version: "0.0.1", code}
   .then -> it.create!
   .then ->
     lc.sample = it
-    it.attach document.body
+    it.attach {root: document.body}
   .then ->
     manager.get {name: "test", version: "0.0.1"}
   .then ->
     it.create!
   .then ->
     lc.test = it
-    it.attach document.body
+    it.attach {root: document.body}
   .then -> lc.test.update [{p: ['style',0], li: ['background', 'yellow']}]
   .then -> lc.land2.update [{p: ['style',0], li: ['opacity', '0.5']}]
   .then -> lc.land2.get-dom-data!

@@ -2,6 +2,12 @@ extends /base.pug
 block head
   style(type="text/css"): :stylus
     html, body { width: 100%; height: 100%; background: #fff }
+    #container > div {
+      width: 1024px;
+      margin: auto;
+    }
 block body
+  #container
+  .form-long-answer hi
 block script
   +script("js/index.js")

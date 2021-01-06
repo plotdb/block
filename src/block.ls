@@ -45,12 +45,19 @@ block.class = (opt={}) ->
   code = opt.code
   if opt.root => code = opt.root.innerHTML
   if code =>
-    @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style]> }
+    @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style]>, ADD_ATTR: <[ld]> }
     div = document.createElement("div")
     div.innerHTML = @code
+    console.log @code
     if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
-    @datadom = new datadom({node: div.childNodes.0})
-  else @datadom = new datadom({node: document.createElement \div})
+    node = div.childNodes.0
+  else node = document.createElement(\div)
+  # remove functional elements before sending them into datadom.
+  <[script style link]>.map (n) ~>
+    @[n] = Array.from(node.querySelectorAll(n))
+      .map ~> it.parentNode.removeChild(it); it.textContent
+      .join \\n
+  @datadom = new datadom({node})
   @init = proxise ~>
     if @inited => return Promise.resolve!
     else if !@initing => @_init!
@@ -66,10 +73,6 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     @initing = true
     @datadom.init!
       .then ~>
-        <[script style link]>.map (n) ~>
-          @[n] = Array.from(@datadom.getNode!.querySelectorAll(n))
-            .map ~> it.parentNode.removeChild(it); it.textContent
-            .join \\n
         @interface = eval(@script)
         document.body.appendChild(@style-node = document.createElement("style"))
         @style-node.setAttribute \type, 'text/css'
@@ -111,7 +114,8 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
   attach: ({root}) ->
     @get-dom-node!then ~>
       it.setAttribute \scope, @block.scope
-      document.body.appendChild it
+      _root = if typeof(root) == \string => document.querySelector(root) else root
+      _root.appendChild it
       @obj = new @block.factory {root: it}
   detach: ->
     @get-dom-node!then (node) ~>

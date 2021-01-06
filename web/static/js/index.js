@@ -1,5 +1,19 @@
-var code, lc, manager;
+var code, loadSample, lc, manager;
 code = "<div style=\"color:red\">11</div>\n<img src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\" onload=\"alert('onload');\"/>\n<script type=\"text/javascript\">\nconsole.log('script tag');\n</script>\n<style type=\"text/css\">\nhtml,body { background: yellow }\n</style>";
+loadSample = function(arg$){
+  var name;
+  name = arg$.name;
+  return manager.get({
+    name: name,
+    version: "0.0.1"
+  }).then(function(it){
+    return it.create();
+  }).then(function(it){
+    return it.attach({
+      root: document.getElementById('container')
+    });
+  });
+};
 lc = {};
 manager = new block.manager({
   registry: function(arg$){
@@ -13,6 +27,22 @@ manager.set(new block['class']({
   version: "0.0.1",
   code: code
 })).then(function(){
+  return loadSample({
+    name: 'long-answer'
+  });
+}).then(function(){
+  return loadSample({
+    name: 'cta'
+  });
+}).then(function(){
+  return loadSample({
+    name: 'columns'
+  });
+}).then(function(){
+  return loadSample({
+    name: 'image-explain'
+  });
+}).then(function(){
   return manager.get({
     name: "landing-col2",
     version: "0.0.1"
@@ -21,7 +51,9 @@ manager.set(new block['class']({
   return it.create();
 }).then(function(it){
   lc.land2 = it;
-  return it.attach(document.body);
+  return it.attach({
+    root: document.body
+  });
 }).then(function(){
   return manager.get({
     name: "landing",
@@ -31,7 +63,9 @@ manager.set(new block['class']({
   return it.create();
 }).then(function(it){
   lc.land1 = it;
-  return it.attach(document.body);
+  return it.attach({
+    root: document.body
+  });
 }).then(function(){
   return debounce(1000);
 }).then(function(){
@@ -43,14 +77,14 @@ manager.set(new block['class']({
   .then -> it.create!
   .then ->
     lc.sample = it
-    it.attach document.body
+    it.attach {root: document.body}
   .then ->
     manager.get {name: "test", version: "0.0.1"}
   .then ->
     it.create!
   .then ->
     lc.test = it
-    it.attach document.body
+    it.attach {root: document.body}
   .then -> lc.test.update [{p: ['style',0], li: ['background', 'yellow']}]
   .then -> lc.land2.update [{p: ['style',0], li: ['opacity', '0.5']}]
   .then -> lc.land2.get-dom-data!
