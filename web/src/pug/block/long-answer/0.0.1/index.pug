@@ -11,7 +11,7 @@
       input.mr-1(type="checkbox",ld="toggle-preview")
       div 預覽
 
-  .flex-grow-1.text-nowrap.d-flex.align-items-center.mt-4(ld="edit-only")
+  .d-none.flex-grow-1.mt-4(ld="edit-only"): .text-nowrap.d-flex.align-items-center
     .mr-2 顯示並提供 Markdown 選項給填表者
     div: .switch.ml-2(ld="markdown-enabled")
   style(type="text/css"): :stylus
@@ -19,7 +19,8 @@
     do
       update: ->
       render: -> @view.render!
-      init: ({root}) ->
+      init: ({root,mode}) ->
+        mode = \edit
         @block = {}
         @view = view = new ldView do
           root: root
@@ -42,6 +43,7 @@
                 @render!
 
           handler: do
+            "edit-only": ({node}) -> node.classList.toggle \d-none, mode != \edit
             "input-field": ({node}) ~> node.value = @block.{}value.content or ''
             "markdown-enabled": ({node}) ~> node.classList.toggle \on, !!@block.{}config.markdown-enabled
             "preview-panel": ({node}) ~>
