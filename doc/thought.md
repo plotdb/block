@@ -92,7 +92,7 @@ registry
  * index.json (?) - metadata
 
 
-## 結構定義 ( 當前設計 )
+## 結構定義 ( 當前設計. 應該要移至 editable? )
 
 利用 HTML 定義基本的 block 結構.
 
@@ -104,7 +104,7 @@ registry
    * 考慮到 block 樣板 可能正在載入, 會需要 loading / load fail 的 ui, 也就需要額外定義特殊的 DOM, 避免被 serialize 同時方便顯示
 
 
-## 參數定義 ( 當前設計 )
+## 參數定義 ( 當前設計. 應該要移至 editable? )
 
  * attr: repeat-item
    - 可自由複製數量的節點
