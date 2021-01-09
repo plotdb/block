@@ -33,6 +33,7 @@
     "uglifycss": "0.0.29"
   },
   "dependencies": {
+    "@plotdb/rescope": "^0.1.0",
     "bootstrap": "^4.5.2",
     "bootstrap.ldui": "github:loadingio/bootstrap.ldui",
     "bootstrap.native": "^3.0.13",
@@ -59,6 +60,7 @@
       "proxise",
       "@plotdb/datadom",
       "@plotdb/csscope",
+      "@plotdb/rescope",
       "sharedb-wrapper",
       "@plotdb/json0"
     ]

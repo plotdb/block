@@ -1,3 +1,5 @@
+## API Reference
+
 block.manager
  - `constructor({registry})`: create a block manager.
    - `registry`: registry url
@@ -21,11 +23,23 @@ block.instance
  - get-data(): 
 
 
-可能的事件:
+## block.instance interface
+
  - before insert ( 編輯用 )
- - init
+ - init({root, mode, context})
+   - root: root element
+   - mode: executing mode. ( edit, view, etc )
+   - context: dependencies in an object.
  - after insert ( 編輯用 )
  - before destroy ( 編輯用 )
  - destroy
  - after destroy ( 編輯用 )
  - update ( 編輯用, 或者...開放跨模組溝通時用來更新用? )
+ - TBD
+   - dependencies, editDependencies ( 類 npm 相依列表 )
+     - list or modules, in case of mutual dependencies:
+       ["some-url", {url: "some-url", async: false}]
+     - by default, is asynchronous.
+
+## environment api?
+ - get mode ( 確認當前模式 )

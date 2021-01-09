@@ -2,6 +2,9 @@
 (function(){
   var block;
   block = {};
+  block.scope = new rescope({
+    global: window
+  });
   block.manager = function(opt){
     opt == null && (opt = {});
     this.hash = {};
@@ -9,6 +12,9 @@
     return this;
   };
   block.manager.prototype = import$(Object.create(Object.prototype), {
+    init: function(){
+      return block.scope.init();
+    },
     setRegistry: function(it){
       var ref$;
       this.reg = it || '';
@@ -119,7 +125,6 @@
       });
       div = document.createElement("div");
       div.innerHTML = this.code;
-      console.log(this.code);
       if (div.childNodes.length > 1) {
         console.warn("DOM definition of a block should contain only one root.");
       }
@@ -153,8 +158,8 @@
       }
       this.initing = true;
       return this.datadom.init().then(function(){
-        var ret, ref$;
-        this$['interface'] = eval(this$.script);
+        var ret, ref$, k, v;
+        this$['interface'] = eval(this$.script || '') || {};
         document.body.appendChild(this$.styleNode = document.createElement("style"));
         this$.styleNode.setAttribute('type', 'text/css');
         this$.styleNode.textContent = ret = csscope({
@@ -174,7 +179,18 @@
           }
           return this;
         };
-        return this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$), this$['interface']);
+        this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$), this$['interface']);
+        this$.dependencies = Array.isArray(this$['interface'].dependencies)
+          ? this$['interface'].dependencies
+          : (function(){
+            var ref$, results$ = [];
+            for (k in ref$ = this['interface'].dependencies || {}) {
+              v = ref$[k];
+              results$.push(v);
+            }
+            return results$;
+          }.call(this$));
+        return block.scope.load(this$.dependencies);
       }).then(function(){
         return this$.inited = true, this$.initing = false, this$;
       }).then(function(){
@@ -233,13 +249,16 @@
     attach: function(arg$){
       var root, this$ = this;
       root = arg$.root;
-      return this.getDomNode().then(function(it){
+      return this.getDomNode().then(function(node){
         var _root;
-        it.setAttribute('scope', this$.block.scope);
+        node.setAttribute('scope', this$.block.scope);
         _root = typeof root === 'string' ? document.querySelector(root) : root;
-        _root.appendChild(it);
-        return this$.obj = new this$.block.factory({
-          root: it
+        _root.appendChild(node);
+        return block.scope.context(this$.block.dependencies, function(context){
+          return this$.obj = new this$.block.factory({
+            root: node,
+            context: context
+          });
         });
       });
     },

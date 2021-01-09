@@ -1,10 +1,13 @@
+
 block = {}
+block.scope = new rescope global: window
 block.manager = (opt={}) ->
   @hash = {}
   @set-registry opt.registry
   @
 
 block.manager.prototype = Object.create(Object.prototype) <<< do
+  init: -> block.scope.init!
   set-registry: ->
     @reg = it or ''
     if typeof(@reg) == \string => if @reg and @reg[* - 1] != \/ => @reg += \/
@@ -48,7 +51,6 @@ block.class = (opt={}) ->
     @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style]>, ADD_ATTR: <[ld]> }
     div = document.createElement("div")
     div.innerHTML = @code
-    console.log @code
     if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
     node = div.childNodes.0
   else node = document.createElement(\div)
@@ -73,7 +75,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     @initing = true
     @datadom.init!
       .then ~>
-        @interface = eval(@script)
+        @interface = eval(@script or '') or {}
         document.body.appendChild(@style-node = document.createElement("style"))
         @style-node.setAttribute \type, 'text/css'
         @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style, scope-test: "[scope]"}
@@ -83,6 +85,10 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @factory.prototype = Object.create(Object.prototype) <<< {
           init: (->), destroy: (->)
         } <<< @interface
+        @dependencies = if Array.isArray(@interface.dependencies) => @interface.dependencies
+        else [v for k,v of (@interface.dependencies or {})]
+        block.scope.load @dependencies
+
       .then ~> @ <<< inited: true, initing: false
       .then ~> @init.resolve!
 
@@ -112,11 +118,12 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
       @ <<< inited: true, initing: false
       @init.resolve!
   attach: ({root}) ->
-    @get-dom-node!then ~>
-      it.setAttribute \scope, @block.scope
+    @get-dom-node!then (node) ~>
+      node.setAttribute \scope, @block.scope
       _root = if typeof(root) == \string => document.querySelector(root) else root
-      _root.appendChild it
-      @obj = new @block.factory {root: it}
+      _root.appendChild node
+      block.scope.context @block.dependencies, (context) ~>
+        @obj = new @block.factory {root: node, context}
   detach: ->
     @get-dom-node!then (node) ~>
       node.parentNode.removeChild node
