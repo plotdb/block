@@ -56,3 +56,8 @@ block.instance
 
 ## environment api?
  - get mode ( 確認當前模式 )
+
+## block html attribute
+ - block: CSS class-like block class definition, with following possible classes:
+   - fit: this block should fit ( maximize size )
+   - inline: this is an inline block.
