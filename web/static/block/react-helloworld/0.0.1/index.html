@@ -1,4 +1,4 @@
-<div><script>({
+<div block="inline"><script>({
   pkg: {
     dependencies: [
       {
@@ -11,7 +11,7 @@
     var root, context, Hello;
     root = arg$.root, context = arg$.context;
     Hello = function(props){
-      return React.createElement('div', null, "React: Hello " + props.name);
+      return React.createElement('span', null, "React: Hello " + props.name);
     };
     return ReactDOM.render(React.createElement(Hello, {
       name: "world"

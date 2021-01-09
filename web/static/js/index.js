@@ -53,34 +53,32 @@ manager.init().then(function(){
     name: 'image-explain'
   });
 }).then(function(){
-  return manager.get({
-    name: "landing-col2",
-    version: "0.0.1"
-  });
-}).then(function(it){
-  return it.create();
-}).then(function(it){
-  lc.land2 = it;
-  return it.attach({
-    root: document.body
+  return loadSample({
+    name: 'landing-col2'
   });
 }).then(function(){
-  return manager.get({
-    name: "landing",
-    version: "0.0.1"
+  return loadSample({
+    name: 'landing'
   });
-}).then(function(it){
-  return it.create();
-}).then(function(it){
-  lc.land1 = it;
-  return it.attach({
-    root: document.body
-  });
-}).then(function(){
-  return debounce(1000);
-}).then(function(){
-  return lc.land1.detach();
 });
+/*
+  .then -> manager.get {name: "landing-col2", version: "0.0.1"}
+  .then -> it.create!
+  .then ->
+    lc.land2 = it
+    it.attach {root: document.body}
+*/
+/*
+  .then ->
+    manager.get {name: "landing", version: "0.0.1"}
+  .then -> it.create!
+  .then ->
+    lc.land1 = it
+    it.attach {root: document.body}
+  .then ->
+    debounce 1000
+  .then -> lc.land1.detach!
+*/
 /*
   .then ->
     manager.get {name: "sample", version: "0.0.1"}

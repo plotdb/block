@@ -121,7 +121,7 @@
     if (code) {
       this.code = DOMPurify.sanitize(code || '', {
         ADD_TAGS: ['script', 'style'],
-        ADD_ATTR: ['ld']
+        ADD_ATTR: ['ld', 'block']
       });
       div = document.createElement("div");
       div.innerHTML = this.code;

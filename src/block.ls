@@ -48,7 +48,7 @@ block.class = (opt={}) ->
   code = opt.code
   if opt.root => code = opt.root.innerHTML
   if code =>
-    @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style]>, ADD_ATTR: <[ld]> }
+    @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style]>, ADD_ATTR: <[ld block]> }
     div = document.createElement("div")
     div.innerHTML = @code
     if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."

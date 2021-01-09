@@ -24,11 +24,16 @@ manager.init!
   .then -> load-sample name: \cta
   .then -> load-sample name: \columns
   .then -> load-sample name: \image-explain
+  .then -> load-sample name: \landing-col2
+  .then -> load-sample name: \landing
+/*
   .then -> manager.get {name: "landing-col2", version: "0.0.1"}
   .then -> it.create!
   .then ->
     lc.land2 = it
     it.attach {root: document.body}
+*/
+/*
   .then ->
     manager.get {name: "landing", version: "0.0.1"}
   .then -> it.create!
@@ -38,6 +43,7 @@ manager.init!
   .then ->
     debounce 1000
   .then -> lc.land1.detach!
+*/
 
 /*
   .then ->
