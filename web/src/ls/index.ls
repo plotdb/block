@@ -16,12 +16,14 @@ load-sample = ({name}) ->
 
 lc = {}
 manager = new block.manager registry: ({name, version}) -> "/block/#name/#version/index.html"
-manager.set new block.class {name: "test", version: "0.0.1", code}
+manager.init!
+  .then -> manager.set new block.class {name: "test", version: "0.0.1", code}
+  .then -> load-sample name: \react-helloworld
+  .then -> load-sample name: \vue-helloworld
   .then -> load-sample name: \long-answer
   .then -> load-sample name: \cta
   .then -> load-sample name: \columns
   .then -> load-sample name: \image-explain
-
   .then -> manager.get {name: "landing-col2", version: "0.0.1"}
   .then -> it.create!
   .then ->
@@ -36,6 +38,7 @@ manager.set new block.class {name: "test", version: "0.0.1", code}
   .then ->
     debounce 1000
   .then -> lc.land1.detach!
+
 /*
   .then ->
     manager.get {name: "sample", version: "0.0.1"}

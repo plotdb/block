@@ -17,11 +17,14 @@
   style(type="text/css"): :stylus
   script: :lsc
     do
+      dependencies: do
+        marked: "https://cdnjs.cloudflare.com/ajax/libs/marked/1.2.7/marked.min.js"
       update: ->
       render: -> @view.render!
-      init: ({root,mode}) ->
+      init: ({root,mode,context}) ->
         mode = \edit
         @block = {}
+        marked = context.marked
         @view = view = new ldView do
           root: root
           action:

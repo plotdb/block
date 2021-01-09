@@ -22,11 +22,21 @@ manager = new block.manager({
     return "/block/" + name + "/" + version + "/index.html";
   }
 });
-manager.set(new block['class']({
-  name: "test",
-  version: "0.0.1",
-  code: code
-})).then(function(){
+manager.init().then(function(){
+  return manager.set(new block['class']({
+    name: "test",
+    version: "0.0.1",
+    code: code
+  }));
+}).then(function(){
+  return loadSample({
+    name: 'react-helloworld'
+  });
+}).then(function(){
+  return loadSample({
+    name: 'vue-helloworld'
+  });
+}).then(function(){
   return loadSample({
     name: 'long-answer'
   });
