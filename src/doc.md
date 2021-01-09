@@ -23,6 +23,24 @@ block.instance
  - get-data(): 
 
 
+## block js object fields
+
+ - pkg
+   - author
+   - name
+   - version
+   - license
+   - description
+   - dependencies ( similar to npm )
+     - list or modules, in case of mutual dependencies:
+       ["some-url", {url: "some-url", async: false, dev: true}]
+     - options in object notation:
+       - name: name of this module
+       - version: version of this module
+       - url: path of the module. generated from name + version if omitted. (TODO)
+       - async: true to load this module asynchronously. true by default.
+       - mode: TBD ( use to control when this module should be loaded. )
+
 ## block.instance interface
 
  - before insert ( 編輯用 )
@@ -35,11 +53,6 @@ block.instance
  - destroy
  - after destroy ( 編輯用 )
  - update ( 編輯用, 或者...開放跨模組溝通時用來更新用? )
- - TBD
-   - dependencies, editDependencies ( 類 npm 相依列表 )
-     - list or modules, in case of mutual dependencies:
-       ["some-url", {url: "some-url", async: false}]
-     - by default, is asynchronous.
 
 ## environment api?
  - get mode ( 確認當前模式 )

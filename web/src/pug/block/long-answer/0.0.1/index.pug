@@ -17,8 +17,15 @@
   style(type="text/css"): :stylus
   script: :lsc
     do
-      dependencies: do
-        marked: "https://cdnjs.cloudflare.com/ajax/libs/marked/1.2.7/marked.min.js"
+      pkg: do
+        author: "zbryikt"
+        name: "long-answer"
+        version: "0.0.1"
+        license: "MIT"
+        description: ""
+        dependencies: [
+          "https://cdnjs.cloudflare.com/ajax/libs/marked/1.2.7/marked.min.js"
+        ]
       update: ->
       render: -> @view.render!
       init: ({root,mode,context}) ->

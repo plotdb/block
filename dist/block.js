@@ -180,11 +180,11 @@
           return this;
         };
         this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$), this$['interface']);
-        this$.dependencies = Array.isArray(this$['interface'].dependencies)
-          ? this$['interface'].dependencies
+        this$.dependencies = Array.isArray(((ref$ = this$['interface']).pkg || (ref$.pkg = {})).dependencies)
+          ? ((ref$ = this$['interface']).pkg || (ref$.pkg = {})).dependencies
           : (function(){
-            var ref$, results$ = [];
-            for (k in ref$ = this['interface'].dependencies || {}) {
+            var ref$, ref1$, results$ = [];
+            for (k in ref$ = ((ref1$ = this['interface']).pkg || (ref1$.pkg = {})).dependencies || {}) {
               v = ref$[k];
               results$.push(v);
             }

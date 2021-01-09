@@ -85,8 +85,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @factory.prototype = Object.create(Object.prototype) <<< {
           init: (->), destroy: (->)
         } <<< @interface
-        @dependencies = if Array.isArray(@interface.dependencies) => @interface.dependencies
-        else [v for k,v of (@interface.dependencies or {})]
+        @dependencies = if Array.isArray(@interface.{}pkg.dependencies) => @interface.{}pkg.dependencies
+        else [v for k,v of (@interface.{}pkg.dependencies or {})]
         block.scope.load @dependencies
 
       .then ~> @ <<< inited: true, initing: false
