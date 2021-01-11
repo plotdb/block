@@ -12,6 +12,8 @@ loadSample = function(arg$){
     return it.attach({
       root: document.getElementById('container')
     });
+  })['catch'](function(){
+    return console.log("failed to load block " + name);
   });
 };
 lc = {};
@@ -60,6 +62,8 @@ manager.init().then(function(){
   return loadSample({
     name: 'landing'
   });
+})['catch'](function(it){
+  return console(">", it);
 });
 /*
   .then -> manager.get {name: "landing-col2", version: "0.0.1"}

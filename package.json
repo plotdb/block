@@ -67,5 +67,5 @@
       "sharedb-wrapper",
       "@plotdb/json0"
     ]
-  },
+  }
 }

@@ -13,6 +13,7 @@ load-sample = ({name}) ->
   manager.get {name, version: "0.0.1"}
     .then -> it.create!
     .then -> it.attach {root: document.getElementById(\container)}
+    .catch -> console.log "failed to load block #name"
 
 lc = {}
 manager = new block.manager registry: ({name, version}) -> "/block/#name/#version/index.html"
@@ -26,6 +27,7 @@ manager.init!
   .then -> load-sample name: \image-explain
   .then -> load-sample name: \landing-col2
   .then -> load-sample name: \landing
+  .catch -> console ">", it
 /*
   .then -> manager.get {name: "landing-col2", version: "0.0.1"}
   .then -> it.create!

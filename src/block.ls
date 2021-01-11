@@ -91,6 +91,19 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 
       .then ~> @ <<< inited: true, initing: false
       .then ~> @init.resolve!
+      .catch ~>
+        node = document.createElement("div")
+        node.innerText = "failed"
+        @datadom = new datadom {node: node}
+        @datadom.init!
+          .then ~>
+            @interface = {}
+            @style-node = {}
+            @factory = -> @
+            @dependencies = []
+            @ <<< inited: true, initing: false
+            @init.resolve!
+      .catch ~> @init.reject!
 
 
   get-dom-node: -> @datadom.getNode!

@@ -195,6 +195,26 @@
         return this$.inited = true, this$.initing = false, this$;
       }).then(function(){
         return this$.init.resolve();
+      })['catch'](function(){
+        var node;
+        node = document.createElement("div");
+        node.innerText = "failed";
+        this$.datadom = new datadom({
+          node: node
+        });
+        return this$.datadom.init().then(function(){
+          this$['interface'] = {};
+          this$.styleNode = {};
+          this$.factory = function(){
+            return this;
+          };
+          this$.dependencies = [];
+          this$.inited = true;
+          this$.initing = false;
+          return this$.init.resolve();
+        });
+      })['catch'](function(){
+        return this$.init.reject();
       });
     },
     getDomNode: function(){
