@@ -65,6 +65,7 @@
         if (!(n && v)) {
           return Promise.reject(new ldError(1015));
         }
+        console.log(this$.hash);
         if (((ref$ = this$.hash)[n] || (ref$[n] = {}))[v] != null && !opt.force) {
           return this$.hash[n][v]
             ? Promise.resolve(this$.hash[n][v])
@@ -118,7 +119,10 @@
     if (opt.root) {
       code = opt.root.innerHTML;
     }
-    if (code) {
+    if (typeof code === 'function') {
+      code = code();
+    }
+    if (typeof code === 'string') {
       this.code = DOMPurify.sanitize(code || '', {
         ADD_TAGS: ['script', 'style'],
         ADD_ATTR: ['ld', 'block']
@@ -129,14 +133,35 @@
         console.warn("DOM definition of a block should contain only one root.");
       }
       node = div.childNodes[0];
-    } else {
+    } else if (typeof code === 'object') {
+      this.script = code.script;
+      this.style = code.style;
+      code = code.dom instanceof Function
+        ? code.dom()
+        : code.dom;
+      this.code = DOMPurify.sanitize(code || '', {
+        ADD_TAGS: ['script', 'style'],
+        ADD_ATTR: ['ld', 'block']
+      });
+      div = document.createElement("div");
+      div.innerHTML = this.code;
+      if (div.childNodes.length > 1) {
+        console.warn("DOM definition of a block should contain only one root.");
+      }
+      node = div.childNodes[0];
+    }
+    if (!node) {
       node = document.createElement('div');
     }
     ['script', 'style', 'link'].map(function(n){
-      return this$[n] = Array.from(node.querySelectorAll(n)).map(function(it){
+      var v;
+      v = Array.from(node.querySelectorAll(n)).map(function(it){
         it.parentNode.removeChild(it);
         return it.textContent;
       }).join('\n');
+      return this$[n] = v != null && v
+        ? v
+        : this$[n] || "";
     });
     this.datadom = new datadom({
       node: node
@@ -159,7 +184,11 @@
       this.initing = true;
       return this.datadom.init().then(function(){
         var ret, ref$, k, v;
-        this$['interface'] = eval(this$.script || '') || {};
+        this$['interface'] = (this$.script instanceof Function
+          ? this$.script()
+          : typeof this$.script === 'object'
+            ? this$.script
+            : eval(this$.script || '')) || {};
         document.body.appendChild(this$.styleNode = document.createElement("style"));
         this$.styleNode.setAttribute('type', 'text/css');
         this$.styleNode.textContent = ret = csscope({
@@ -195,8 +224,9 @@
         return this$.inited = true, this$.initing = false, this$;
       }).then(function(){
         return this$.init.resolve();
-      })['catch'](function(){
+      })['catch'](function(e){
         var node;
+        console.error(e);
         node = document.createElement("div");
         node.innerText = "failed";
         this$.datadom = new datadom({

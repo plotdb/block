@@ -11,6 +11,11 @@ block.manager
 
 block.class
  - `constructor({name, version, code, root})`: create a block class.
+   - code can be a serialized html file, or an object containing following members:
+     - dom - dom string. if it contains any `style` or `script` tags, following members will be overwritten.
+     - style - style string
+     - script - can be either an object or a function returing an object.
+       the object (either script itself or the returned one) should follow `block instance interface` spec.
  - `create()`: create and a block instance.
  - `get-dom():
  - `get-datadom(): 
@@ -53,6 +58,7 @@ block.instance
  - destroy
  - after destroy ( 編輯用 )
  - update ( 編輯用, 或者...開放跨模組溝通時用來更新用? )
+ - pkg ( see above )
 
 ## environment api?
  - get mode ( 確認當前模式 )

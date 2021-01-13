@@ -1,6 +1,6 @@
 {
   "author": "zbryikt",
-  "name": "block",
+  "name": "@plotdb/block",
   "license": "MIT",
   "description": "block",
   "version": "0.0.1",
@@ -45,6 +45,7 @@
   "peerDependencies": {
     "dompurify": "^2.2.6",
     "@plotdb/rescope": "^0.2.1",
+    "@plotdb/csscope": "^0.2.0",
     "proxise": "0.0.1"
   },
   "frontendDependencies": {

@@ -47,18 +47,31 @@ block.class = (opt={}) ->
   @ <<< opt{name, version}
   code = opt.code
   if opt.root => code = opt.root.innerHTML
-  if code =>
+  if typeof(code) == \function => code = code!
+  if typeof(code) == \string =>
     @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style]>, ADD_ATTR: <[ld block]> }
     div = document.createElement("div")
     div.innerHTML = @code
     if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
     node = div.childNodes.0
-  else node = document.createElement(\div)
+  else if typeof(code) == \object =>
+    @script = code.script
+    @style = code.style
+    code = if code.dom instanceof Function => code.dom! else code.dom
+    @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style]>, ADD_ATTR: <[ld block]> }
+    div = document.createElement("div")
+    div.innerHTML = @code
+    if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
+    node = div.childNodes.0
+  if !node => node = document.createElement(\div)
+
   # remove functional elements before sending them into datadom.
   <[script style link]>.map (n) ~>
-    @[n] = Array.from(node.querySelectorAll(n))
+    v = Array.from(node.querySelectorAll(n))
       .map ~> it.parentNode.removeChild(it); it.textContent
       .join \\n
+    @[n] = if v? and v => v else (@[n] or "")
+
   @datadom = new datadom({node})
   @init = proxise ~>
     if @inited => return Promise.resolve!
@@ -75,7 +88,9 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     @initing = true
     @datadom.init!
       .then ~>
-        @interface = eval(@script or '') or {}
+        @interface = (if @script instanceof Function => @script!
+        else if typeof(@script) == \object => @script
+        else eval(@script or '')) or {}
         document.body.appendChild(@style-node = document.createElement("style"))
         @style-node.setAttribute \type, 'text/css'
         @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style, scope-test: "[scope]"}
@@ -91,7 +106,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 
       .then ~> @ <<< inited: true, initing: false
       .then ~> @init.resolve!
-      .catch ~>
+      .catch (e) ~>
+        console.error e
         node = document.createElement("div")
         node.innerText = "failed"
         @datadom = new datadom {node: node}
