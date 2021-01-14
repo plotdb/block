@@ -1,6 +1,9 @@
 # block
 
+
 spec and library for pre-defined web page building block.
+
+Following content need to update based on the latest update of src files. check `src/doc.md` also.
 
 
 ## Related modules
@@ -108,7 +111,7 @@ For every instantiated block of certain `block.class` type, there will be a corr
 
 and following private members:
 
- - `obj` - block's data and interface.
+ - `obj` - block's data and interface. it's a list containing all objects in the inheritant chain.
  - `datadom` - `@plotdb/datadom` object for retrieving DOM and data representation of DOM.
 
 
