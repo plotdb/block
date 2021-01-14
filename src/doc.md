@@ -1,6 +1,8 @@
 ## Why block
 
-While it seems that what block ( web component & management ) provides is already available in other popular frameworks, block is actually designed with following criteria:
+At first we just want to make web editing easier across expertise, and *block design* ( see [future of web design comes in blocks](https://thecode.co/block-web-design/), [Editor.js](https://editorjs.io/) ) seems to be a trend in web design. It's similar to web components but we will have to do more for making editing visuallly possible.
+
+While it seems that what block ( web component & management ) provides is already available in other popular frameworks, block is actually designed with following criteria thus makes it different with others:
 
  * version management
    - blocks are managed with proper versioning. components with different versions should work along, to some extent.
