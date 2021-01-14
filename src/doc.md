@@ -1,3 +1,27 @@
+## Why block
+
+While it seems that what block ( web component & management ) provides is already available in other popular frameworks, block is actually designed with following criteria:
+
+ * version management
+   - blocks are managed with proper versioning. components with different versions should work along, to some extent.
+   - components should works even using the same lib with different versions, without using `import`. 
+     - popular frameworks use `import` which will have to bundle js within.
+     - even if bundle is not necessary, many libs don't support `import` and will need wrapper to be able to use them.
+ * framework agnostic
+   - prevent from abducted by specific framework
+   - while we actually invent `yet another framework`:
+     - we modularize the whole things to make them as independent as possible.
+     - thus `@plotdb/block` only serves for components purpose. no state management, no reactive.
+     - additionally, any js frameworks are expected to work well with `@plotdb/block`.
+ * As Simple as Possible
+   - creating components has to be extremely easy. ( KISS principle )
+     - there is no new syntax to learn in `@plotdb/block`, only APIs.
+ * Collaborative
+   - the whole page should be able to be serialized, including DOM, data / state
+   - actions generalized and described by concepts such as operational transformation
+ * DOM manipulating with UI ( cross expertise editing )
+
+
 ## API Reference
 
 block.manager
