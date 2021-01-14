@@ -1,4 +1,9 @@
 
+# Do we really need sanitize after all? we have to trust all block we are going to use anyway...
+sanitize = (code) ->
+  return (code or '')
+  #DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style plug]>, ADD_ATTR: <[ld ld-each block plug]> }
+
 pubsub = ->
   @subs = {}
   @
@@ -57,7 +62,7 @@ block.class = (opt={}) ->
   if opt.root => code = opt.root.innerHTML
   if typeof(code) == \function => code = code!
   if typeof(code) == \string =>
-    @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style plug]>, ADD_ATTR: <[ld ld-each block plug]> }
+    @code = sanitize code
     div = document.createElement("div")
     div.innerHTML = @code
     if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
@@ -66,7 +71,7 @@ block.class = (opt={}) ->
     @script = code.script
     @style = code.style
     code = if code.dom instanceof Function => code.dom! else code.dom
-    @code = DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style plug]>, ADD_ATTR: <[ld ld-each block plug]> }
+    @code = sanitize code
     div = document.createElement("div")
     div.innerHTML = @code
     if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
