@@ -1,3 +1,4 @@
+if module? and require? => require! <[@plotdb/rescope]>
 
 # Do we really need sanitize after all? we have to trust all block we are going to use anyway...
 sanitize = (code) ->

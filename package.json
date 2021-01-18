@@ -4,6 +4,7 @@
   "license": "MIT",
   "description": "block",
   "version": "0.0.1",
+  "main": "dist/block.js",
   "homepage": "https://github.com/plotdb/block",
   "repository": {
     "type": "git",
