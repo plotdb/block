@@ -1,4 +1,4 @@
-if module? and require? => require! <[@plotdb/rescope]>
+rescope = if window? => window.rescope else if module? and require? => require "@plotdb/rescope" else null
 
 # Do we really need sanitize after all? we have to trust all block we are going to use anyway...
 sanitize = (code) ->
@@ -42,10 +42,10 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     Promise.all(
       opts.map (opt = {}) ~>
         [n,v] = [opt.name, opt.version or \latest]
-        if !(n and v) => return Promise.reject(new ldError 1015)
+        if !(n and v) => return Promise.reject(new Error! <<< {name: "ldError", id: 1015})
         if @hash{}[n][v]? and !opt.force =>
           return if @hash[n][v] => Promise.resolve(@hash[n][v])
-          else Promise.reject(new ldError 404)
+          else Promise.reject(new Error! <<< {name: "ldError", id: 404})
         ld$.fetch @get-url(opt{name,version}) , {method: \GET}, {type: \text}
           .then (ret = {}) ~>
             @set obj = ({name: n, version: v} <<< {block: b = new block.class({code: ret, name: n, version: v})})
