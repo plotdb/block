@@ -212,6 +212,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
         _ list, idx + 1, gtx, o
     _ cs, 0, {}
 
+    ## original, no inheritance structure
     #block.scope.context @block.dependencies, (context) ~>
     #  @obj = new @block.factory {root: node, context}
 
