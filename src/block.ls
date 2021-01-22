@@ -86,6 +86,7 @@ block.class = (opt={}) ->
       .join \\n
     @[n] = if v? and v => v else (@[n] or "")
 
+  # datadom is used to recursively init blocks.
   @datadom = new datadom({node})
   @init = proxise ~>
     if @inited => return Promise.resolve!
@@ -138,7 +139,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
   get-datadom: -> @datadom
   get-dom-data: -> @datadom.getData!
   create: ->
-    ret = new block.instance {block: @}
+    ret = new block.instance {block: @, name: @name, version: @version}
     ret.init!then -> ret
 
   resolve-plug-and-clone-node: (child) ->
@@ -155,7 +156,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 
 #TODO consider how initialization of datadom work in block.instance and block.class.
 block.instance = (opt = {}) ->
-  @block = opt.block
+  @ <<< opt{block, name, version}
   @datadom = new datadom {data: JSON.parse(JSON.stringify(@block.get-dom-data!))}
   @inited = false
   @initing = false
