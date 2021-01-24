@@ -60,6 +60,10 @@
         return this$.initing = false;
       }).then(function(){
         return this$.inited = true;
+      }).then(function(){
+        return this$.init.resolve();
+      })['catch'](function(){
+        return this$.init.reject();
       });
     },
     setRegistry: function(it){

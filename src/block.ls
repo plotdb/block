@@ -30,6 +30,8 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     block.scope.init!
       .finally ~> @initing = false
       .then ~> @inited = true
+      .then ~> @init.resolve!
+      .catch ~> @init.reject!
 
   set-registry: ->
     @reg = it or ''
