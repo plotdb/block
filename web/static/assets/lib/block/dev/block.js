@@ -168,7 +168,9 @@
     this.extend = opt.extend;
     code = opt.code;
     if (opt.root) {
-      code = opt.root.innerHTML;
+      code = (typeof opt.root === 'string'
+        ? document.querySelector(opt.root)
+        : opt.root).innerHTML;
     }
     if (typeof code === 'function') {
       code = code();
@@ -218,6 +220,7 @@
         return this$._init();
       }
     });
+    this.init();
     return this;
   };
   block['class'].prototype = import$(Object.create(Object.prototype), {
@@ -334,9 +337,6 @@
     this.block = opt.block;
     this.name = opt.name;
     this.version = opt.version;
-    this.datadom = new datadom({
-      data: JSON.parse(JSON.stringify(this.block.getDomData()))
-    });
     this.inited = false;
     this.initing = false;
     this.init = proxise(function(){
@@ -354,10 +354,17 @@
       if (this.inited) {
         return Promise.resolve();
       }
-      return this.datadom.init().then(function(){
-        this$.inited = true;
-        this$.initing = false;
+      return this.block.init().then(function(){
+        this$.datadom = new datadom({
+          data: JSON.parse(JSON.stringify(this$.block.getDomData()))
+        });
+        return this$.datadom.init();
+      }).then(function(){
+        return this$.inited = true, this$.initing = false, this$;
+      }).then(function(){
         return this$.init.resolve();
+      })['catch'](function(){
+        return this$.init.reject();
       });
     },
     attach: function(arg$){

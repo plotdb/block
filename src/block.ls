@@ -71,7 +71,7 @@ block.class = (opt={}) ->
   @initing = false
   @ <<< opt{name, version, extend}
   code = opt.code
-  if opt.root => code = opt.root.innerHTML
+  if opt.root => code = (if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root).innerHTML
   if typeof(code) == \function => code = code!
   if typeof(code) == \string =>
     @code = sanitize code
@@ -102,6 +102,7 @@ block.class = (opt={}) ->
   @init = proxise ~>
     if @inited => return Promise.resolve!
     else if !@initing => @_init!
+  @init!
   @
 
 # use document fragment ( yet datadom doesn't work with #document-fragment )
@@ -168,7 +169,6 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 #TODO consider how initialization of datadom work in block.instance and block.class.
 block.instance = (opt = {}) ->
   @ <<< opt{block, name, version}
-  @datadom = new datadom {data: JSON.parse(JSON.stringify(@block.get-dom-data!))}
   @inited = false
   @initing = false
   @init = proxise ~>
@@ -179,9 +179,13 @@ block.instance = (opt = {}) ->
 block.instance.prototype = Object.create(Object.prototype) <<< do
   _init: ->
     if @inited => return Promise.resolve!
-    @datadom.init!then ~>
-      @ <<< inited: true, initing: false
-      @init.resolve!
+    @block.init!
+      .then ~>
+        @datadom = new datadom {data: JSON.parse(JSON.stringify(@block.get-dom-data!))}
+        @datadom.init!
+      .then ~> @ <<< inited: true, initing: false
+      .then ~> @init.resolve!
+      .catch ~> @init.reject!
   attach: ({root}) ->
     @get-dom-node!then (node) ~>
       node.setAttribute \scope, @block.scope
