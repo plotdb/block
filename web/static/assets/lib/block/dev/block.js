@@ -33,14 +33,34 @@
     global: window
   });
   block.manager = function(opt){
+    var this$ = this;
     opt == null && (opt = {});
     this.hash = {};
     this.setRegistry(opt.registry);
+    this.inited = false;
+    this.initing = false;
+    this.init = proxise(function(){
+      if (this$.inited) {
+        return Promise.resolve();
+      } else if (!this$.initing) {
+        return this$._init();
+      }
+    });
+    this.init();
     return this;
   };
   block.manager.prototype = import$(Object.create(Object.prototype), {
-    init: function(){
-      return block.scope.init();
+    _init: function(){
+      var this$ = this;
+      if (this.inited) {
+        return Promise.resolve();
+      }
+      this.initing = true;
+      return block.scope.init()['finally'](function(){
+        return this$.initing = false;
+      }).then(function(){
+        return this$.inited = true;
+      });
     },
     setRegistry: function(it){
       var ref$;

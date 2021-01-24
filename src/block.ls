@@ -18,10 +18,19 @@ block.scope = new rescope global: window
 block.manager = (opt={}) ->
   @hash = {}
   @set-registry opt.registry
+  @ <<< {inited: false, initing: false}
+  @init = proxise ~> if @inited => Promise.resolve! else if !@initing => @_init!
+  @init!
   @
 
 block.manager.prototype = Object.create(Object.prototype) <<< do
-  init: -> block.scope.init!
+  _init: ->
+    if @inited => return Promise.resolve!
+    @initing = true
+    block.scope.init!
+      .finally ~> @initing = false
+      .then ~> @inited = true
+
   set-registry: ->
     @reg = it or ''
     if typeof(@reg) == \string => if @reg and @reg[* - 1] != \/ => @reg += \/
