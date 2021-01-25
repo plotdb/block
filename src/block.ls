@@ -18,21 +18,12 @@ block.scope = new rescope global: window
 block.manager = (opt={}) ->
   @hash = {}
   @set-registry opt.registry
-  @ <<< {inited: false, initing: false}
-  @init = proxise ~> if @inited => Promise.resolve! else if !@initing => @_init!
+  @init = proxise.once ~> @_init!
   @init!
   @
 
 block.manager.prototype = Object.create(Object.prototype) <<< do
-  _init: ->
-    if @inited => return Promise.resolve!
-    @initing = true
-    block.scope.init!
-      .finally ~> @initing = false
-      .then ~> @inited = true
-      .then ~> @init.resolve!
-      .catch ~> @init.reject!
-
+  _init: -> block.scope.init!
   set-registry: ->
     @reg = it or ''
     if typeof(@reg) == \string => if @reg and @reg[* - 1] != \/ => @reg += \/
@@ -67,8 +58,6 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
 block.class = (opt={}) ->
   @opt = opt
   @scope = "_" + Math.random!toString(36)substring(2)
-  @inited = false
-  @initing = false
   @ <<< opt{name, version, extend}
   code = opt.code
   if opt.root => code = (if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root).innerHTML
@@ -99,9 +88,7 @@ block.class = (opt={}) ->
 
   # datadom is used to recursively init blocks.
   @datadom = new datadom({node})
-  @init = proxise ~>
-    if @inited => return Promise.resolve!
-    else if !@initing => @_init!
+  @init = proxise.once ~> @_init!
   @init!
   @
 
@@ -111,8 +98,6 @@ block.class = (opt={}) ->
 
 block.class.prototype = Object.create(Object.prototype) <<< do
   _init: ->
-    if @inited => return Promise.resolve!
-    @initing = true
     @datadom.init!
       .then ~>
         @interface = (if @script instanceof Function => @script!
@@ -130,9 +115,6 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @dependencies = if Array.isArray(@interface.{}pkg.dependencies) => @interface.{}pkg.dependencies
         else [v for k,v of (@interface.{}pkg.dependencies or {})]
         block.scope.load @dependencies
-
-      .then ~> @ <<< inited: true, initing: false
-      .then ~> @init.resolve!
       .catch (e) ~>
         console.error e
         node = document.createElement("div")
@@ -145,8 +127,6 @@ block.class.prototype = Object.create(Object.prototype) <<< do
             @factory = -> @
             @dependencies = []
             @ <<< inited: true, initing: false
-            @init.resolve!
-      .catch ~> @init.reject!
   get-dom-node: -> @datadom.getNode!
   get-datadom: -> @datadom
   get-dom-data: -> @datadom.getData!
@@ -169,23 +149,15 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 #TODO consider how initialization of datadom work in block.instance and block.class.
 block.instance = (opt = {}) ->
   @ <<< opt{block, name, version}
-  @inited = false
-  @initing = false
-  @init = proxise ~>
-    if @inited => return Promise.resolve!
-    else if !@initing => @_init!
+  @init = proxise.once ~> @_init!
   @
 
 block.instance.prototype = Object.create(Object.prototype) <<< do
   _init: ->
-    if @inited => return Promise.resolve!
     @block.init!
       .then ~>
         @datadom = new datadom {data: JSON.parse(JSON.stringify(@block.get-dom-data!))}
         @datadom.init!
-      .then ~> @ <<< inited: true, initing: false
-      .then ~> @init.resolve!
-      .catch ~> @init.reject!
   attach: ({root}) ->
     @get-dom-node!then (node) ~>
       node.setAttribute \scope, @block.scope
