@@ -13,7 +13,7 @@ load-sample = ({name}) ->
   manager.get {name, version: "0.0.1"}
     .then -> it.create!
     .then -> it.attach {root: document.getElementById(\container)}
-    .catch -> console.log "failed to load block #name"
+    .catch -> console.log "failed to load block #name", it
 
 lc = {}
 manager = new block.manager registry: ({name, version}) -> "/block/#name/#version/index.html"

@@ -3,7 +3,14 @@ rescope = if window? => window.rescope else if module? and require? => require "
 # Do we really need sanitize after all? we have to trust all block we are going to use anyway...
 sanitize = (code) ->
   return (code or '')
-  #DOMPurify.sanitize (code or ''), { ADD_TAGS: <[script style plug]>, ADD_ATTR: <[ld ld-each block plug]> }
+  /* To Sanitize: ( args dependes )
+  DOMPurify.sanitize(
+   (code or ''), {
+     ADD_TAGS: <[script style plug]>
+     ADD_ATTR: <[ld ld-each block plug]>
+   }
+  )
+  */
 
 pubsub = ->
   @subs = {}
@@ -85,9 +92,7 @@ block.class = (opt={}) ->
       .map ~> it.parentNode.removeChild(it); it.textContent
       .join \\n
     @[n] = if v? and v => v else (@[n] or "")
-
-  # datadom is used to recursively init blocks.
-  @datadom = new datadom({node})
+  @node = node
   @init = proxise.once ~> @_init!
   @init!
   @
@@ -98,7 +103,7 @@ block.class = (opt={}) ->
 
 block.class.prototype = Object.create(Object.prototype) <<< do
   _init: ->
-    @datadom.init!
+    Promise.resolve!
       .then ~>
         @interface = (if @script instanceof Function => @script!
         else if typeof(@script) == \object => @script
@@ -119,23 +124,16 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         console.error e
         node = document.createElement("div")
         node.innerText = "failed"
-        @datadom = new datadom {node: node}
-        @datadom.init!
-          .then ~>
-            @interface = {}
-            @style-node = {}
-            @factory = -> @
-            @dependencies = []
-            @ <<< inited: true, initing: false
-  get-dom-node: -> @datadom.getNode!
-  get-datadom: -> @datadom
-  get-dom-data: -> @datadom.getData!
+        @ <<< interface: {}, style-node: {}, factory: (-> @), dependencies: []
+
+  dom: -> @node
+
   create: ->
     ret = new block.instance {block: @, name: @name, version: @version}
     ret.init!then -> ret
 
   resolve-plug-and-clone-node: (child) ->
-    node = @get-dom-node!cloneNode true
+    node = @dom!cloneNode true
     # child content may contain elements for `plug` - replace parent plug with child, if any found.
     if child =>
       # list all plugs used in sample dom, and replace them with child [plug].
@@ -146,38 +144,27 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         if n => it.replaceWith n
     return if @extend => @extend.resolve-plug-and-clone-node(node) else node
 
-#TODO consider how initialization of datadom work in block.instance and block.class.
 block.instance = (opt = {}) ->
   @ <<< opt{block, name, version}
   @init = proxise.once ~> @_init!
   @
 
 block.instance.prototype = Object.create(Object.prototype) <<< do
-  _init: ->
-    @block.init!
-      .then ~>
-        @datadom = new datadom {data: JSON.parse(JSON.stringify(@block.get-dom-data!))}
-        @datadom.init!
+  _init: -> @block.init!
   attach: ({root}) ->
-    @get-dom-node!then (node) ~>
-      node.setAttribute \scope, @block.scope
-      _root = if typeof(root) == \string => document.querySelector(root) else root
-      _root.appendChild node
-      #block.scope.context @block.dependencies, (context) ~>
-      #  @obj = new @block.factory {root: node, context}
-      @run({node, type: \init})
+    node = @dom!
+    node.setAttribute \scope, @block.scope
+    _root = if typeof(root) == \string => document.querySelector(root) else root
+    _root.appendChild node
+    @run({node, type: \init})
   detach: ->
-    @get-dom-node!then (node) ~>
-      node.parentNode.removeChild node
-      #@obj.destroy!
-      @run({node, type: \destroy})
+    node = @dom!
+    node.parentNode.removeChild node
+    @run({node, type: \destroy})
   update: (ops) -> @datadom.update ops
   get-datadom: -> @datadom
 
-  # we have to re-think about datadom because we might edit it even if we have plug / inheritance.
-  #get-dom-node: -> Promise.resolve @datadom.get-node!
-  get-dom-node: -> Promise.resolve(if @node => that else @node = @block.resolve-plug-and-clone-node!)
-  get-dom-data: -> Promise.resolve @datadom.get-data!
+  dom: -> if @node => that else @node = @block.resolve-plug-and-clone-node!
 
   # run factory methods, recursively.
   # we will need a bus for communication.

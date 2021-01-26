@@ -189,9 +189,7 @@
         ? v
         : this$[n] || "";
     });
-    this.datadom = new datadom({
-      node: node
-    });
+    this.node = node;
     this.init = proxise.once(function(){
       return this$._init();
     });
@@ -201,7 +199,7 @@
   block['class'].prototype = import$(Object.create(Object.prototype), {
     _init: function(){
       var this$ = this;
-      return this.datadom.init().then(function(){
+      return Promise.resolve().then(function(){
         var ret, ref$, k, v;
         this$['interface'] = (this$.script instanceof Function
           ? this$.script()
@@ -244,28 +242,13 @@
         console.error(e);
         node = document.createElement("div");
         node.innerText = "failed";
-        this$.datadom = new datadom({
-          node: node
-        });
-        return this$.datadom.init().then(function(){
-          this$['interface'] = {};
-          this$.styleNode = {};
-          this$.factory = function(){
-            return this;
-          };
-          this$.dependencies = [];
-          return this$.inited = true, this$.initing = false, this$;
-        });
+        return this$['interface'] = {}, this$.styleNode = {}, this$.factory = function(){
+          return this;
+        }, this$.dependencies = [], this$;
       });
     },
-    getDomNode: function(){
-      return this.datadom.getNode();
-    },
-    getDatadom: function(){
-      return this.datadom;
-    },
-    getDomData: function(){
-      return this.datadom.getData();
+    dom: function(){
+      return this.node;
     },
     create: function(){
       var ret;
@@ -280,7 +263,7 @@
     },
     resolvePlugAndCloneNode: function(child){
       var node;
-      node = this.getDomNode().cloneNode(true);
+      node = this.dom().cloneNode(true);
       if (child) {
         Array.from(node.querySelectorAll('plug')).map(function(it){
           var name, n;
@@ -307,36 +290,27 @@
   };
   block.instance.prototype = import$(Object.create(Object.prototype), {
     _init: function(){
-      var this$ = this;
-      return this.block.init().then(function(){
-        this$.datadom = new datadom({
-          data: JSON.parse(JSON.stringify(this$.block.getDomData()))
-        });
-        return this$.datadom.init();
-      });
+      return this.block.init();
     },
     attach: function(arg$){
-      var root, this$ = this;
+      var root, node, _root;
       root = arg$.root;
-      return this.getDomNode().then(function(node){
-        var _root;
-        node.setAttribute('scope', this$.block.scope);
-        _root = typeof root === 'string' ? document.querySelector(root) : root;
-        _root.appendChild(node);
-        return this$.run({
-          node: node,
-          type: 'init'
-        });
+      node = this.dom();
+      node.setAttribute('scope', this.block.scope);
+      _root = typeof root === 'string' ? document.querySelector(root) : root;
+      _root.appendChild(node);
+      return this.run({
+        node: node,
+        type: 'init'
       });
     },
     detach: function(){
-      var this$ = this;
-      return this.getDomNode().then(function(node){
-        node.parentNode.removeChild(node);
-        return this$.run({
-          node: node,
-          type: 'destroy'
-        });
+      var node;
+      node = this.dom();
+      node.parentNode.removeChild(node);
+      return this.run({
+        node: node,
+        type: 'destroy'
       });
     },
     update: function(ops){
@@ -345,14 +319,13 @@
     getDatadom: function(){
       return this.datadom;
     },
-    getDomNode: function(){
+    dom: function(){
       var that;
-      return Promise.resolve((that = this.node)
-        ? that
-        : this.node = this.block.resolvePlugAndCloneNode());
-    },
-    getDomData: function(){
-      return Promise.resolve(this.datadom.getData());
+      if (that = this.node) {
+        return that;
+      } else {
+        return this.node = this.block.resolvePlugAndCloneNode();
+      }
     },
     run: function(arg$){
       var node, type, cs, c, _, this$ = this;

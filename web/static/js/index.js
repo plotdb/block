@@ -12,8 +12,8 @@ loadSample = function(arg$){
     return it.attach({
       root: document.getElementById('container')
     });
-  })['catch'](function(){
-    return console.log("failed to load block " + name);
+  })['catch'](function(it){
+    return console.log("failed to load block " + name, it);
   });
 };
 lc = {};
