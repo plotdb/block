@@ -145,7 +145,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     return if @extend => @extend.resolve-plug-and-clone-node(node) else node
 
 block.instance = (opt = {}) ->
-  @ <<< opt{block, name, version}
+  @ <<< opt{name, version, block}
   @init = proxise.once ~> @_init!
   @
 
