@@ -1,16 +1,11 @@
 rescope = if window? => window.rescope else if module? and require? => require "@plotdb/rescope" else null
 
-# Do we really need sanitize after all? we have to trust all block we are going to use anyway...
-sanitize = (code) ->
-  return (code or '')
-  /* To Sanitize: ( args dependes )
-  DOMPurify.sanitize(
-   (code or ''), {
-     ADD_TAGS: <[script style plug]>
-     ADD_ATTR: <[ld ld-each block plug]>
-   }
-  )
-  */
+sanitize = (code) -> (code or '')
+
+# We don't sanitize input for now, since we have to trust blocks.
+# Following code is for reference.
+#sanitize-real = (code) ->
+#  DOMPurify.sanitize( (code or ''), { ADD_TAGS: <[script style plug]>, ADD_ATTR: <[ld ld-each block plug]> })
 
 pubsub = ->
   @subs = {}
