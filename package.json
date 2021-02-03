@@ -18,7 +18,6 @@
     "npm": ">=6.4.1"
   },
   "scripts": {
-    "postinstall": "./node_modules/.bin/fedep",
     "start": "npx server -r web -o true"
   },
   "devDependencies": {
