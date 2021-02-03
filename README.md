@@ -1,7 +1,8 @@
 # block
 
 
-spec and library for pre-defined web page building block.
+Spec and library for pre-defined web page building block. Work in progress, please consider everything as unstable.
+
 
 Following content need to update based on the latest update of src files. check `src/doc.md` also.
 
@@ -123,7 +124,7 @@ and following private members:
  - before destroy
  - destroy
  - after destroy
- - update ( 編輯用, 或者...開放跨模組溝通時用來更新用? )
+ - update
 
 
 ## License
