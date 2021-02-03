@@ -1,4 +1,4 @@
-# block
+# @plotdb/block
 
 
 Spec and library for pre-defined web page building block. Work in progress, please consider everything as unstable.
