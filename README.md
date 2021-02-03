@@ -157,6 +157,7 @@ and following private members:
  - `destroy({root, context})`: destroying a block.
  - `interface()`: for accessing custom object. TBD.
 
+
 #### Block Information
 
 The `pkg` field of a block interface is defined as:
