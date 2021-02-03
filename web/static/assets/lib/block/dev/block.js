@@ -280,9 +280,9 @@
   block.instance = function(opt){
     var this$ = this;
     opt == null && (opt = {});
-    this.block = opt.block;
     this.name = opt.name;
     this.version = opt.version;
+    this.block = opt.block;
     this.init = proxise.once(function(){
       return this$._init();
     });
