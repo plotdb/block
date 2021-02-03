@@ -155,6 +155,7 @@ and following private members:
    - mode: executing mode. ( edit, view, etc )
    - context: dependencies in an object.
  - `destroy({root, context})`: destroying a block.
+ - `interface()`: for accessing custom object. TBD.
 
 #### Block Information
 
