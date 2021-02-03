@@ -66,7 +66,9 @@ either way we have to provide a way to load, register, cache these blocks - that
  - `constructor(opt)` with following options:
    - `name`: block name. mandatory.
    - `version`: block version. mandatory.
-   - `code`: string of html code. use to create internal dom tree if provided.
+   - `code`: string of html code. use to create internal dom tree if provided. it can also be:
+     - a function, return alternative code.
+     - an object, containing `dom`, `style` and `script` members.
    - `root`: root of a DOM tree. use to create internal dom tree if provided. Overwrite code.
  - `getDomNode`: simply return a clone of the DOM tree for this block.
  - `getDomData`: get a JSON representation tree in `@plotdb/datadom` format of this block's DOM.
