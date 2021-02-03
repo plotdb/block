@@ -156,8 +156,10 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     node = @dom!
     node.parentNode.removeChild node
     @run({node, type: \destroy})
+
+  # TBD
+  interface: -> if @obj and @obj.0 => @obj.0.interface!
   update: (ops) -> @datadom.update ops
-  get-datadom: -> @datadom
 
   dom: -> if @node => that else @node = @block.resolve-plug-and-clone-node!
 
@@ -178,7 +180,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
         gtx <<< ctx
         payload = {root: node, context: gtx, parent: parent, pubsub: @pubsub}
         if type == \init => @obj.push(o = new b.factory payload)
-        else if (o = @obj[it]) => @obj[it](payload)
+        else if (o = @obj[type]) => @obj[type](payload)
         _ list, idx + 1, gtx, o
     _ cs, 0, {}
 

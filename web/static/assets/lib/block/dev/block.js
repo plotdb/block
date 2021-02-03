@@ -313,11 +313,13 @@
         type: 'destroy'
       });
     },
+    'interface': function(){
+      if (this.obj && this.obj[0]) {
+        return this.obj[0]['interface']();
+      }
+    },
     update: function(ops){
       return this.datadom.update(ops);
-    },
-    getDatadom: function(){
-      return this.datadom;
     },
     dom: function(){
       var that;
@@ -362,8 +364,8 @@
           };
           if (type === 'init') {
             this$.obj.push(o = new b.factory(payload));
-          } else if (o = this$.obj[it]) {
-            this$.obj[it](payload);
+          } else if (o = this$.obj[type]) {
+            this$.obj[type](payload);
           }
           return _(list, idx + 1, gtx, o);
         });
