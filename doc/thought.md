@@ -185,3 +185,5 @@ registry
      - 使用 md5, 製造 unique url?
      - block.manage 載入時處理掉?
        - 這樣的話, js 端就必須要提供 api 供用戶做 mapping
+ * i18n
+   - 怎辦?
