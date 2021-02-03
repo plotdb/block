@@ -3,9 +3,12 @@
   "name": "@plotdb/block",
   "license": "MIT",
   "description": "block",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/block.js",
   "homepage": "https://github.com/plotdb/block",
+  "files": [
+    "dist/**/*"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/plotdb/block"
@@ -44,9 +47,9 @@
     "uglifycss": "0.0.29"
   },
   "peerDependencies": {
-    "dompurify": "^2.2.6",
-    "@plotdb/rescope": "^0.2.1",
     "@plotdb/csscope": "^0.2.0",
+    "@plotdb/rescope": "^0.2.1",
+    "dompurify": "^2.2.6",
     "proxise": "0.0.1"
   },
   "frontendDependencies": {
