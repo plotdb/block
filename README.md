@@ -60,6 +60,7 @@ Blocks may be stored in places like:
 
 either way we have to provide a way to load, register, cache these blocks - that is, to manage them.
 
+
 `block.manager` helps us manage blocks by providing following APIs:
 
  - `constructor(opts)`: create a new block.manager object before using it with opts:
@@ -67,7 +68,8 @@ either way we have to provide a way to load, register, cache these blocks - that
      - `function({name,version})`: return URL for given `name` and `version` of a block.
      - `string`: the registry base url. block.manager will look up blocks under this url with this rule:
        - `/block/<name>/<version>/index.html`
- - `setRegistry(registry)`: update `registry` dynamically.
+ - `setRegistry(v)`: update `registry` dynamically.
+   - `v`: can be a function or string, similar to the option in constructor.
  - `set({name,version,block}): register a block with `name` and `version`.
    - `block`: a `block-class` object, explained below.
    - `set` also accepts Array of {name,version,block} object for batching `set`.
@@ -87,9 +89,16 @@ either way we have to provide a way to load, register, cache these blocks - that
  - `constructor(opt)` with following options:
    - `name`: block name. mandatory.
    - `version`: block version. mandatory.
-   - `code`: string of html code. use to create internal dom tree if provided. it can also be:
-     - a function, return alternative code.
+   - `code`: use to create DOM / style / internal object. it can be one of following:
+     - a function. should return either html code or object; returned value will be parsed by corresponding rules.
+     - a string, providing HTML code. structure of HTML should follow the definition of a block.
      - an object, containing `dom`, `style` and `script` members.
+       - `dom`: HTML code string, or a function returning HTML code string.
+       - `style`: should be string for CSS.
+       - `script`: function, object or string of code, for interface of the internal object by:
+         - function: return the interface.
+         - object: as the interface.
+         - string: evaled to the interface.
    - `root`: root of a DOM tree. use to create internal dom tree if provided. Overwrite code.
  - `create()`: create a `block.instance` based on this object.
 
@@ -136,9 +145,41 @@ and following private members:
  - `obj` - block's data and interface. it's a list containing all objects in the inheritant chain.
 
 
-### Events
+### Interface of the internal object
 
-(TBD) Following are the events supported by `@plotdb/block`: 
+`block.instance` is just a generic object for managing block life cycle. Every block has another object, serves as the internal object that provides real dynamics of the block. This object is created along with `block.instance`, and it's interface is implemented by developers based on following interface:
+
+ - `pkg`: block information, described below.
+ - `init({root, mode, context, parent, pubsub})`: initializing a block.
+   - root: root element
+   - mode: executing mode. ( edit, view, etc )
+   - context: dependencies in an object.
+ - `destroy({root, context})`: destroying a block.
+
+#### Block Information
+
+The `pkg` field of a block interface is defined as:
+
+ - `author`: author name. optional
+ - `name`: block name. Follow NPM package naming convention. required.
+ - `version`: Semver string. required.
+ - `license`: License. required
+ - `description`: description of this block. optional
+ - `dependencies`: dependencies of this block.
+   - list or modules, in case of mutual dependencies:
+     ["some-url", {url: "some-url", async: false, dev: true}]
+   - options in object notation:
+     - async: true to load this module asynchronously. true by default.
+     - url: path of required module.
+       - generated from name + version if omitted. ( TODO )
+     - name: name of required module ( TODO )
+     - version: version of required module ( TODO )
+     - mode: use to control when this module should be loaded. ( TODO )
+
+
+#### Block Events
+
+(TBD) Following are possible events:
 
  - before insert
  - init
