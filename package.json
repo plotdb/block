@@ -3,7 +3,7 @@
   "name": "@plotdb/block",
   "license": "MIT",
   "description": "block",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "dist/block.js",
   "homepage": "https://github.com/plotdb/block",
   "files": [
@@ -49,7 +49,7 @@
     "@plotdb/csscope": "^0.2.0",
     "@plotdb/rescope": "^0.2.1",
     "dompurify": "^2.2.6",
-    "proxise": "0.0.1"
+    "proxise": "0.1.1"
   },
   "frontendDependencies": {
     "root": "web/static/assets/lib",
