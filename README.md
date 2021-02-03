@@ -190,6 +190,33 @@ The `pkg` field of a block interface is defined as:
  - update
 
 
+## Why block
+
+At first we just want to make web editing easier across expertise, and *block design* ( see [future of web design comes in blocks](https://thecode.co/block-web-design/), [Editor.js](https://editorjs.io/) ) seems to be a trend in web design. It's similar to web components but we will have to do more for making visually editing possible.
+
+While what `@plotdb/block` ( web component & management ) provides is already available in other popular frameworks, `@plotdb/block` is actually designed with following criteria thus makes it different with others:
+
+ * version management
+   - blocks are managed with proper versioning.
+   - blocks should work even using the same lib with different versions without `import`. 
+     - popular frameworks use `import` which will have to bundle js within.
+     - even if bundle is not necessary, many libs don't support `import` and will need wrapper.
+ * framework agnostic
+   - prevent from abducted by specific framework
+   - while we seem to invent `yet another framework`:
+     - `@plotdb/block` is only for components. no state management, no reactive.
+     - thus, any js frameworks are expected to work well with `@plotdb/block`.
+ * As Simple as Possible
+   - making a component is extremely easy. ( KISS principle )
+     - there is no new syntax to learn in `@plotdb/block`, only interface.
+ * Collaborative
+   - `@plotdb/block` is built along with `@plotdb/datadom` for DOM serialization.
+     - this makes it by default suitable for serialization, thus also for collaboration
+     - editing can be described by concepts such as operational transformation
+ * DOM manipulating with UI ( cross expertise editing )
+   - this is covered in `@plotdb/editable`.
+
+
 ## Resources
 
  - Related modules
