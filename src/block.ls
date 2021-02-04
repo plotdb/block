@@ -2,6 +2,11 @@ rescope = if window? => window.rescope else if module? and require? => require "
 
 sanitize = (code) -> (code or '')
 
+parse-name-string = (n) ->
+  n = n.split('@')
+  [n,v] = if !n.0 => ["@#{n.1}", n.2] else [n.0,n.1]
+  return {name: n, version: v}
+
 # We don't sanitize input for now, since we have to trust blocks.
 # Following code is for reference.
 #sanitize-real = (code) ->
@@ -45,6 +50,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     opts = if Array.isArray(opt) => opt else [opt]
     Promise.all(
       opts.map (opt = {}) ~>
+        if typeof(opt) == \string => opt = parse-name-string(opt)
         [n,v] = [opt.name, opt.version or \latest]
         if !(n and v) => return Promise.reject(new Error! <<< {name: "ldError", id: 1015})
         if @hash{}[n][v]? and !opt.force =>
@@ -52,7 +58,8 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
           else Promise.reject(new Error! <<< {name: "ldError", id: 404})
         ld$.fetch @get-url(opt{name,version}) , {method: \GET}, {type: \text}
           .then (ret = {}) ~>
-            @set obj = ({name: n, version: v} <<< {block: b = new block.class({code: ret, name: n, version: v})})
+            b = new block.class({code: ret, name: n, version: v, manager: @})
+            @set obj = ({name: n, version: v} <<< {block: b})
             if ret.version and ret.version != v => @set(obj <<< {version: ret.version})
             b.init!then -> b
     ).then -> if Array.isArray(opt) => return it else return it.0
@@ -60,7 +67,8 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
 block.class = (opt={}) ->
   @opt = opt
   @scope = "_" + Math.random!toString(36)substring(2)
-  @ <<< opt{name, version, extend}
+  # manager is used for recursively get extended block.
+  @ <<< opt{name, version, extend, manager}
   code = opt.code
   if opt.root => code = (if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root).innerHTML
   if typeof(code) == \function => code = code!
@@ -115,6 +123,10 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @dependencies = if Array.isArray(@interface.{}pkg.dependencies) => @interface.{}pkg.dependencies
         else [v for k,v of (@interface.{}pkg.dependencies or {})]
         block.scope.load @dependencies
+      .then ~>
+        if !@interface.{}pkg.extend => return
+        if !@manager => return new Error("no available manager to get extended block")
+        @manager.get(@interface.pkg.extend).then ~> @extend = it
       .catch (e) ~>
         console.error e
         node = document.createElement("div")

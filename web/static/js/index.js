@@ -62,6 +62,10 @@ manager.init().then(function(){
   return loadSample({
     name: 'landing'
   });
+}).then(function(){
+  return loadSample({
+    name: 'child'
+  });
 })['catch'](function(it){
   return console(">", it);
 });

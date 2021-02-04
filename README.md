@@ -167,6 +167,8 @@ The `pkg` field of a block interface is defined as:
  - `version`: Semver string. required.
  - `license`: License. required
  - `description`: description of this block. optional
+ - `extend`: optional. block identifier ( `name@version` or `{name, version}` ) of block to extend.
+   - use `plug` ( for html ), `obj` and `pubsub` ( js ) to work with extended block. ( TODO: documentation )
  - `dependencies`: dependencies of this block.
    - list or modules, in case of mutual dependencies:
      ["some-url", {url: "some-url", async: false, dev: true}]

@@ -27,6 +27,7 @@ manager.init!
   .then -> load-sample name: \image-explain
   .then -> load-sample name: \landing-col2
   .then -> load-sample name: \landing
+  .then -> load-sample name: \child
   .catch -> console ">", it
 /*
   .then -> manager.get {name: "landing-col2", version: "0.0.1"}
