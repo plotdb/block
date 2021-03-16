@@ -177,13 +177,29 @@ registry
        - 使用 service worker?
          - 但若要辨識來源, 還是需要在網址中提供 `name@version` ...
            - 由 js 處理? 要怎麼判斷哪些是 src? background image 怎麼辦?
+         - 不支援 serviceworker 就麻煩了
        - 針對 src / href 做過濾? 再提供 API 讓 JS 呼叫?
+         - 窮舉所有 use case? 難度很高
+       - 利用 "/@/name/version/filename" 的形式, 並要求使用者建立 asset server, serving /@/ path
+         - 就很麻煩.
+         - 而且使用 DOM initialize 時怎辦? 進 innerHTML 再轉出?
+         - 如果橫豎都要處理的話, 那用 `/@/filename` 不就好了?
+     4. js dependency 中若有 worker.js, 可能也會有一樣的困擾
    - 即便透過 base64 embed 也不合理, 因為這樣會混入 DOM tree:
      - 無法 cache
      - 可能會讓 block.class 變很大.
+     - 在 html / css 中引用一樣需要參數化
    - 因此還是得透過網址. 網址:
+     - 若使用任意網址, 風險自負? ( e.g., some-cdn/blah/my.jpg )
      - 使用 md5, 製造 unique url?
      - block.manage 載入時處理掉?
        - 這樣的話, js 端就必須要提供 api 供用戶做 mapping
+   - assets 也可能存在套件供引用
+   - 引用外部檔案的方式
+     - img(src)
+     - a(href)
+     - css @import
+     - script, link
+     - style="background-image"
  * i18n
    - 怎辦?
