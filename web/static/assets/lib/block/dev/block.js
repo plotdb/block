@@ -217,12 +217,14 @@
     _init: function(){
       var this$ = this;
       return Promise.resolve().then(function(){
-        var ret, ref$, k, v;
-        this$['interface'] = (this$.script instanceof Function
+        var v, ret, ref$, k;
+        this$['interface'] = this$.script instanceof Function
           ? this$.script()
           : typeof this$.script === 'object'
             ? this$.script
-            : eval(this$.script || '')) || {};
+            : (v = eval(this$.script || '')) instanceof Function
+              ? v()
+              : v || {};
         document.body.appendChild(this$.styleNode = document.createElement("style"));
         this$.styleNode.setAttribute('type', 'text/css');
         this$.styleNode.textContent = ret = csscope({
@@ -342,8 +344,13 @@
       });
     },
     'interface': function(){
-      if (this.obj && this.obj[0]) {
+      if (!(this.obj && this.obj[0])) {
+        return;
+      }
+      if (this.obj[0]['interface'] instanceof Function) {
         return this.obj[0]['interface']();
+      } else {
+        return this.obj[0]['interface'];
       }
     },
     update: function(ops){

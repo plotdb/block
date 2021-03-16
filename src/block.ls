@@ -110,7 +110,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       .then ~>
         @interface = (if @script instanceof Function => @script!
         else if typeof(@script) == \object => @script
-        else eval(@script or '')) or {}
+        else if (v = eval(@script or '')) instanceof Function => v!
+        else (v or {}))
         document.body.appendChild(@style-node = document.createElement("style"))
         @style-node.setAttribute \type, 'text/css'
         @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style, scope-test: "[scope]"}
@@ -170,7 +171,9 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     @run({node, type: \destroy})
 
   # TBD
-  interface: -> if @obj and @obj.0 => @obj.0.interface!
+  interface: ->
+    if !(@obj and @obj.0) => return
+    if @obj.0.interface instanceof Function => @obj.0.interface! else @obj.0.interface
   update: (ops) -> @datadom.update ops
 
   dom: -> if @node => that else @node = @block.resolve-plug-and-clone-node!

@@ -33,6 +33,7 @@ There is no preferred languages in coding this html files. Users can write scrip
       script(type="@plotdb/block"): :lsc
         { init: -> console.log \loaded. }
 
+script can be either an object described as below, or a function returning that object .
 
 Similar to NPM module, blocks are defined with a `name` and a `version`, where:
 
@@ -98,7 +99,7 @@ either way we have to provide a way to load, register, cache these blocks - that
        - `script`: function, object or string of code, for interface of the internal object by:
          - function: return the interface.
          - object: as the interface.
-         - string: evaled to the interface.
+         - string: evaled to the interface, or a function which return the interface.
    - `root`: root of a DOM tree. use to create internal dom tree if provided. Overwrite code.
  - `create()`: create a `block.instance` based on this object.
 
@@ -155,7 +156,8 @@ and following private members:
    - mode: executing mode. ( edit, view, etc )
    - context: dependencies in an object.
  - `destroy({root, context})`: destroying a block.
- - `interface()`: for accessing custom object. TBD.
+ - `interface`: for accessing custom object. TBD
+    - either a function returning interface object, or the interface object itself.
 
 
 #### Block Information
