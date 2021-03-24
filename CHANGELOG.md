@@ -1,3 +1,8 @@
+## v0.0.9
+
+ - upgrade proxise and template for bug fixing and vulnerabilites resolving
+
+
 ## v0.0.8
 
  - return promise in pubsub `fire` function.
