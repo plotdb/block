@@ -30,9 +30,9 @@
         res$.push(arguments[i$]);
       }
       args = res$;
-      return ((ref$ = this.subs)[name] || (ref$[name] = [])).map(function(it){
+      return Promise.all(((ref$ = this.subs)[name] || (ref$[name] = [])).map(function(it){
         return it.apply(null, args);
-      });
+      }));
     },
     on: function(name, cb){
       var ref$;
@@ -239,9 +239,6 @@
             res$.push(arguments[i$]);
           }
           args = res$;
-          if (this.init) {
-            this.init.apply(this, args);
-          }
           return this;
         };
         this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$), this$['interface']);
@@ -365,9 +362,10 @@
       }
     },
     run: function(arg$){
-      var node, type, cs, c, _, this$ = this;
+      var node, type, cs, ps, c, this$ = this;
       node = arg$.node, type = arg$.type;
       cs = [];
+      ps = [];
       c = this.block;
       if (!this.obj) {
         this.obj = [];
@@ -379,33 +377,40 @@
         cs = [c].concat(cs);
         c = c.extend;
       }
-      _ = function(list, idx, gtx, parent){
-        var b;
-        list == null && (list = []);
-        idx == null && (idx = 0);
-        gtx == null && (gtx = {});
-        if (list.length <= idx) {
-          return;
-        }
-        b = list[idx];
-        return block.scope.context(b.dependencies || [], function(ctx){
-          var payload, o;
-          import$(gtx, ctx);
-          payload = {
-            root: node,
-            context: gtx,
-            parent: parent,
-            pubsub: this$.pubsub
-          };
-          if (type === 'init') {
-            this$.obj.push(o = new b.factory(payload));
-          } else if (o = this$.obj[type]) {
-            this$.obj[type](payload);
+      return new Promise(function(res, rej){
+        var _;
+        _ = function(list, idx, gtx, parent){
+          var p, b;
+          list == null && (list = []);
+          idx == null && (idx = 0);
+          gtx == null && (gtx = {});
+          if (list.length <= idx) {
+            p = Promise.all(ps).then(function(it){
+              return res(it);
+            })['catch'](function(it){
+              return rej(it);
+            });
+            return p;
           }
-          return _(list, idx + 1, gtx, o);
-        });
-      };
-      return _(cs, 0, {});
+          b = list[idx];
+          return block.scope.context(b.dependencies || [], function(ctx){
+            var payload, o;
+            import$(gtx, ctx);
+            payload = {
+              root: node,
+              context: gtx,
+              parent: parent,
+              pubsub: this$.pubsub
+            };
+            if (type === 'init') {
+              this$.obj.push(o = new b.factory(payload));
+            }
+            ps.push((o = this$.obj[idx][type]) ? this$.obj[idx][type](payload) : null);
+            return _(list, idx + 1, gtx, o);
+          });
+        };
+        return _(cs, 0, {});
+      });
     }
   });
   if (typeof module != 'undefined' && module !== null) {

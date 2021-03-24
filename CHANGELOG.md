@@ -1,3 +1,10 @@
+## v0.0.8
+
+ - return promise in pubsub `fire` function.
+ - return promise in block.instance `run` function.
+ - separate `init` from the constructor of `factory`.
+
+
 ## v0.0.7
 
  - support function defined block script.

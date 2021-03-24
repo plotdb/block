@@ -138,7 +138,8 @@ Please note that `obj` (block's internal object) is not the `block.instance` obj
    - `block`: block definition ( `block.class` ) for this instance.
  - `attach({root})`: attach DOM of this instance to a specific node ( `root` ).
    - in the meantime, a block `obj` is created via `block.class`'s factory method and stored in `@obj` member.
- - `detach()`: detach DOM.
+   - return promise.
+ - `detach()`: detach DOM. return promise.
  - `update(ops)`: update `datadom` based on provided ops ( array of operational transformation ).
 
 and following private members:
@@ -152,9 +153,13 @@ and following private members:
 
  - `pkg`: block information, described below.
  - `init({root, mode, context, parent, pubsub})`: initializing a block.
-   - root: root element
-   - mode: executing mode. ( edit, view, etc )
-   - context: dependencies in an object.
+   - `root`: root element
+   - `mode`: executing mode. ( edit, view, etc )
+   - `context`: dependencies in an object.
+   - `pubsub`: for communication between block in extend chain. `pubsub` is an object with following methods:
+      - `on(event, cb(parmas))`: handle event with `cb` callback, params from `fire`.
+        - return value will be passed and resolved to the returned promise of `fire`.
+      - `fire(event, params): fire `event`. return promise.
  - `destroy({root, context})`: destroying a block.
  - `interface`: for accessing custom object. TBD
     - either a function returning interface object, or the interface object itself.

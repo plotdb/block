@@ -17,7 +17,7 @@ pubsub = ->
   @
 
 pubsub.prototype = Object.create(Object.prototype) <<< do
-  fire: (name, ...args) -> @subs[][name].map -> it.apply null, args
+  fire: (name, ...args) -> Promise.all(@subs[][name].map -> it.apply null, args)
   on: (name, cb) -> @subs[][name].push cb
 
 block = {}
@@ -115,9 +115,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         document.body.appendChild(@style-node = document.createElement("style"))
         @style-node.setAttribute \type, 'text/css'
         @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style, scope-test: "[scope]"}
-        @factory = (...args) ->
-          if @init => @init.apply(@, args)
-          @
+        @factory = (...args) -> @
         @factory.prototype = Object.create(Object.prototype) <<< {
           init: (->), destroy: (->)
         } <<< @interface
@@ -182,22 +180,28 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
   # we will need a bus for communication.
   run: ({node, type}) ->
     cs = []
+    ps = []
     c = @block
     if !@obj => @obj = []
     if !@pubsub => @pubsub = new pubsub!
     while c =>
       cs = [c] ++ cs
       c = c.extend
-    _ = (list = [], idx = 0, gtx = {}, parent) ~>
-      if list.length <= idx => return
-      b = list[idx]
-      block.scope.context (b.dependencies or []), (ctx) ~>
-        gtx <<< ctx
-        payload = {root: node, context: gtx, parent: parent, pubsub: @pubsub}
-        if type == \init => @obj.push(o = new b.factory payload)
-        else if (o = @obj[type]) => @obj[type](payload)
-        _ list, idx + 1, gtx, o
-    _ cs, 0, {}
+    new Promise (res, rej) ~>
+      _ = (list = [], idx = 0, gtx = {}, parent) ~>
+        if list.length <= idx =>
+          p = Promise.all(ps)
+            .then -> res it
+            .catch -> rej it
+          return p
+        b = list[idx]
+        block.scope.context (b.dependencies or []), (ctx) ~>
+          gtx <<< ctx
+          payload = {root: node, context: gtx, parent: parent, pubsub: @pubsub}
+          if type == \init => @obj.push(o = new b.factory payload)
+          ps.push if (o = @obj[idx][type]) => @obj[idx][type](payload) else null
+          _ list, idx + 1, gtx, o
+      _ cs, 0, {}
 
     ## original, no inheritance structure
     #block.scope.context @block.dependencies, (context) ~>
