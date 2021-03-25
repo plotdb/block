@@ -1,3 +1,8 @@
+## v0.0.10
+
+ - interface is now get from descendant instead of ancestor, to prevent confusion.
+
+
 ## v0.0.9
 
  - upgrade proxise and template for bug fixing and vulnerabilites resolving

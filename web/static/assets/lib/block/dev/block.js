@@ -341,14 +341,15 @@
       });
     },
     'interface': function(){
-      if (!(this.obj && this.obj[0])) {
-        return;
+      var i$, i, ret;
+      for (i$ = this.obj.length; i$ >= 0; --i$) {
+        i = i$;
+        if (!(ret = (this.obj[i] || {})['interface'])) {
+          continue;
+        }
+        return ret instanceof Function ? ret.apply(this.obj[i]) : ret;
       }
-      if (this.obj[0]['interface'] instanceof Function) {
-        return this.obj[0]['interface']();
-      } else {
-        return this.obj[0]['interface'];
-      }
+      return null;
     },
     update: function(ops){
       return this.datadom.update(ops);

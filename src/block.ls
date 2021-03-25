@@ -170,8 +170,10 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
 
   # TBD
   interface: ->
-    if !(@obj and @obj.0) => return
-    if @obj.0.interface instanceof Function => @obj.0.interface! else @obj.0.interface
+    for i from @obj.length to 0 by -1 =>
+      if !(ret = (@obj[i] or {}).interface) => continue
+      return if ret instanceof Function => ret.apply(@obj[i]) else ret
+    return null
   update: (ops) -> @datadom.update ops
 
   dom: -> if @node => that else @node = @block.resolve-plug-and-clone-node!
