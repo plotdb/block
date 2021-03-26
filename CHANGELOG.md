@@ -1,3 +1,8 @@
+## v0.0.11
+
+ - access optional data in instance create and attach method. data is also passed to factory methods.
+
+
 ## v0.0.10
 
  - interface is now get from descendant instead of ancestor, to prevent confusion.

@@ -134,8 +134,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 
   dom: -> @node
 
-  create: ->
-    ret = new block.instance {block: @, name: @name, version: @version}
+  create: ({data}) ->
+    ret = new block.instance {block: @, name: @name, version: @version, data: data}
     ret.init!then -> ret
 
   resolve-plug-and-clone-node: (child) ->
@@ -151,13 +151,14 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     return if @extend => @extend.resolve-plug-and-clone-node(node) else node
 
 block.instance = (opt = {}) ->
-  @ <<< opt{name, version, block}
+  @ <<< opt{name, version, block, data}
   @init = proxise.once ~> @_init!
   @
 
 block.instance.prototype = Object.create(Object.prototype) <<< do
   _init: -> @block.init!
-  attach: ({root}) ->
+  attach: ({root, data}) ->
+    if data => @data = data
     node = @dom!
     node.setAttribute \scope, @block.scope
     _root = if typeof(root) == \string => document.querySelector(root) else root
@@ -199,7 +200,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
         b = list[idx]
         block.scope.context (b.dependencies or []), (ctx) ~>
           gtx <<< ctx
-          payload = {root: node, context: gtx, parent: parent, pubsub: @pubsub}
+          payload = {root: node, context: gtx, parent: parent, pubsub: @pubsub, data: @data}
           if type == \init => @obj.push(o = new b.factory payload)
           ps.push if (o = @obj[idx][type]) => @obj[idx][type](payload) else null
           _ list, idx + 1, gtx, o

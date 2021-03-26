@@ -277,12 +277,14 @@
     dom: function(){
       return this.node;
     },
-    create: function(){
-      var ret;
+    create: function(arg$){
+      var data, ret;
+      data = arg$.data;
       ret = new block.instance({
         block: this,
         name: this.name,
-        version: this.version
+        version: this.version,
+        data: data
       });
       return ret.init().then(function(){
         return ret;
@@ -310,6 +312,7 @@
     this.name = opt.name;
     this.version = opt.version;
     this.block = opt.block;
+    this.data = opt.data;
     this.init = proxise.once(function(){
       return this$._init();
     });
@@ -320,8 +323,11 @@
       return this.block.init();
     },
     attach: function(arg$){
-      var root, node, _root;
-      root = arg$.root;
+      var root, data, node, _root;
+      root = arg$.root, data = arg$.data;
+      if (data) {
+        this.data = data;
+      }
       node = this.dom();
       node.setAttribute('scope', this.block.scope);
       _root = typeof root === 'string' ? document.querySelector(root) : root;
@@ -401,7 +407,8 @@
               root: node,
               context: gtx,
               parent: parent,
-              pubsub: this$.pubsub
+              pubsub: this$.pubsub,
+              data: this$.data
             };
             if (type === 'init') {
               this$.obj.push(o = new b.factory(payload));
