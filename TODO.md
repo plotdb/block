@@ -1,0 +1,2 @@
+ - exception within module may not be tracked.
+   - e.g., we can't know the correct line number when exception occurred in `chart.render` in `@plotdb/chart`.
