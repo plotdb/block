@@ -186,6 +186,7 @@ The `pkg` field of a block interface is defined as:
      - name: name of required module ( TODO )
      - version: version of required module ( TODO )
      - mode: use to control when this module should be loaded. ( TODO )
+   - dependencies will be additive in extend chain.
 
 
 #### Block Events
