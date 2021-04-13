@@ -3,7 +3,7 @@
   "name": "@plotdb/block",
   "license": "MIT",
   "description": "block",
-  "version": "0.0.11",
+  "version": "1.0.0",
   "main": "dist/block.js",
   "homepage": "https://github.com/plotdb/block",
   "files": [
@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@loadingio/debounce.js": "0.0.1",
-    "@loadingio/ldquery": "^1.1.1",
+    "@loadingio/ldquery": "^2.0.0",
     "@plotdb/csscope": "^0.2.0",
     "@plotdb/datadom": "0.0.4",
     "@plotdb/json0": "0.0.1",
@@ -41,7 +41,7 @@
     "proxise": "^0.1.1",
     "sharedb-wrapper": "github:zbryikt/sharedb-wrapper",
     "stylus": "^0.54.5",
-    "template": "github:zbryikt/template#v2.3.7",
+    "template": "github:zbryikt/template#v2.3.9",
     "uglify-js": "=3.2.0",
     "uglifycss": "0.0.29"
   },

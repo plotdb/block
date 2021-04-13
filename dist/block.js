@@ -109,12 +109,12 @@
         }
         ref$ = [opt.name, opt.version || 'latest'], n = ref$[0], v = ref$[1];
         if (!(n && v)) {
-          return Promise.reject((ref$ = new Error(), ref$.name = "ldError", ref$.id = 1015, ref$));
+          return Promise.reject((ref$ = new Error(), ref$.name = "lderror", ref$.id = 1015, ref$));
         }
         if (((ref$ = this$.hash)[n] || (ref$[n] = {}))[v] != null && !opt.force) {
           return this$.hash[n][v]
             ? Promise.resolve(this$.hash[n][v])
-            : Promise.reject((ref$ = new Error(), ref$.name = "ldError", ref$.id = 404, ref$));
+            : Promise.reject((ref$ = new Error(), ref$.name = "lderror", ref$.id = 404, ref$));
         }
         return ld$.fetch(this$.getUrl({
           name: opt.name,

@@ -1,3 +1,9 @@
+## v1.0.0
+
+ - use `lderror` instead of `ldError`
+ - upgrade modules
+
+
 ## v0.0.11
 
  - access optional data in instance create and attach method. data is also passed to factory methods.

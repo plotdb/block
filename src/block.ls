@@ -52,10 +52,10 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
       opts.map (opt = {}) ~>
         if typeof(opt) == \string => opt = parse-name-string(opt)
         [n,v] = [opt.name, opt.version or \latest]
-        if !(n and v) => return Promise.reject(new Error! <<< {name: "ldError", id: 1015})
+        if !(n and v) => return Promise.reject(new Error! <<< {name: "lderror", id: 1015})
         if @hash{}[n][v]? and !opt.force =>
           return if @hash[n][v] => Promise.resolve(@hash[n][v])
-          else Promise.reject(new Error! <<< {name: "ldError", id: 404})
+          else Promise.reject(new Error! <<< {name: "lderror", id: 404})
         ld$.fetch @get-url(opt{name,version}) , {method: \GET}, {type: \text}
           .then (ret = {}) ~>
             b = new block.class({code: ret, name: n, version: v, manager: @})
