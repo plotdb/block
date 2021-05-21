@@ -67,6 +67,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
 block.class = (opt={}) ->
   @opt = opt
   @scope = "_" + Math.random!toString(36)substring(2)
+  @_ctx = {} # libraries context. may inherited from extended base class.
   # manager is used for recursively get extended block.
   @ <<< opt{name, version, extend, manager}
   code = opt.code
@@ -119,18 +120,22 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @factory.prototype = Object.create(Object.prototype) <<< {
           init: (->), destroy: (->)
         } <<< @interface
-        @dependencies = if Array.isArray(@interface.{}pkg.dependencies) => @interface.{}pkg.dependencies
-        else [v for k,v of (@interface.{}pkg.dependencies or {})]
-        block.scope.load @dependencies
       .then ~>
         if !@interface.{}pkg.extend => return
         if !@manager => return new Error("no available manager to get extended block")
         @manager.get(@interface.pkg.extend).then ~> @extend = it
+      .then ~>
+        @dependencies = if Array.isArray(@interface.{}pkg.dependencies) => @interface.{}pkg.dependencies
+        else [v for k,v of (@interface.{}pkg.dependencies or {})]
+        if @extend => @_ctx = @extend.context!
+        block.scope.load @dependencies, @_ctx
       .catch (e) ~>
         console.error e
         node = document.createElement("div")
         node.innerText = "failed"
         @ <<< interface: {}, style-node: {}, factory: (-> @), dependencies: []
+
+  context: -> @_ctx # get library context
 
   dom: -> @node
 

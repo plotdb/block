@@ -102,6 +102,7 @@ either way we have to provide a way to load, register, cache these blocks - that
          - string: evaled to the interface, or a function which return the interface.
    - `root`: root of a DOM tree. use to create internal dom tree if provided. Overwrite code.
  - `create()`: create a `block.instance` based on this object.
+ - `context()`: get library context corresponding to this block.
 
 and following private members:
 

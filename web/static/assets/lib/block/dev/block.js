@@ -158,6 +158,7 @@
     opt == null && (opt = {});
     this.opt = opt;
     this.scope = "_" + Math.random().toString(36).substring(2);
+    this._ctx = {};
     this.name = opt.name;
     this.version = opt.version;
     this.extend = opt.extend;
@@ -217,7 +218,7 @@
     _init: function(){
       var this$ = this;
       return Promise.resolve().then(function(){
-        var v, ret, ref$, k;
+        var v, ret, ref$;
         this$['interface'] = this$.script instanceof Function
           ? this$.script()
           : typeof this$.script === 'object'
@@ -241,18 +242,7 @@
           args = res$;
           return this;
         };
-        this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$), this$['interface']);
-        this$.dependencies = Array.isArray(((ref$ = this$['interface']).pkg || (ref$.pkg = {})).dependencies)
-          ? ((ref$ = this$['interface']).pkg || (ref$.pkg = {})).dependencies
-          : (function(){
-            var ref$, ref1$, results$ = [];
-            for (k in ref$ = ((ref1$ = this['interface']).pkg || (ref1$.pkg = {})).dependencies || {}) {
-              v = ref$[k];
-              results$.push(v);
-            }
-            return results$;
-          }.call(this$));
-        return block.scope.load(this$.dependencies);
+        return this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$), this$['interface']);
       }).then(function(){
         var ref$;
         if (!((ref$ = this$['interface']).pkg || (ref$.pkg = {})).extend) {
@@ -264,6 +254,22 @@
         return this$.manager.get(this$['interface'].pkg.extend).then(function(it){
           return this$.extend = it;
         });
+      }).then(function(){
+        var ref$, k, v;
+        this$.dependencies = Array.isArray(((ref$ = this$['interface']).pkg || (ref$.pkg = {})).dependencies)
+          ? ((ref$ = this$['interface']).pkg || (ref$.pkg = {})).dependencies
+          : (function(){
+            var ref$, ref1$, results$ = [];
+            for (k in ref$ = ((ref1$ = this['interface']).pkg || (ref1$.pkg = {})).dependencies || {}) {
+              v = ref$[k];
+              results$.push(v);
+            }
+            return results$;
+          }.call(this$));
+        if (this$.extend) {
+          this$._ctx = this$.extend.context();
+        }
+        return block.scope.load(this$.dependencies, this$._ctx);
       })['catch'](function(e){
         var node;
         console.error(e);
@@ -273,6 +279,9 @@
           return this;
         }, this$.dependencies = [], this$;
       });
+    },
+    context: function(){
+      return this._ctx;
     },
     dom: function(){
       return this.node;

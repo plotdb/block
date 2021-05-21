@@ -1,3 +1,8 @@
+## v1.1.0
+
+ - make child block alters and inherits base block's dependencies.
+
+
 ## v1.0.0
 
  - use `lderror` instead of `ldError`
