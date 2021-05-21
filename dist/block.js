@@ -396,7 +396,7 @@
       return new Promise(function(res, rej){
         var _;
         _ = function(list, idx, gtx, parent){
-          var p, b;
+          var p, b, ref$;
           list == null && (list = []);
           idx == null && (idx = 0);
           gtx == null && (gtx = {});
@@ -409,7 +409,7 @@
             return p;
           }
           b = list[idx];
-          return block.scope.context(b.dependencies || [], function(ctx){
+          return block.scope.context((ref$ = b._ctx).local || (ref$.local = {}), function(ctx){
             var payload, o;
             import$(gtx, ctx);
             payload = {

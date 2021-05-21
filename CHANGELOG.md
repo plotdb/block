@@ -1,3 +1,8 @@
+# v1.1.1
+
+ - get context based on `_ctx` instead of lib urls so base class context can propagate.
+
+
 ## v1.1.0
 
  - make child block alters and inherits base block's dependencies.

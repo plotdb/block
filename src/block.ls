@@ -203,7 +203,9 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
             .catch -> rej it
           return p
         b = list[idx]
-        block.scope.context (b.dependencies or []), (ctx) ~>
+        # if we don't want dependencies from base class, use b.dependencies:
+        #   block.scope.context (b.dependencies or []), (ctx) ~>
+        block.scope.context b._ctx.{}local, (ctx) ~>
           gtx <<< ctx
           payload = {root: node, context: gtx, parent: parent, pubsub: @pubsub, data: @data}
           if type == \init => @obj.push(o = new b.factory payload)
