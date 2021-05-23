@@ -21,7 +21,8 @@ pubsub.prototype = Object.create(Object.prototype) <<< do
   on: (name, cb) -> @subs[][name].push cb
 
 block = {}
-block.scope = new rescope global: window
+block.rescope = new rescope global: window
+block.csscope = new csscope.manager!
 block.manager = (opt={}) ->
   @hash = {}
   @set-registry opt.registry
@@ -30,7 +31,7 @@ block.manager = (opt={}) ->
   @
 
 block.manager.prototype = Object.create(Object.prototype) <<< do
-  _init: -> block.scope.init!
+  _init: -> block.rescope.init!
   set-registry: ->
     @reg = it or ''
     if typeof(@reg) == \string => if @reg and @reg[* - 1] != \/ => @reg += \/
@@ -128,7 +129,16 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @dependencies = if Array.isArray(@interface.{}pkg.dependencies) => @interface.{}pkg.dependencies
         else [v for k,v of (@interface.{}pkg.dependencies or {})]
         if @extend => @_ctx = @extend.context!
-        block.scope.load @dependencies, @_ctx
+        block.rescope.load @dependencies.filter(-> /\.js$/.exec(it.url or it) or it.type == \js), @_ctx
+      .then ~>
+        block.csscope.load(
+          @dependencies
+            .filter -> /\.css$/.exec(it.url or it) or it.type == \css
+            .map -> it.url or it
+        )
+          .then ~>
+            # TODO documenting? or let it be private?
+            @csscope = (it or []) ++ (if @extend => @extend.csscope or [] else [])
       .catch (e) ~>
         console.error e
         node = document.createElement("div")
@@ -139,8 +149,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 
   dom: -> @node
 
-  create: ({data}) ->
-    ret = new block.instance {block: @, name: @name, version: @version, data: data}
+  create: (opt={}) ->
+    ret = new block.instance {block: @, name: @name, version: @version, data: opt.data}
     ret.init!then -> ret
 
   resolve-plug-and-clone-node: (child) ->
@@ -166,6 +176,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     if data => @data = data
     node = @dom!
     node.setAttribute \scope, @block.scope
+    node.classList.add.apply node.classList, @block.csscope
     _root = if typeof(root) == \string => document.querySelector(root) else root
     _root.appendChild node
     @run({node, type: \init})
@@ -204,8 +215,8 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
           return p
         b = list[idx]
         # if we don't want dependencies from base class, use b.dependencies:
-        #   block.scope.context (b.dependencies or []), (ctx) ~>
-        block.scope.context b._ctx.{}local, (ctx) ~>
+        #   block.rescope.context (b.dependencies or []).filter(->it.type != \css), (ctx) ~>
+        block.rescope.context b._ctx.{}local, (ctx) ~>
           gtx <<< ctx
           payload = {root: node, context: gtx, parent: parent, pubsub: @pubsub, data: @data}
           if type == \init => @obj.push(o = new b.factory payload)
@@ -214,7 +225,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
       _ cs, 0, {}
 
     ## original, no inheritance structure
-    #block.scope.context @block.dependencies, (context) ~>
+    #block.rescope.context @block.dependencies.filter(->it.type != \css), (context) ~>
     #  @obj = new @block.factory {root: node, context}
 
 if module? => module.exports = block

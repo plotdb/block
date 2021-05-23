@@ -270,7 +270,19 @@
         if (this$.extend) {
           this$._ctx = this$.extend.context();
         }
-        return block.rescope.load(this$.dependencies, this$._ctx);
+        return block.rescope.load(this$.dependencies.filter(function(it){
+          return /\.js$/.exec(it.url || it) || it.type === 'js';
+        }), this$._ctx);
+      }).then(function(){
+        return block.csscope.load(this$.dependencies.filter(function(it){
+          return /\.css$/.exec(it.url || it) || it.type === 'css';
+        }).map(function(it){
+          return it.url || it;
+        })).then(function(it){
+          return this$.csscope = (it || []).concat(this$.extend
+            ? this$.extend.csscope || []
+            : []);
+        });
       })['catch'](function(e){
         var node;
         console.error(e);
@@ -340,6 +352,7 @@
       }
       node = this.dom();
       node.setAttribute('scope', this.block.scope);
+      node.classList.add.apply(node.classList, this.block.csscope);
       _root = typeof root === 'string' ? document.querySelector(root) : root;
       _root.appendChild(node);
       return this.run({

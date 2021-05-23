@@ -1,3 +1,8 @@
+# v1.2.0
+
+ - support css library
+ - fix bug: create block class with data will fail. 
+
 # v1.1.1
 
  - get context based on `_ctx` instead of lib urls so base class context can propagate.

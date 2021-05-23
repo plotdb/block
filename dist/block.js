@@ -40,9 +40,10 @@
     }
   });
   block = {};
-  block.scope = new rescope({
+  block.rescope = new rescope({
     global: window
   });
+  block.csscope = new csscope.manager();
   block.manager = function(opt){
     var this$ = this;
     opt == null && (opt = {});
@@ -56,7 +57,7 @@
   };
   block.manager.prototype = import$(Object.create(Object.prototype), {
     _init: function(){
-      return block.scope.init();
+      return block.rescope.init();
     },
     setRegistry: function(it){
       var ref$;
@@ -269,7 +270,19 @@
         if (this$.extend) {
           this$._ctx = this$.extend.context();
         }
-        return block.scope.load(this$.dependencies, this$._ctx);
+        return block.rescope.load(this$.dependencies.filter(function(it){
+          return /\.js$/.exec(it.url || it) || it.type === 'js';
+        }), this$._ctx);
+      }).then(function(){
+        return block.csscope.load(this$.dependencies.filter(function(it){
+          return /\.css$/.exec(it.url || it) || it.type === 'css';
+        }).map(function(it){
+          return it.url || it;
+        })).then(function(it){
+          return this$.csscope = (it || []).concat(this$.extend
+            ? this$.extend.csscope || []
+            : []);
+        });
       })['catch'](function(e){
         var node;
         console.error(e);
@@ -286,14 +299,14 @@
     dom: function(){
       return this.node;
     },
-    create: function(arg$){
-      var data, ret;
-      data = arg$.data;
+    create: function(opt){
+      var ret;
+      opt == null && (opt = {});
       ret = new block.instance({
         block: this,
         name: this.name,
         version: this.version,
-        data: data
+        data: opt.data
       });
       return ret.init().then(function(){
         return ret;
@@ -339,6 +352,7 @@
       }
       node = this.dom();
       node.setAttribute('scope', this.block.scope);
+      node.classList.add.apply(node.classList, this.block.csscope);
       _root = typeof root === 'string' ? document.querySelector(root) : root;
       _root.appendChild(node);
       return this.run({
@@ -409,7 +423,7 @@
             return p;
           }
           b = list[idx];
-          return block.scope.context((ref$ = b._ctx).local || (ref$.local = {}), function(ctx){
+          return block.rescope.context((ref$ = b._ctx).local || (ref$.local = {}), function(ctx){
             var payload, o;
             import$(gtx, ctx);
             payload = {
