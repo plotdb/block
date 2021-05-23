@@ -26,7 +26,7 @@
     "@plotdb/csscope": "^0.2.0",
     "@plotdb/datadom": "0.0.4",
     "@plotdb/json0": "0.0.1",
-    "@plotdb/rescope": "^0.2.1",
+    "@plotdb/rescope": "^1.1.4",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.5.2",
     "bootstrap.ldui": "github:loadingio/bootstrap.ldui",
@@ -47,7 +47,7 @@
   },
   "peerDependencies": {
     "@plotdb/csscope": "^0.2.0",
-    "@plotdb/rescope": "^0.2.1",
+    "@plotdb/rescope": "^1.1.4",
     "dompurify": "^2.2.6",
     "proxise": "^0.1.2"
   },
