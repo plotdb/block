@@ -67,7 +67,7 @@ manager.init().then(function(){
     name: 'child'
   });
 })['catch'](function(it){
-  return console(">", it);
+  return console.log(">", it);
 });
 /*
   .then -> manager.get {name: "landing-col2", version: "0.0.1"}

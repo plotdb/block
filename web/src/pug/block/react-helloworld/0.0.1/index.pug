@@ -2,11 +2,13 @@ div(block="inline")
   script: :lsc
     do
       pkg:
+        name: "react-helloworld", version: "0.0.1"
         dependencies: [
           {url: "https://unpkg.com/react@17/umd/react.development.js", async: false},
-          "https://unpkg.com/react-dom@17/umd/react-dom.development.js"
+          {url: "https://unpkg.com/react-dom@17/umd/react-dom.development.js", async: false}
         ],
       init: ({root, context}) ->
+        {React, ReactDOM} = context
         Hello = (props) -> return React.createElement('span', null, "React: Hello #{props.name}")
         ReactDOM.render(
           React.createElement(Hello, {name: "world"}, null),

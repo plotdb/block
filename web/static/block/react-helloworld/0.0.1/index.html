@@ -1,15 +1,23 @@
 <div block="inline"><script>({
   pkg: {
+    name: "react-helloworld",
+    version: "0.0.1",
     dependencies: [
       {
         url: "https://unpkg.com/react@17/umd/react.development.js",
         async: false
-      }, "https://unpkg.com/react-dom@17/umd/react-dom.development.js"
+      }, {
+        url: "https://unpkg.com/react-dom@17/umd/react-dom.development.js",
+        async: false
+      }
     ]
   },
   init: function(arg$){
-    var root, context, Hello;
+    var root, context, React, ReactDOM, Hello;
     root = arg$.root, context = arg$.context;
+    console.log("react-helloworld context: ", context);
+    React = context.React, ReactDOM = context.ReactDOM;
+    console.log(context);
     Hello = function(props){
       return React.createElement('span', null, "React: Hello " + props.name);
     };
