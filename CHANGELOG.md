@@ -1,3 +1,8 @@
+# v1.2.1
+
+ - proxisify block.class `get` to prevent multiple get and multiple scope id for the same block.
+
+
 # v1.2.0
 
  - support css library

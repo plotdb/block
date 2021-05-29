@@ -25,6 +25,8 @@ block.rescope = new rescope global: window
 block.csscope = new csscope.manager!
 block.manager = (opt={}) ->
   @hash = {}
+  @proxy = {}
+  @running = {}
   @set-registry opt.registry
   @init = proxise.once ~> @_init!
   @init!
@@ -46,23 +48,38 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
   get-url: ({name, version}) ->
     if typeof(@reg) == \function => @reg {name, version}
     else return "#{@reg or ''}/block/#{name}/#{version}"
+
   # TODO parse semantic versioning for better cache performance.
+  _get: (opt) ->
+    [n,v] = [opt.name, opt.version or \latest]
+    if !(n and v) => return Promise.reject(new Error! <<< {name: "lderror", id: 1015})
+    if @hash{}[n][v]? and !opt.force =>
+      return if @hash[n][v] => Promise.resolve(@hash[n][v])
+      else Promise.reject(new Error! <<< {name: "lderror", id: 404})
+    if @running{}[n][v] == true => return
+    @running[n][v] = true
+    ld$.fetch @get-url(opt{name,version}) , {method: \GET}, {type: \text}
+      .then (ret = {}) ~>
+        b = new block.class({code: ret, name: n, version: v, manager: @})
+        @set obj = ({name: n, version: v} <<< {block: b})
+        if ret.version and ret.version != v => @set(obj <<< {version: ret.version})
+        b.init!then -> b
+      .then ~>
+        @proxy[n][v].resolve it
+        return it
+      .finally ~> @running[n][v] = false
+      .catch (e) ~>
+        @proxy[n][v].reject e
+        return Promise.reject e
+
   get: (opt = {}) ->
     opts = if Array.isArray(opt) => opt else [opt]
     Promise.all(
       opts.map (opt = {}) ~>
         if typeof(opt) == \string => opt = parse-name-string(opt)
         [n,v] = [opt.name, opt.version or \latest]
-        if !(n and v) => return Promise.reject(new Error! <<< {name: "lderror", id: 1015})
-        if @hash{}[n][v]? and !opt.force =>
-          return if @hash[n][v] => Promise.resolve(@hash[n][v])
-          else Promise.reject(new Error! <<< {name: "lderror", id: 404})
-        ld$.fetch @get-url(opt{name,version}) , {method: \GET}, {type: \text}
-          .then (ret = {}) ~>
-            b = new block.class({code: ret, name: n, version: v, manager: @})
-            @set obj = ({name: n, version: v} <<< {block: b})
-            if ret.version and ret.version != v => @set(obj <<< {version: ret.version})
-            b.init!then -> b
+        if !@proxy{}[n][v] => @proxy[n][v] = proxise (opt) ~> @_get(opt)
+        @proxy[n][v] opt
     ).then -> if Array.isArray(opt) => return it else return it.0
 
 block.class = (opt={}) ->

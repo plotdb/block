@@ -48,6 +48,8 @@
     var this$ = this;
     opt == null && (opt = {});
     this.hash = {};
+    this.proxy = {};
+    this.running = {};
     this.setRegistry(opt.registry);
     this.init = proxise.once(function(){
       return this$._init();
@@ -96,6 +98,58 @@
         return (this.reg || '') + "/block/" + name + "/" + version;
       }
     },
+    _get: function(opt){
+      var ref$, n, v, this$ = this;
+      ref$ = [opt.name, opt.version || 'latest'], n = ref$[0], v = ref$[1];
+      if (!(n && v)) {
+        return Promise.reject((ref$ = new Error(), ref$.name = "lderror", ref$.id = 1015, ref$));
+      }
+      if (((ref$ = this.hash)[n] || (ref$[n] = {}))[v] != null && !opt.force) {
+        return this.hash[n][v]
+          ? Promise.resolve(this.hash[n][v])
+          : Promise.reject((ref$ = new Error(), ref$.name = "lderror", ref$.id = 404, ref$));
+      }
+      if (((ref$ = this.running)[n] || (ref$[n] = {}))[v] === true) {
+        return;
+      }
+      this.running[n][v] = true;
+      return ld$.fetch(this.getUrl({
+        name: opt.name,
+        version: opt.version
+      }), {
+        method: 'GET'
+      }, {
+        type: 'text'
+      }).then(function(ret){
+        var b, obj;
+        ret == null && (ret = {});
+        b = new block['class']({
+          code: ret,
+          name: n,
+          version: v,
+          manager: this$
+        });
+        this$.set(obj = {
+          name: n,
+          version: v,
+          block: b
+        });
+        if (ret.version && ret.version !== v) {
+          this$.set((obj.version = ret.version, obj));
+        }
+        return b.init().then(function(){
+          return b;
+        });
+      }).then(function(it){
+        this$.proxy[n][v].resolve(it);
+        return it;
+      })['finally'](function(){
+        return this$.running[n][v] = false;
+      })['catch'](function(e){
+        this$.proxy[n][v].reject(e);
+        return Promise.reject(e);
+      });
+    },
     get: function(opt){
       var opts, this$ = this;
       opt == null && (opt = {});
@@ -109,42 +163,12 @@
           opt = parseNameString(opt);
         }
         ref$ = [opt.name, opt.version || 'latest'], n = ref$[0], v = ref$[1];
-        if (!(n && v)) {
-          return Promise.reject((ref$ = new Error(), ref$.name = "lderror", ref$.id = 1015, ref$));
+        if (!((ref$ = this$.proxy)[n] || (ref$[n] = {}))[v]) {
+          this$.proxy[n][v] = proxise(function(opt){
+            return this$._get(opt);
+          });
         }
-        if (((ref$ = this$.hash)[n] || (ref$[n] = {}))[v] != null && !opt.force) {
-          return this$.hash[n][v]
-            ? Promise.resolve(this$.hash[n][v])
-            : Promise.reject((ref$ = new Error(), ref$.name = "lderror", ref$.id = 404, ref$));
-        }
-        return ld$.fetch(this$.getUrl({
-          name: opt.name,
-          version: opt.version
-        }), {
-          method: 'GET'
-        }, {
-          type: 'text'
-        }).then(function(ret){
-          var b, obj;
-          ret == null && (ret = {});
-          b = new block['class']({
-            code: ret,
-            name: n,
-            version: v,
-            manager: this$
-          });
-          this$.set(obj = {
-            name: n,
-            version: v,
-            block: b
-          });
-          if (ret.version && ret.version !== v) {
-            this$.set((obj.version = ret.version, obj));
-          }
-          return b.init().then(function(){
-            return b;
-          });
-        });
+        return this$.proxy[n][v](opt);
       })).then(function(it){
         if (Array.isArray(opt)) {
           return it;
