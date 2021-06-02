@@ -179,7 +179,7 @@ The `pkg` field of a block interface is defined as:
    - use `plug` ( for html ), `obj` and `pubsub` ( js ) to work with extended block. ( TODO: documentation )
  - `dependencies`: dependencies of this block.
    - list or modules, in case of mutual dependencies:
-     ["some-url", {url: "some-url", async: false, dev: true}]
+     ["some-url", {url: "some-url", async: false, dev: true, global: true}]
    - options in object notation:
      - async: true to load this module asynchronously. true by default.
      - url: path of required module.
@@ -187,6 +187,7 @@ The `pkg` field of a block interface is defined as:
      - name: name of required module ( TODO )
      - version: version of required module ( TODO )
      - mode: use to control when this module should be loaded. ( TODO )
+     - global: for CSS. true if the CSS should also work in global scope. ( under body ). default false.
    - dependencies will be additive in extend chain.
 
 

@@ -40,6 +40,22 @@
     }
   });
   block = {};
+  block.global = {
+    csscope: {
+      hash: {},
+      apply: function(ret){
+        var this$ = this;
+        ret = ret.filter(function(it){
+          return !this$.hash[it.url];
+        }).map(function(it){
+          return this$.hash[it.url] = it.scope;
+        });
+        if (ret.length) {
+          return document.body.classList.add.apply(document.body.classList, ret);
+        }
+      }
+    }
+  };
   block.rescope = new rescope({
     global: window
   });
@@ -184,6 +200,10 @@
     this.opt = opt;
     this.scope = "_" + Math.random().toString(36).substring(2);
     this._ctx = {};
+    this.csscope = {
+      global: [],
+      local: []
+    };
     this.name = opt.name;
     this.version = opt.version;
     this.extend = opt.extend;
@@ -299,14 +319,21 @@
         }), this$._ctx);
       }).then(function(){
         return block.csscope.load(this$.dependencies.filter(function(it){
-          return /\.css$/.exec(it.url || it) || it.type === 'css';
+          return (/\.css$/.exec(it.url || it) || it.type === 'css') && it.global === true;
         }).map(function(it){
           return it.url || it;
-        })).then(function(it){
-          return this$.csscope = (it || []).concat(this$.extend
-            ? this$.extend.csscope || []
-            : []);
-        });
+        }));
+      }).then(function(it){
+        (this$.csscope || (this$.csscope = {})).global = it || [];
+        return block.csscope.load(this$.dependencies.filter(function(it){
+          return (/\.css$/.exec(it.url || it) || it.type === 'css') && it.global !== true;
+        }).map(function(it){
+          return it.url || it;
+        }));
+      }).then(function(it){
+        return this$.csscope.local = (it || []).concat(this$.extend
+          ? this$.extend.csscope.local || []
+          : []);
       })['catch'](function(e){
         var node;
         console.error(e);
@@ -376,7 +403,12 @@
       }
       node = this.dom();
       node.setAttribute('scope', this.block.scope);
-      node.classList.add.apply(node.classList, this.block.csscope);
+      node.classList.add.apply(node.classList, this.block.csscope.local.map(function(it){
+        return it.scope;
+      }).concat(this.block.csscope.global.map(function(it){
+        return it.scope;
+      })));
+      block.global.csscope.apply(this.block.csscope.global);
       _root = typeof root === 'string' ? document.querySelector(root) : root;
       _root.appendChild(node);
       return this.run({

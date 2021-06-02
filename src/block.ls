@@ -21,6 +21,15 @@ pubsub.prototype = Object.create(Object.prototype) <<< do
   on: (name, cb) -> @subs[][name].push cb
 
 block = {}
+block.global =
+  csscope:
+    hash: {}
+    apply: (ret) ->
+      ret = ret
+        .filter ~> !@hash[it.url]
+        .map ~> @hash[it.url] = it.scope
+      if ret.length => document.body.classList.add.apply document.body.classList, ret
+
 block.rescope = new rescope global: window
 block.csscope = new csscope.manager!
 block.manager = (opt={}) ->
@@ -86,6 +95,7 @@ block.class = (opt={}) ->
   @opt = opt
   @scope = "_" + Math.random!toString(36)substring(2)
   @_ctx = {} # libraries context. may inherited from extended base class.
+  @csscope = {global: [], local: []} # css libraries. may be either global or local.
   # manager is used for recursively get extended block.
   @ <<< opt{name, version, extend, manager}
   code = opt.code
@@ -150,12 +160,19 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       .then ~>
         block.csscope.load(
           @dependencies
-            .filter -> /\.css$/.exec(it.url or it) or it.type == \css
+            .filter -> (/\.css$/.exec(it.url or it) or it.type == \css) and it.global == true
             .map -> it.url or it
         )
-          .then ~>
-            # TODO documenting? or let it be private?
-            @csscope = (it or []) ++ (if @extend => @extend.csscope or [] else [])
+      .then ~>
+        @{}csscope.global = (it or [])
+        block.csscope.load(
+          @dependencies
+            .filter -> (/\.css$/.exec(it.url or it) or it.type == \css) and it.global != true
+            .map -> it.url or it
+        )
+      .then ~>
+        # TODO documenting? or let it be private?
+        @csscope.local = (it or []) ++ (if @extend => @extend.csscope.local or [] else [])
       .catch (e) ~>
         console.error e
         node = document.createElement("div")
@@ -193,7 +210,11 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     if data => @data = data
     node = @dom!
     node.setAttribute \scope, @block.scope
-    node.classList.add.apply node.classList, @block.csscope
+    node.classList.add.apply(
+      node.classList,
+      @block.csscope.local.map(-> it.scope) ++ @block.csscope.global.map(->it.scope)
+    )
+    block.global.csscope.apply @block.csscope.global
     _root = if typeof(root) == \string => document.querySelector(root) else root
     _root.appendChild node
     @run({node, type: \init})

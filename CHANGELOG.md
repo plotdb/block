@@ -1,14 +1,22 @@
-# v1.2.1
+# Change Logs
+
+## v1.3.0 
+
+ - support global css library
+ - upgrade modules
+
+
+## v1.2.1
 
  - proxisify block.class `get` to prevent multiple get and multiple scope id for the same block.
 
 
-# v1.2.0
+## v1.2.0
 
  - support css library
  - fix bug: create block class with data will fail. 
 
-# v1.1.1
+## v1.1.1
 
  - get context based on `_ctx` instead of lib urls so base class context can propagate.
 
