@@ -5,9 +5,9 @@ rm -rf dist
 mkdir -p dist
 
 echo "building block.ls -> block.js ..."
-npx lsc -cp src/block.ls > dist/block.js
+./node_modules/.bin/lsc -cp src/block.ls > dist/block.js
 echo "minify block.js -> block.min.js ..."
-npx uglifyjs dist/block.js > dist/block.min.js
+./node_modules/.bin/uglifyjs dist/block.js > dist/block.min.js
 
 echo "build src/block.styl -> dist/block.css ..."
 ./node_modules/.bin/stylus -p src/block.styl > dist/block.css
