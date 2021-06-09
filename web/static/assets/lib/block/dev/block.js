@@ -271,6 +271,9 @@
             : (v = eval(this$.script || '')) instanceof Function
               ? v()
               : v || {};
+        if (!this$['interface']) {
+          this$['interface'] = {};
+        }
         document.body.appendChild(this$.styleNode = document.createElement("style"));
         this$.styleNode.setAttribute('type', 'text/css');
         this$.styleNode.textContent = ret = csscope({
@@ -297,7 +300,8 @@
           return new Error("no available manager to get extended block");
         }
         return this$.manager.get(this$['interface'].pkg.extend).then(function(it){
-          return this$.extend = it;
+          this$.extend = it;
+          return this$.extendDom = !(this$['interface'].pkg.extend.dom != null) || this$['interface'].pkg.extend.dom;
         });
       }).then(function(){
         var ref$, k, v;
@@ -376,7 +380,7 @@
           }
         });
       }
-      return this.extend ? this.extend.resolvePlugAndCloneNode(node) : node;
+      return this.extend && this.extendDom ? this.extend.resolvePlugAndCloneNode(node) : node;
     }
   });
   block.instance = function(opt){
@@ -395,22 +399,29 @@
     _init: function(){
       return this.block.init();
     },
-    attach: function(arg$){
-      var root, data, node, _root;
-      root = arg$.root, data = arg$.data;
-      if (data) {
-        this.data = data;
+    attach: function(opt){
+      var root, node;
+      opt == null && (opt = {});
+      if (opt.data) {
+        this.data = opt.data;
       }
-      node = this.dom();
-      node.setAttribute('scope', this.block.scope);
-      node.classList.add.apply(node.classList, this.block.csscope.local.map(function(it){
-        return it.scope;
-      }).concat(this.block.csscope.global.map(function(it){
-        return it.scope;
-      })));
+      root = opt.root;
+      root = !root
+        ? null
+        : typeof root === 'string' ? document.querySelector(root) : root;
       block.global.csscope.apply(this.block.csscope.global);
-      _root = typeof root === 'string' ? document.querySelector(root) : root;
-      _root.appendChild(node);
+      if (!root) {
+        node = null;
+      } else {
+        node = this.dom();
+        node.setAttribute('scope', this.block.scope);
+        node.classList.add.apply(node.classList, this.block.csscope.local.map(function(it){
+          return it.scope;
+        }).concat(this.block.csscope.global.map(function(it){
+          return it.scope;
+        })));
+        root.appendChild(node);
+      }
       return this.run({
         node: node,
         type: 'init'

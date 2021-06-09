@@ -141,6 +141,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         else if typeof(@script) == \object => @script
         else if (v = eval(@script or '')) instanceof Function => v!
         else (v or {}))
+        if !@interface => @interface = {}
         document.body.appendChild(@style-node = document.createElement("style"))
         @style-node.setAttribute \type, 'text/css'
         @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style, scope-test: "[scope]"}
@@ -151,7 +152,9 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       .then ~>
         if !@interface.{}pkg.extend => return
         if !@manager => return new Error("no available manager to get extended block")
-        @manager.get(@interface.pkg.extend).then ~> @extend = it
+        @manager.get(@interface.pkg.extend).then ~>
+          @extend = it
+          @extend-dom = !(@interface.pkg.extend.dom?) or @interface.pkg.extend.dom
       .then ~>
         @dependencies = if Array.isArray(@interface.{}pkg.dependencies) => @interface.{}pkg.dependencies
         else [v for k,v of (@interface.{}pkg.dependencies or {})]
@@ -197,7 +200,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         # we skip nested plugs so recursive plug applying is possible.
         n = child.querySelector(":scope :not([plug]) [plug=#{name}], :scope > [plug=#{name}]")
         if n => it.replaceWith n
-    return if @extend => @extend.resolve-plug-and-clone-node(node) else node
+    return if @extend and @extend-dom => @extend.resolve-plug-and-clone-node(node) else node
 
 block.instance = (opt = {}) ->
   @ <<< opt{name, version, block, data}
@@ -206,17 +209,21 @@ block.instance = (opt = {}) ->
 
 block.instance.prototype = Object.create(Object.prototype) <<< do
   _init: -> @block.init!
-  attach: ({root, data}) ->
-    if data => @data = data
-    node = @dom!
-    node.setAttribute \scope, @block.scope
-    node.classList.add.apply(
-      node.classList,
-      @block.csscope.local.map(-> it.scope) ++ @block.csscope.global.map(->it.scope)
-    )
+  attach: (opt = {}) ->
+    if opt.data => @data = opt.data
+    root = opt.root
+    root = if !root => null else if typeof(root) == \string => document.querySelector(root) else root
     block.global.csscope.apply @block.csscope.global
-    _root = if typeof(root) == \string => document.querySelector(root) else root
-    _root.appendChild node
+    if !root => node = null
+    else
+      node = @dom!
+      node.setAttribute \scope, @block.scope
+      node.classList.add.apply(
+        node.classList,
+        @block.csscope.local.map(->it.scope) ++ @block.csscope.global.map(->it.scope)
+      )
+      root.appendChild node
+
     @run({node, type: \init})
   detach: ->
     node = @dom!
