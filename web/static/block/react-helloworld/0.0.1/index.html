@@ -15,9 +15,7 @@
   init: function(arg$){
     var root, context, React, ReactDOM, Hello;
     root = arg$.root, context = arg$.context;
-    console.log("react-helloworld context: ", context);
     React = context.React, ReactDOM = context.ReactDOM;
-    console.log(context);
     Hello = function(props){
       return React.createElement('span', null, "React: Hello " + props.name);
     };

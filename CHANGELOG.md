@@ -1,5 +1,13 @@
 # Change Logs
 
+## v1.4.0
+
+ - support headless block.
+ - support dom overwrite mode ( don't extend dom ) in block extension.
+ - fix bug: interface default `{}` if not provided. 
+ - add simple headless block and test case.
+
+
 ## v1.3.0 
 
  - support global css library

@@ -4,19 +4,34 @@
 
 Frontend module library with following features:
 
- - isolated dependencies of JavaScript libraries.
- - scoped CSS
+ - scoped JS / CSS for vanilla libraries, no bundling required.
+ - reuseable, extendable components
+
+
+## Usage
+
+install `@plotdb/block` along with all necessary js libraries:
+
+    npm install @plotdb/block @plotdb/rescope @plotdb/csscope proxise dompurify
+
+and include them:
+
+    <script src="path-to/proxise.js"></script>
+    <script src="path-to/csscope.js"></script>
+    <script src="path-to/rescope.js"></script>
+    <script src="path-to/purify.js"></script>
+    <script src="path-to/block.js"></script>
 
 
 ## Concept
 
-Similar to `web component`, `@plotdb/block` modularizes frontend codes int components called `block`. A block can be defined in a plain HTML files, containing following 3 parts ( all parts are optional ):
+Similar to `web component`, `@plotdb/block` modularizes frontend codes int components called `block`. A block is defined with a plain HTML file, containing following 3 parts ( all parts are optional ):
 
  - HTML
  - CSS
  - JavaScript
 
-This is an example of a block html file:
+This is an example of a block HTML file:
 
     <div>
       <h1> Hello World! </h1>
@@ -24,32 +39,51 @@ This is an example of a block html file:
       <script type="@plotdb/block"> ... </script>
     </div>
 
-There is no preferred languages in coding this html files. Users can write script in `TypeScript`, use `SASS` for stylesheet.  Following is an example using Pug, LiveScript and Stylus with `zbryikt/template` syntax:
+There is no preferred languages for creae this file. Users can write script in `TypeScript`, use `SASS` for stylesheet. Following is an example with Pug, LiveScript and Stylus with additional Pug filters ( `:stylus` and `:lsc` ):
 
     div
       h1 Hello World!
       style(type="@plotdb/block"): :stylus
-        html, body { width: 100%; height: 100% }
+        h1 { color: #543; }
       script(type="@plotdb/block"): :lsc
         { init: -> console.log \loaded. }
 
-script can be either an object described as below, or a function returning that object .
+Script can either be an object described as below, or a function returning that object. Styles will be automatically scoped and limited in this block.
 
-Similar to NPM module, blocks are defined with a `name` and a `version`, where:
+
+## Block Naming and Accessing
+
+To use a block, we need to know how to identify it. Like npm modules, blocks are defined with a `name` and a `version`, where:
 
  - `name`: use the naming convention as npm. e.g., `@loadingio/spinner`
  - `version`: sematic versioning, tag or hash value. e.g., `0.0.1`
 
-And thus it's possible to manange blocks of different versions with a block manager ( `block.manager` ). When request a block from block manager, a block class ( `block.class` ) is returned for creating a block instance ( `block.instance` ) as a class. The block instance is the actual object injected and used in webpage.
+To access a block with its name, we need a manager ( `block.manager` ):
+
+    manager = new block.manager registry: ({name,version}) -> "/block/#name/#version/index.html"
+    mananger.init!
+      .then -> manager.get({name: "my-block", version: "0.1.0"})
+      .then (block) -> ...
+
+A block is represented by a JS object `block.class`, serving as the class for creating a live block instance. A `block.class` is returned by `block.manager`, which can be used to create a block instance ( `block.instance` ):
+
+    manager.get(...)
+      .then (block-class) -> block-class.create!
+      .then (block-instance) -> ...
+
+A block instance is then injected into web page:
+
+    block-instance.attach({root: document.body})
+      .then -> ...
 
 
 ## Core modules
 
-As described above, `@plotdb/block` provides following tools:
+As described above, `@plotdb/block` contains following basic elements:
 
- - `block.manager` - for accessing block definitions, used to register, get and cache `block.class` 
- - `block.class` -  based on the definition of a block to generate `block.instance`.
- - `block.instance` - object for manipulating state / DOM of the given block.
+ - `block.manager` - to access, register, get and cache `block.class` 
+ - `block.class` - representing the definition of a block, and is used to generate `block.instance`.
+ - `block.instance` - object for manipulating state / DOM of a given block.
 
 
 ### block.manager
@@ -150,7 +184,7 @@ and following private members:
 
 ### Interface of the internal object
 
-`block.instance` is just a generic object for managing block life cycle. Every block has another object, serves as the internal object that provides real dynamics of the block. This object is created along with `block.instance`, and it's interface is implemented by developers based on following interface:
+`block.instance` is just a generic object for managing block life cycle. Every block has another object, serves as the internal object that provides real dynamics of the block. This object is created along with `block.instance`, and it's interface is implemented by developers with the following spec:
 
  - `pkg`: block information, described below.
  - `init({root, mode, context, parent, pubsub})`: initializing a block.
@@ -164,6 +198,7 @@ and following private members:
  - `destroy({root, context})`: destroying a block.
  - `interface`: for accessing custom object. TBD
     - either a function returning interface object, or the interface object itself.
+    - child block always overwrite parents' interface in an inheritance chain.
 
 
 #### Block Information
@@ -176,19 +211,23 @@ The `pkg` field of a block interface is defined as:
  - `license`: License. required
  - `description`: description of this block. optional
  - `extend`: optional. block identifier ( `name@version` or `{name, version}` ) of block to extend.
+   - `name`: parent block's name
+   - `version`: parent block's version.
+   - `dom`: default true. use parent's DOM if set true.
    - use `plug` ( for html ), `obj` and `pubsub` ( js ) to work with extended block. ( TODO: documentation )
  - `dependencies`: dependencies of this block.
    - list or modules, in case of mutual dependencies:
-     ["some-url", {url: "some-url", async: false, dev: true, global: true}]
+     ["some-url", {url: "some-url", async: false, dev: true, global: true, type: "css or js"}]
    - options in object notation:
-     - async: true to load this module asynchronously. true by default.
-     - url: path of required module.
+     - `async: true to load this module asynchronously. true by default.
+     - `global: for CSS. true if the CSS should also work in global scope. ( under body ). default false.
+     - `type`: default `js`. either `css` or `js`.
+     - `url`: path of required module.
        - generated from name + version if omitted. ( TODO )
-     - name: name of required module ( TODO )
-     - version: version of required module ( TODO )
-     - mode: use to control when this module should be loaded. ( TODO )
-     - global: for CSS. true if the CSS should also work in global scope. ( under body ). default false.
-   - dependencies will be additive in extend chain.
+     - `name`: name of required module ( TODO )
+     - `version`: version of required module ( TODO )
+     - `mode`: use to control when this module should be loaded. ( TODO )
+   - dependencies will be additive in inheritance chain.
 
 
 #### Block Events
