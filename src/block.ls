@@ -266,7 +266,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
           gtx <<< ctx
           payload = {root: node, context: gtx, parent: parent, pubsub: @pubsub, data: @data}
           if type == \init => @obj.push(o = new b.factory payload)
-          ps.push if (o = @obj[idx][type]) => @obj[idx][type](payload) else null
+          ps.push if (o = @obj[idx]) => @obj[idx][type](payload) else null
           _ list, idx + 1, gtx, o
       _ cs, 0, {}
 

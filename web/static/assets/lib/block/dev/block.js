@@ -506,7 +506,7 @@
             if (type === 'init') {
               this$.obj.push(o = new b.factory(payload));
             }
-            ps.push((o = this$.obj[idx][type]) ? this$.obj[idx][type](payload) : null);
+            ps.push((o = this$.obj[idx]) ? this$.obj[idx][type](payload) : null);
             return _(list, idx + 1, gtx, o);
           });
         };

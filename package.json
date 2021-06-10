@@ -3,7 +3,7 @@
   "name": "@plotdb/block",
   "license": "MIT",
   "description": "block",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "main": "dist/block.js",
   "homepage": "https://github.com/plotdb/block",
   "files": [

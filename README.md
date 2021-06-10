@@ -187,10 +187,10 @@ and following private members:
 `block.instance` is just a generic object for managing block life cycle. Every block has another object, serves as the internal object that provides real dynamics of the block. This object is created along with `block.instance`, and it's interface is implemented by developers with the following spec:
 
  - `pkg`: block information, described below.
- - `init({root, mode, context, parent, pubsub})`: initializing a block.
+ - `init({root, context, parent, pubsub})`: initializing a block.
    - `root`: root element
-   - `mode`: executing mode. ( edit, view, etc )
    - `context`: dependencies in an object.
+   - `parent`: object for the direct base block.
    - `pubsub`: for communication between block in extend chain. `pubsub` is an object with following methods:
       - `on(event, cb(parmas))`: handle event with `cb` callback, params from `fire`.
         - return value will be passed and resolved to the returned promise of `fire`.

@@ -1,6 +1,11 @@
 # Change Logs
 
-## V1.4.2
+## v1.4.3
+
+ - fix bug: incorrect `parent` parameter in `init` function.
+
+
+## v1.4.2
 
  - upgrade rescope version to solve scoped / global conflict issue.
 

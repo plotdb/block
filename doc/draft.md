@@ -31,7 +31,7 @@ html+css+js -> json ( dom tree )
  * npm 風格套件. 亦有 package.json
  * 最小需求: 一個 html, 一個 package.json
    - 但若有 js, js 應依規格撰寫
-     - init, destroy, view mode, etc
+     - init, destroy, etc
  * 可用其它語言撰寫, 但發布前需自行編譯.
    - 前端編輯器可提供 transpiler
 
