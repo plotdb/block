@@ -1,5 +1,10 @@
 # Change Logs
 
+## V1.4.2
+
+ - upgrade rescope version to solve scoped / global conflict issue.
+
+
 ## v1.4.1
 
  - add `block.init` for initialization ( such as rescope.init ) when needed, and init block in block.class since block.class can be used independently to block.manager.
