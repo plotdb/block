@@ -56,6 +56,9 @@
       }
     }
   };
+  block.init = proxise.once(function(){
+    return block.rescope.init();
+  });
   block.rescope = new rescope({
     global: window
   });
@@ -75,7 +78,7 @@
   };
   block.manager.prototype = import$(Object.create(Object.prototype), {
     _init: function(){
-      return block.rescope.init();
+      return block.init();
     },
     setRegistry: function(it){
       var ref$;
@@ -262,7 +265,7 @@
   block['class'].prototype = import$(Object.create(Object.prototype), {
     _init: function(){
       var this$ = this;
-      return Promise.resolve().then(function(){
+      return block.init().then(function(){
         var v, ret, ref$;
         this$['interface'] = this$.script instanceof Function
           ? this$.script()

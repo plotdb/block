@@ -30,6 +30,7 @@ block.global =
         .map ~> @hash[it.url] = it.scope
       if ret.length => document.body.classList.add.apply document.body.classList, ret
 
+block.init = proxise.once ~> block.rescope.init!
 block.rescope = new rescope global: window
 block.csscope = new csscope.manager!
 block.manager = (opt={}) ->
@@ -42,7 +43,7 @@ block.manager = (opt={}) ->
   @
 
 block.manager.prototype = Object.create(Object.prototype) <<< do
-  _init: -> block.rescope.init!
+  _init: -> block.init!
   set-registry: ->
     @reg = it or ''
     if typeof(@reg) == \string => if @reg and @reg[* - 1] != \/ => @reg += \/
@@ -135,7 +136,7 @@ block.class = (opt={}) ->
 
 block.class.prototype = Object.create(Object.prototype) <<< do
   _init: ->
-    Promise.resolve!
+    block.init!
       .then ~>
         @interface = (if @script instanceof Function => @script!
         else if typeof(@script) == \object => @script

@@ -1,5 +1,10 @@
 # Change Logs
 
+## v1.4.1
+
+ - add `block.init` for initialization ( such as rescope.init ) when needed, and init block in block.class since block.class can be used independently to block.manager.
+
+
 ## v1.4.0
 
  - support headless block.
