@@ -137,6 +137,7 @@ either way we have to provide a way to load, register, cache these blocks - that
    - `root`: root of a DOM tree. use to create internal dom tree if provided. Overwrite code.
  - `create()`: create a `block.instance` based on this object.
  - `context()`: get library context corresponding to this block.
+ - `i18n(text)`: return translated text based on the current context.
 
 and following private members:
 
@@ -176,6 +177,7 @@ Please note that `obj` (block's internal object) is not the `block.instance` obj
    - return promise.
  - `detach()`: detach DOM. return promise.
  - `update(ops)`: update `datadom` based on provided ops ( array of operational transformation ).
+ - `i18n(text)`: return translated text based on the current context.
 
 and following private members:
 
@@ -187,7 +189,7 @@ and following private members:
 `block.instance` is just a generic object for managing block life cycle. Every block has another object, serves as the internal object that provides real dynamics of the block. This object is created along with `block.instance`, and it's interface is implemented by developers with the following spec:
 
  - `pkg`: block information, described below.
- - `init({root, context, parent, pubsub})`: initializing a block.
+ - `init({root, context, parent, pubsub, data, t})`: initializing a block.
    - `root`: root element
    - `context`: dependencies in an object.
    - `parent`: object for the direct base block.
@@ -195,6 +197,8 @@ and following private members:
       - `on(event, cb(parmas))`: handle event with `cb` callback, params from `fire`.
         - return value will be passed and resolved to the returned promise of `fire`.
       - `fire(event, params): fire `event`. return promise.
+   - `data`: data passing to `create`. optional and up to user.
+   - `t(text)`: translation function based on local, base class and global i18n information.
  - `destroy({root, context})`: destroying a block.
  - `interface`: for accessing custom object. TBD
     - either a function returning interface object, or the interface object itself.
@@ -228,6 +232,11 @@ The `pkg` field of a block interface is defined as:
      - `version`: version of required module ( TODO )
      - `mode`: use to control when this module should be loaded. ( TODO )
    - dependencies will be additive in inheritance chain.
+ - `i18n`: `i18next` style i18n resource. e.g., 
+
+    {
+      "zh-TW": { "name": "名字" }
+    }
 
 
 #### Block Events
@@ -241,6 +250,16 @@ The `pkg` field of a block interface is defined as:
  - destroy
  - after destroy
  - update
+
+## i18n configuration
+
+use `block.i18n.use(...)` to switch the core i18n module, which should at least implement following API:
+
+ - `addResourceBundle(lng, ns, resource, deep, overwrite)`
+ - `changeLanguage(lng)`
+ - `t(text)`
+
+These API are intentionally aligned with `i18next`. Check [i18next documentation](https://www.i18next.com/overview/api) for more information about these API. 
 
 
 ## Why block

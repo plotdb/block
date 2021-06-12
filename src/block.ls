@@ -21,6 +21,22 @@ pubsub.prototype = Object.create(Object.prototype) <<< do
   on: (name, cb) -> @subs[][name].push cb
 
 block = {}
+block.i18n =
+  module:
+    lng: \en
+    t: (v) ->
+      vs = if Array.isArray(v) => v else [v]
+      lng = @lng
+      for i from 0 til vs.length =>
+        [ns, ...t] = vs[i].split(':')
+        t = t.join(':')
+        if @res{}[lng]{}[ns][t] => return that
+      return t or ns or v[* - 1]
+    change-language: -> @lng = it or \en
+    add-resource-bundle: (lng, ns, res, deep, overwrite) -> @res{}[lng][ns] = res
+    res: {}
+  use: -> @module = it
+
 block.global =
   csscope:
     hash: {}
@@ -143,6 +159,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         else if (v = eval(@script or '')) instanceof Function => v!
         else (v or {}))
         if !@interface => @interface = {}
+        @interface.{}pkg
         document.body.appendChild(@style-node = document.createElement("style"))
         @style-node.setAttribute \type, 'text/css'
         @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style, scope-test: "[scope]"}
@@ -151,11 +168,18 @@ block.class.prototype = Object.create(Object.prototype) <<< do
           init: (->), destroy: (->)
         } <<< @interface
       .then ~>
-        if !@interface.{}pkg.extend => return
+        @extends = []
+        if !@interface.pkg.extend => return
         if !@manager => return new Error("no available manager to get extended block")
         @manager.get(@interface.pkg.extend).then ~>
           @extend = it
           @extend-dom = !(@interface.pkg.extend.dom?) or @interface.pkg.extend.dom
+          @extends = [@extend] ++ @extend.extends
+      .then ~>
+        i18n = @interface.pkg.i18n or {}
+        for lng, res of i18n =>
+          ns = "#{@interface.pkg.name}@#{@interface.pkg.version}"
+          block.i18n.module.add-resource-bundle lng, ns, res, true, true
       .then ~>
         @dependencies = if Array.isArray(@interface.{}pkg.dependencies) => @interface.{}pkg.dependencies
         else [v for k,v of (@interface.{}pkg.dependencies or {})]
@@ -186,6 +210,12 @@ block.class.prototype = Object.create(Object.prototype) <<< do
   context: -> @_ctx # get library context
 
   dom: -> @node
+
+  i18n: (t) ->
+    p = @interface.pkg
+    block.i18n.module.t(
+      ["#{p.name}@#{p.version}:#t"] ++ (@extends.map -> "#{it.name}@#{it.version}:#t") ++ [t]
+    )
 
   create: (opt={}) ->
     ret = new block.instance {block: @, name: @name, version: @version, data: opt.data}
@@ -240,6 +270,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
   update: (ops) -> @datadom.update ops
 
   dom: -> if @node => that else @node = @block.resolve-plug-and-clone-node!
+  i18n: -> @block.i18n it
 
   # run factory methods, recursively.
   # we will need a bus for communication.
@@ -264,7 +295,12 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
         #   block.rescope.context (b.dependencies or []).filter(->it.type != \css), (ctx) ~>
         block.rescope.context b._ctx.{}local, (ctx) ~>
           gtx <<< ctx
-          payload = {root: node, context: gtx, parent: parent, pubsub: @pubsub, data: @data}
+          payload = {
+            root: node, parent: parent,
+            ctx: gtx, context: gtx,
+            pubsub: @pubsub, i18n: {t: ~> @block.i18n(it)}, t: ~> @block.i18n(it)
+            data: @data
+          }
           if type == \init => @obj.push(o = new b.factory payload)
           ps.push if (o = @obj[idx]) => @obj[idx][type](payload) else null
           _ list, idx + 1, gtx, o

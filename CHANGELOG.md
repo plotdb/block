@@ -1,5 +1,10 @@
 # Change Logs
 
+## v1.4.4
+
+ - add i18n support
+
+
 ## v1.4.3
 
  - fix bug: incorrect `parent` parameter in `init` function.
