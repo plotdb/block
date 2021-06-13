@@ -1,5 +1,10 @@
 # Change Logs
 
+## v1.4.5
+
+ - fix bug: block should be scoped in base block's scope too.
+
+
 ## v1.4.4
 
  - add i18n support

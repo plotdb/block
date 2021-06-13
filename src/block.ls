@@ -162,7 +162,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @interface.{}pkg
         document.body.appendChild(@style-node = document.createElement("style"))
         @style-node.setAttribute \type, 'text/css'
-        @style-node.textContent = ret = csscope {scope: "*[scope=#{@scope}]", css: @style, scope-test: "[scope]"}
+        @style-node.textContent = ret = csscope {scope: "*[scope~=#{@scope}]", css: @style, scope-test: "[scope]"}
         @factory = (...args) -> @
         @factory.prototype = Object.create(Object.prototype) <<< {
           init: (->), destroy: (->)
@@ -248,7 +248,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     if !root => node = null
     else
       node = @dom!
-      node.setAttribute \scope, @block.scope
+      node.setAttribute \scope, ([@block.scope] ++ @block.extends.map(-> it.scope)).join(' ')
       node.classList.add.apply(
         node.classList,
         @block.csscope.local.map(->it.scope) ++ @block.csscope.global.map(->it.scope)

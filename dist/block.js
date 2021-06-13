@@ -313,7 +313,7 @@
         document.body.appendChild(this$.styleNode = document.createElement("style"));
         this$.styleNode.setAttribute('type', 'text/css');
         this$.styleNode.textContent = ret = csscope({
-          scope: "*[scope=" + this$.scope + "]",
+          scope: "*[scope~=" + this$.scope + "]",
           css: this$.style,
           scopeTest: "[scope]"
         });
@@ -467,7 +467,9 @@
         node = null;
       } else {
         node = this.dom();
-        node.setAttribute('scope', this.block.scope);
+        node.setAttribute('scope', ([this.block.scope].concat(this.block['extends'].map(function(it){
+          return it.scope;
+        }))).join(' '));
         node.classList.add.apply(node.classList, this.block.csscope.local.map(function(it){
           return it.scope;
         }).concat(this.block.csscope.global.map(function(it){
