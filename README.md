@@ -134,6 +134,7 @@ either way we have to provide a way to load, register, cache these blocks - that
          - function: return the interface.
          - object: as the interface.
          - string: evaled to the interface, or a function which return the interface.
+         - for detail of the "interface", see "interface of the internal object" section below.
    - `root`: root of a DOM tree. use to create internal dom tree if provided. Overwrite code.
  - `create()`: create a `block.instance` based on this object.
  - `context()`: get library context corresponding to this block.
@@ -148,9 +149,19 @@ and following private members:
  - `script`: source code for this block's script definition.
  - `style`: source code for this block's style definition.
  - `link`: reserved for future use.
- - `interface`: javascript interface for this block.
  - `styleNode`: node storing parsed / scoped style of this block.
+ - `interface`: javascript interface for this block.
+   - This will also be used as prototype of the instance object, created by `factory` method below.
  - `factory`: constructor for generating an object defined by `script` part.
+ - `id`: unique name for this block.
+   - "name@version" or randomly generated one if `name` and `version` is omitted in `pkg` described below.
+ - `_ctx`: js context object from `rescope`.
+ - `csscope`
+   - `local`: scope list of css for local scope.
+   - `global`: scope list of css scope name for global scope.
+ - `extend`: extended block, as a `block.class` object.
+ - `extendDom`: to extend dom or not.
+ - `extends`: array of extended blocks. `extends[0]` is the direct parent class.
 
 To create a `block.instance` based on a `block.class`:
 

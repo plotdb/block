@@ -1,5 +1,11 @@
 # Change Logs
 
+## v1.4.6 (upcoming)
+
+ - add `id` for block.class in replace of manual composition of name and version.
+ - tweak code flow and remove unnecessary check.
+
+
 ## v1.4.5
 
  - fix bug: block should be scoped in base block's scope too.

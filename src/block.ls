@@ -2,6 +2,13 @@ rescope = if window? => window.rescope else if module? and require? => require "
 
 sanitize = (code) -> (code or '')
 
+rid = ->
+  while true
+    id = "b-#{Math.random!toString(36).substring(2)}"
+    if !rid.hash[id] => break
+  rid.hash[id] = true
+  return id
+
 parse-name-string = (n) ->
   n = n.split('@')
   [n,v] = if !n.0 => ["@#{n.1}", n.2] else [n.0,n.1]
@@ -160,6 +167,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         else (v or {}))
         if !@interface => @interface = {}
         @interface.{}pkg
+        @id = "#{@interface.pkg.name or rid!}@#{@interface.pkg.version or rid!}"
         document.body.appendChild(@style-node = document.createElement("style"))
         @style-node.setAttribute \type, 'text/css'
         @style-node.textContent = ret = csscope {scope: "*[scope~=#{@scope}]", css: @style, scope-test: "[scope]"}
@@ -178,11 +186,10 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       .then ~>
         i18n = @interface.pkg.i18n or {}
         for lng, res of i18n =>
-          ns = "#{@interface.pkg.name}@#{@interface.pkg.version}"
-          block.i18n.module.add-resource-bundle lng, ns, res, true, true
+          block.i18n.module.add-resource-bundle lng, @id, res, true, true
       .then ~>
-        @dependencies = if Array.isArray(@interface.{}pkg.dependencies) => @interface.{}pkg.dependencies
-        else [v for k,v of (@interface.{}pkg.dependencies or {})]
+        @dependencies = if Array.isArray(@interface.pkg.dependencies) => @interface.pkg.dependencies
+        else [v for k,v of (@interface.pkg.dependencies or {})]
         if @extend => @_ctx = @extend.context!
         block.rescope.load @dependencies.filter(-> /\.js$/.exec(it.url or it) or it.type == \js), @_ctx
       .then ~>
@@ -212,10 +219,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
   dom: -> @node
 
   i18n: (t) ->
-    p = @interface.pkg
-    block.i18n.module.t(
-      ["#{p.name}@#{p.version}:#t"] ++ (@extends.map -> "#{it.name}@#{it.version}:#t") ++ [t]
-    )
+    id = @id
+    block.i18n.module.t( ["#id:#t"] ++ (@extends.map -> "#id:#t") ++ [t] )
 
   create: (opt={}) ->
     ret = new block.instance {block: @, name: @name, version: @version, data: opt.data}
