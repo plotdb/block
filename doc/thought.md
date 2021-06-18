@@ -1,31 +1,49 @@
-# block
+# @plotdb/block
 
-exchangable web building block ( block ) 規格制定.
+web exchangable building block ( webblock / block ) 規格制定.
 
  * 目標
-   - cross-expertise / 三方編輯 ( editor, developer, designer )
    - modularized / 可重用、元件化
-   - collaborative / 協作
    - flexibility / 靜態、動態頁面均能開發.
+   - collaborative / 協作
+   - cross-expertise / 三方編輯 ( editor, developer, designer )
+     - 目前看起來這塊會更著重在 `datadom` 的運用. 或者說, 跟以下模組有關:
+       - `datadom`: 內容抽象化
+       - `ldview`: 功能模組化
 
  * 開發規格
-   * block 中不可包含任何 id
-   * 進入點: index.html, index.css, index.js ( 或者, index.html )
-     - 允許任何形式的 transpiling
-       - pug, styl 做為特例特別支援? html / css / js 要替他生成嗎？
-       - 感覺是編輯器才有這個需要.
-     - 引入檔案?
-   * sanity checker? 檢查 id 或其它限制
+   * 進入點: index.html 或由 (TODO/TBD) package.json 定義.
+     - 只辨識 html, css 跟 js, 但允許任何形式的事前 transpiling
+       - 身為開發者的 plotdb 目前主要語言為 pug, stylus 跟 livescript
+         但這透過 `@plotdb/srcbuild` 來支援, 不應另在 `@plotdb/block` 中破例支援.
+       - 亦可另外開發 block editor, 在裡面支援各種可能性.
+   * 外部資源
+     - 允許引入檔案, 但 (TBD) 應妥善定義連結的 scope 與功用.
+       - 目前我們使用 pug 時, 為了將 pug 模組化而使用 `@/` 做為前綴來替代 include path
+         - 也許可以參照這個手訪, 在 block 中使用 `@` 做為網址前綴.
+       - 這必須要主機支援 `@` 這樣的 route, 才能正確取得資源檔 ( js, css, img, font, etc )
+       - 參照下方關於 `assets` 的相關討論.
+   * 基於 html/css/js 的限制
+     - html 中不可包含任何 id
+       - sanity checker? 檢查 id 或其它限制
+     - js 要依 internal object interface(ioi?) 介面製作
+       - js 部份可能會有數層物件:
+         - block 類別的共通介面, 供管理、建立 block, 提供既定的 API 跟已知的作業情境.
+         - 前者與 block 本身的溝通介面, 有既定的 API / Interface 待 block 實作者製作
+         - 由 block 自己管理的內部物件, 可以是任何形式
 
  * 套件規格
    * 檔案架構
-     - 最少只要有 /index.html 即可運作. 但若滿足其它條件, 則 index.html 不一定要有.
-     - 其次, 一定會檢查有無 /package.json, 若有則會從中取得套件資料
-       - block 相關資訊放在 blockinfo 物件中 ( 或者其它名稱? ) 其中包含:
-         - block dependency
-         - lib dependency
-         - 入口檔案 ( html, css, js )
-       - 確認套件名跟版本 (name, version )
+     - 最少只要有 /index.html 即可運作
+ * 套件規格 ( TBD )
+   * 檔案架構
+     - 仍應保留利用任何檔案或機制建立進入點的可能.
+       - 例如, 可以檢查有無 /package.json, 若有則會從中取得套件資料
+         - block 相關資訊放在 blockinfo 物件中 ( 或者其它名稱? ) 其中包含:
+           - block dependency
+           - lib dependency
+           - 入口檔案 ( html, css, js )
+         - 確認套件名跟版本 (name, version )
 
    * 打包格式?
      - json: {files: {'index.html': "...", 'index.css': ..., 'somefile': {type: 'base64', content: ...}}}
@@ -39,39 +57,52 @@ exchangable web building block ( block ) 規格制定.
      - 可以當場自行編輯區塊
    * npm?
    * 一旦在編輯器中客製 block, 這個 block 就沒辦法透過 name@version 將引用傳遞給其它用戶, 因為他只在某用戶的本地端/
-     所以我們需要一個取用本地端 block 的機制
-   * nested package 可參考 npm workspace 怎麼設計:
-     - https://github.com/npm/rfcs/blob/latest/accepted/0026-workspaces.md
-     - https://blog.npmjs.org/post/626173315965468672/npm-v7-series-beta-release-and-semver-major
-
+     - 也許可以將原始 block 以 extend 形式另外保存
+     - 我們需要一個取用本地端 block 的機制
+     - 若元件分組並有較多子元件可能會需要 nested package.
+     - nested package 可參考 npm workspace 怎麼設計:
+       - https://github.com/npm/rfcs/blob/latest/accepted/0026-workspaces.md
+       - https://blog.npmjs.org/post/626173315965468672/npm-v7-series-beta-release-and-semver-major
+   * js / css purpose block?
+     - 因為 block 本身就已可包含 css 跟 js, 可以考慮提供只有 js, css 或兩者 as lib ?
+     - 最 naive 就透過 name@version 找 package.json 看 `main`, `style` 或 `browser` 欄位.
+       - 但這就一般套件. 也會需要定義是否 global. 如:
+         {name, version, global: true}
+     - 光只有 name@version 不一定能識別. 最糟就 fallback 到 package.json. 也可以依 registry 定義, 或者就找index.html.
+     - index.html 的情況, 資訊定義在 js 的 {pkg} 中. 相較於 package.json, block dependencies 看起來更適合前端?
+       - js 可以就在 blobk js 中 {pkg, exports} 的 exports 傳回.
+       - 或沒有 {pkg, exports} 也可以直接就執行 js 內容?
+       - css 可同理, 這樣或者就讓 rescope / csscope 直接 load content.
  * 影響其他 block 的問題?
  * nested block?
- * 假設我有很多個 block, 現在想搬到一個 two column block 中, 該怎麼做? 全選塞入?
-   - 編輯器中選取的問題
-   - 感覺需要一個獨立的 tree-style block list viewer?
-
- * 若非明確定義可以編輯的部份, 都不應該讓視覺編輯介面改到. 但是, 樣式可以?
- * 可編輯的區塊若包含 repeat-item, 可以用 mixin 來定義, 以利變數的套用
- * 需要指定使用的 library
-   - 得想辦法定義 id & version syntax
- * 各個 block 可以自行定義編輯時可做的動作, 例如
-   - 插入 dropdown
-   - 插入表單
+ * 編輯的考量
+   - 假設我有很多個 block, 現在想搬到一個 two column block 中, 該怎麼做? 全選塞入?
+     - 編輯器中選取的問題
+     - 感覺需要一個獨立的 tree-style block list viewer?
+   - 若非明確定義可以編輯的部份, 都不應該讓視覺編輯介面改到. 但是, 樣式可以?
+   - 可編輯的區塊若包含 repeat-item, 可以用 mixin 來定義, 以利變數的套用
+   - 需要指定使用的 library
+     - 得想辦法定義 id & version syntax
+   - 各個 block 可以自行定義編輯時可做的動作, 例如
+     - 插入 dropdown
+     - 插入表單
 
 
 ## Quick Idea
 
-block-runtime - 負責管理 block load, resolve depdendency 等
- - default set - 可以有一組 block
- - dynamically load
-Block - 建構的基礎元件. 可包含 child block
-root-block - 一個實體化的 Block, 但為根
+ * block-manager - 負責管理 block load, resolve depdendency 等
+   - default set - 可以有一組 block
+   - dynamically load
+ * Block - 建構的基礎元件
+   - 可包含 child block (?) ( 不清楚這個概念是什麼 )
+ * root-block - 一個實體化的 Block, 但為根
+   - 可能可以做為一個特例跟隨 block lib 本身提供.
 
 registry
 1. 有一個集中 registry
 2. 核心模組
 3. 使用者定義模組列表 ( 來源,版本等 )
-4. 使用時, 透過 runtime 即時載入
+4. 使用時, 透過 manager 即時載入
   - 亦可控制行為, 比方說限制使用範圍, 禁止動態載入
 5. 可載入一組 Blocks, 但亦可各別載入子 blocks
 
@@ -203,3 +234,4 @@ registry
      - style="background-image"
  * i18n
    - 怎辦?
+   - 已大致搞定.

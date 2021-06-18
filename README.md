@@ -81,7 +81,7 @@ A block instance is then injected into web page:
 
 As described above, `@plotdb/block` contains following basic elements:
 
- - `block.manager` - to access, register, get and cache `block.class` 
+ - `block.manager` - to access, register, get and cache `block.class`
  - `block.class` - representing the definition of a block, and is used to generate `block.instance`.
  - `block.instance` - object for manipulating state / DOM of a given block.
 
@@ -199,8 +199,8 @@ and following private members:
 
 `block.instance` is just a generic object for managing block life cycle. Every block has another object, serves as the internal object that provides real dynamics of the block. This object is created along with `block.instance`, and it's interface is implemented by developers with the following spec:
 
- - `pkg`: block information, described below.
- - `init({root, context, parent, pubsub, data, t})`: initializing a block.
+ - `pkg`: block information, described below. optional.
+ - `init({root, context, parent, pubsub, data, t})`: initializing a block. optional.
    - `root`: root element
    - `context`: dependencies in an object.
    - `parent`: object for the direct base block.
@@ -210,10 +210,17 @@ and following private members:
       - `fire(event, params): fire `event`. return promise.
    - `data`: data passing to `create`. optional and up to user.
    - `t(text)`: translation function based on local, base class and global i18n information.
- - `destroy({root, context})`: destroying a block.
- - `interface`: for accessing custom object. TBD
+ - `destroy({root, context})`: destroying a block. optional.
+ - `interface`: for accessing custom object. optional.
     - either a function returning interface object, or the interface object itself.
-    - child block always overwrite parents' interface in an inheritance chain.
+    - child block always overwrite parents' interface in an inheritance chain, if available
+ - `exports(global)`: for sharing block as a JS library. return objects to export. optional
+   - (TBD) user can use a block as a library by adding it in the `dependencies` config, such as:
+     - [{name: "some-block", version: "some-vesion"}, ...]
+
+All members are optional thus the minimal definition will be an empty object or even `undefined`:
+
+    {}
 
 
 #### Block Information
@@ -237,13 +244,14 @@ The `pkg` field of a block interface is defined as:
      - `async: true to load this module asynchronously. true by default.
      - `global: for CSS. true if the CSS should also work in global scope. ( under body ). default false.
      - `type`: default `js`. either `css` or `js`.
+       - (TBD) support `block` type for preloading block / export block library.
      - `url`: path of required module.
        - generated from name + version if omitted. ( TODO )
      - `name`: name of required module ( TODO )
      - `version`: version of required module ( TODO )
      - `mode`: use to control when this module should be loaded. ( TODO )
    - dependencies will be additive in inheritance chain.
- - `i18n`: `i18next` style i18n resource. e.g., 
+ - `i18n`: `i18next` style i18n resource. e.g.,
 
     {
       "zh-TW": { "name": "名字" }
@@ -270,7 +278,7 @@ use `block.i18n.use(...)` to switch the core i18n module, which should at least 
  - `changeLanguage(lng)`
  - `t(text)`
 
-These API are intentionally aligned with `i18next`. Check [i18next documentation](https://www.i18next.com/overview/api) for more information about these API. 
+These API are intentionally aligned with `i18next`. Check [i18next documentation](https://www.i18next.com/overview/api) for more information about these API.
 
 
 ## Why block
@@ -281,7 +289,7 @@ While what `@plotdb/block` ( web component & management ) provides is already av
 
  * version management
    - blocks are managed with proper versioning.
-   - blocks should work even using the same lib with different versions without `import`. 
+   - blocks should work even using the same lib with different versions without `import`.
      - popular frameworks use `import` which will have to bundle js within.
      - even if bundle is not necessary, many libs don't support `import` and will need wrapper.
  * framework agnostic
