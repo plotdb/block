@@ -4,6 +4,7 @@
 
  - add `id` for block.class in replace of manual composition of name and version.
  - tweak code flow and remove unnecessary check.
+ - add `overwrite` value in {pkg: {extend: {dom}}} for replacing current `false` behavior.
 
 
 ## v1.4.5

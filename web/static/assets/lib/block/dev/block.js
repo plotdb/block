@@ -414,8 +414,8 @@
     i18n: function(t){
       var id;
       id = this.id;
-      return block.i18n.module.t([id + ":" + t].concat(this['extends'].map(function(){
-        return id + ":" + t;
+      return block.i18n.module.t([id + ":" + t].concat(this['extends'].map(function(it){
+        return it.id + ":" + t;
       }), [t]));
     },
     create: function(opt){
@@ -431,20 +431,27 @@
         return ret;
       });
     },
-    resolvePlugAndCloneNode: function(child){
+    resolvePlugAndCloneNode: function(child, byPass){
       var node;
-      node = this.dom().cloneNode(true);
-      if (child) {
-        Array.from(node.querySelectorAll('plug')).map(function(it){
-          var name, n;
-          name = it.getAttribute('name');
-          n = child.querySelector(":scope :not([plug]) [plug=" + name + "], :scope > [plug=" + name + "]");
-          if (n) {
-            return it.replaceWith(n);
-          }
-        });
+      byPass == null && (byPass = false);
+      if (!byPass) {
+        node = this.dom().cloneNode(true);
+        if (child) {
+          Array.from(node.querySelectorAll('plug')).map(function(it){
+            var name, n;
+            name = it.getAttribute('name');
+            n = child.querySelector(":scope :not([plug]) [plug=" + name + "], :scope > [plug=" + name + "]");
+            if (n) {
+              return it.replaceWith(n);
+            }
+          });
+        }
+      } else {
+        node = child;
       }
-      return this.extend && this.extendDom ? this.extend.resolvePlugAndCloneNode(node) : node;
+      return this.extend && this.extendDom !== false ? this.extendDom === 'overwrite'
+        ? this.extend.resolvePlugAndCloneNode(node, true)
+        : this.extend.resolvePlugAndCloneNode(node) : node;
     }
   });
   block.instance = function(opt){
@@ -516,13 +523,29 @@
     update: function(ops){
       return this.datadom.update(ops);
     },
+    _transform: function(node){
+      var this$ = this;
+      Array.from(node.querySelectorAll('[t]')).map(function(n){
+        var v;
+        if (!(v = n.getAttribute('t'))) {
+          return;
+        }
+        v = this$.i18n(v);
+        if (n.hasAttribute('t-attr')) {
+          return n.setAttribute(n.getAttribute('t-attr'), v);
+        } else {
+          return n.textContent = v;
+        }
+      });
+      return node;
+    },
     dom: function(){
       var that;
       if (that = this.node) {
         return that;
-      } else {
-        return this.node = this.block.resolvePlugAndCloneNode();
       }
+      this.node = this.block.resolvePlugAndCloneNode();
+      return this._transform(this.node);
     },
     i18n: function(it){
       return this.block.i18n(it);

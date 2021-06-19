@@ -1,3 +1,4 @@
  - standalone js library packed in block
  - cnofig dependencies with partial import
  - assets loading with `/~/file`, `/~m/name/version/file` syntax
+ - DOM transformer

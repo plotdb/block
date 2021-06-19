@@ -189,6 +189,9 @@ Please note that `obj` (block's internal object) is not the `block.instance` obj
  - `detach()`: detach DOM. return promise.
  - `update(ops)`: update `datadom` based on provided ops ( array of operational transformation ).
  - `i18n(text)`: return translated text based on the current context.
+ - `dom()`: return DOM corresponding to this block. Create a new one if not yet created.
+ - `run({node,type})`: execute `type` API provided by `block` implementation with `node` as root. 
+
 
 and following private members:
 
@@ -235,7 +238,10 @@ The `pkg` field of a block interface is defined as:
  - `extend`: optional. block identifier ( `name@version` or `{name, version}` ) of block to extend.
    - `name`: parent block's name
    - `version`: parent block's version.
-   - `dom`: default true. use parent's DOM if set true.
+   - `dom`: default true. can be any of following:
+     - `true`: use parent's DOM if set true.
+     - `false`: completely ignore extended DOM in any ancestor.
+     - `"overwrite"`: overwrite parent DOM but extend DOM from grantparent, if any.
    - use `plug` ( for html ), `obj` and `pubsub` ( js ) to work with extended block. ( TODO: documentation )
  - `dependencies`: dependencies of this block.
    - list or modules, in case of mutual dependencies:

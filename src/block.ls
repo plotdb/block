@@ -220,23 +220,28 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 
   i18n: (t) ->
     id = @id
-    block.i18n.module.t( ["#id:#t"] ++ (@extends.map -> "#id:#t") ++ [t] )
+    block.i18n.module.t( ["#id:#t"] ++ (@extends.map -> "#{it.id}:#t") ++ [t] )
 
   create: (opt={}) ->
     ret = new block.instance {block: @, name: @name, version: @version, data: opt.data}
     ret.init!then -> ret
 
-  resolve-plug-and-clone-node: (child) ->
-    node = @dom!cloneNode true
-    # child content may contain elements for `plug` - replace parent plug with child, if any found.
-    if child =>
-      # list all plugs used in sample dom, and replace them with child [plug].
-      Array.from(node.querySelectorAll('plug')).map ->
-        name = it.getAttribute(\name)
-        # we skip nested plugs so recursive plug applying is possible.
-        n = child.querySelector(":scope :not([plug]) [plug=#{name}], :scope > [plug=#{name}]")
-        if n => it.replaceWith n
-    return if @extend and @extend-dom => @extend.resolve-plug-and-clone-node(node) else node
+  resolve-plug-and-clone-node: (child, by-pass = false) ->
+    if !by-pass =>
+      node = @dom!cloneNode true
+      # child content may contain elements for `plug` - replace parent plug with child, if any found.
+      if child =>
+        # list all plugs used in sample dom, and replace them with child [plug].
+        Array.from(node.querySelectorAll('plug')).map ->
+          name = it.getAttribute(\name)
+          # we skip nested plugs so recursive plug applying is possible.
+          n = child.querySelector(":scope :not([plug]) [plug=#{name}], :scope > [plug=#{name}]")
+          if n => it.replaceWith n
+    else node = child
+    return if @extend and @extend-dom != false =>
+      if @extend-dom == \overwrite => @extend.resolve-plug-and-clone-node(node, true)
+      else @extend.resolve-plug-and-clone-node(node)
+    else node
 
 block.instance = (opt = {}) ->
   @ <<< opt{name, version, block, data}
@@ -274,7 +279,21 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     return null
   update: (ops) -> @datadom.update ops
 
-  dom: -> if @node => that else @node = @block.resolve-plug-and-clone-node!
+  _transform: (node) ->
+    # i18n transformer
+    Array.from(node.querySelectorAll '[t]')
+      .map (n) ~>
+        if !(v = n.getAttribute(\t)) => return
+        v = @i18n(v)
+        if n.hasAttribute \t-attr => n.setAttribute n.getAttribute(\t-attr), v
+        else n.textContent = v
+    return node
+
+  dom: ->
+    if @node => return that
+    @node = @block.resolve-plug-and-clone-node!
+    @_transform @node
+
   i18n: -> @block.i18n it
 
   # run factory methods, recursively.
