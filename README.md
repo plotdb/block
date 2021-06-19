@@ -142,6 +142,9 @@ either way we have to provide a way to load, register, cache these blocks - that
 
 and following private members:
 
+ - `name`: name of this block.
+ - `version`: name of this block.
+ - `manager`: block manager to use when resolving recursive blocks.
  - `dom`: block DOM tree.
  - `scope`: unique id randomly generated each time when `block.class` is created mainly for scoping purpose.
  - `opt`: raw constructor options.
