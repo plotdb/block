@@ -480,7 +480,7 @@
       return this.block.init();
     },
     attach: function(opt){
-      var root, node;
+      var root, node, exts, s, i$, to$, i, es;
       opt == null && (opt = {});
       if (opt.data) {
         this.data = opt.data;
@@ -494,9 +494,19 @@
         node = null;
       } else {
         node = this.dom();
-        node.setAttribute('scope', ([this.block.scope].concat(this.block['extends'].map(function(it){
-          return it.scope;
-        }))).join(' '));
+        exts = [this.block].concat(this.block['extends']);
+        s = [this.block.scope];
+        for (i$ = 0, to$ = exts.length - 1; i$ < to$; ++i$) {
+          i = i$;
+          es = exts[i].extendStyle;
+          if (es === 'overwrite') {
+            continue;
+          } else if (es === false) {
+            break;
+          }
+          s.push(exts[i + 1].scope);
+        }
+        node.setAttribute('scope', s.join(' '));
         node.classList.add.apply(node.classList, this.block.csscope.local.map(function(it){
           return it.scope;
         }).concat(this.block.csscope.global.map(function(it){

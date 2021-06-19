@@ -1,5 +1,10 @@
 # Change Logs
 
+## v1.4.8
+
+ - fix bug: should by-pass scope which style is not extended
+
+
 ## v1.4.7
 
  - remove useless `extend` option in `block.class` constructor.

@@ -264,7 +264,14 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     if !root => node = null
     else
       node = @dom!
-      node.setAttribute \scope, ([@block.scope] ++ @block.extends.map(-> it.scope)).join(' ')
+      exts = [@block] ++ @block.extends
+      s = [@block.scope]
+      for i from 0 til exts.length - 1 =>
+        es = exts[i].extend-style
+        if es == \overwrite => continue
+        else if es == false => break
+        s.push exts[i + 1].scope
+      node.setAttribute \scope, s.join(' ')
       node.classList.add.apply(
         node.classList,
         @block.csscope.local.map(->it.scope) ++ @block.csscope.global.map(->it.scope)
