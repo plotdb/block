@@ -252,7 +252,6 @@
     };
     this.name = opt.name;
     this.version = opt.version;
-    this.extend = opt.extend;
     this.manager = opt.manager;
     code = opt.code;
     if (opt.root) {

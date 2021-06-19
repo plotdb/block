@@ -121,7 +121,7 @@ block.class = (opt={}) ->
   @_ctx = {} # libraries context. may inherited from extended base class.
   @csscope = {global: [], local: []} # css libraries. may be either global or local.
   # manager is used for recursively get extended block.
-  @ <<< opt{name, version, extend, manager}
+  @ <<< opt{name, version, manager}
   code = opt.code
   if opt.root => code = (if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root).innerHTML
   if typeof(code) == \function => code = code!

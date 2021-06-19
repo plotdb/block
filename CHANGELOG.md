@@ -1,5 +1,9 @@
 # Change Logs
 
+## v1.4.7 (upcoming)
+
+ - remove useless `extend` option in `block.class` constructor.
+
 ## v1.4.6
 
  - add `id` for block.class in replace of manual composition of name and version.
