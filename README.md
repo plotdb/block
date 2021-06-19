@@ -245,6 +245,10 @@ The `pkg` field of a block interface is defined as:
      - `true`: use parent's DOM if set true.
      - `false`: completely ignore extended DOM in any ancestor.
      - `"overwrite"`: overwrite parent DOM but extend DOM from grantparent, if any.
+   - `style`: default true. can be any of following:
+     - `true`: use parent's style if set true.
+     - `false`: completely ignore extended style in any ancestor.
+     - `"overwrite"`: overwrite parent style but extend style from grantparent, if any.
    - use `plug` ( for html ), `obj` and `pubsub` ( js ) to work with extended block. ( TODO: documentation )
  - `dependencies`: dependencies of this block.
    - list or modules, in case of mutual dependencies:

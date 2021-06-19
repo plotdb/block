@@ -349,6 +349,9 @@
         return this$.manager.get(this$['interface'].pkg.extend).then(function(it){
           this$.extend = it;
           this$.extendDom = !(this$['interface'].pkg.extend.dom != null) || this$['interface'].pkg.extend.dom;
+          this$.extendStyle = !(this$['interface'].pkg.extend.style != null) || this$['interface'].pkg.extend.style;
+          return this$.extend.init();
+        }).then(function(){
           return this$['extends'] = [this$.extend].concat(this$.extend['extends']);
         });
       }).then(function(){
@@ -391,9 +394,16 @@
           return it.url || it;
         }));
       }).then(function(it){
-        return this$.csscope.local = (it || []).concat(this$.extend
-          ? this$.extend.csscope.local || []
-          : []);
+        var ref$;
+        this$.csscope.local = it || [];
+        if (!this$.extend) {
+          return;
+        }
+        if (this$.extendStyle === true) {
+          return (ref$ = this$.csscope).local = ref$.local.concat(this$.extend.csscope.local || []);
+        } else if (this$.extendDom === 'overwrite') {
+          return (ref$ = this$.csscope).local = ref$.local.concat(this$.extend.csscope.local.slice(1));
+        }
       })['catch'](function(e){
         var node;
         console.error(e);

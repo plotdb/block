@@ -1,8 +1,11 @@
 # Change Logs
 
-## v1.4.7 (upcoming)
+## v1.4.7
 
  - remove useless `extend` option in `block.class` constructor.
+ - add `style` in `extend` similar to `dom` but applied on style.
+ - fix bug: block.class.init should also wait for extended class initialization (recursively)
+
 
 ## v1.4.6
 

@@ -179,10 +179,14 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @extends = []
         if !@interface.pkg.extend => return
         if !@manager => return new Error("no available manager to get extended block")
-        @manager.get(@interface.pkg.extend).then ~>
-          @extend = it
-          @extend-dom = !(@interface.pkg.extend.dom?) or @interface.pkg.extend.dom
-          @extends = [@extend] ++ @extend.extends
+        @manager.get(@interface.pkg.extend)
+          .then ~>
+            @extend = it
+            @extend-dom = !(@interface.pkg.extend.dom?) or @interface.pkg.extend.dom
+            @extend-style = !(@interface.pkg.extend.style?) or @interface.pkg.extend.style
+            @extend.init!
+          .then ~>
+            @extends = [@extend] ++ @extend.extends
       .then ~>
         i18n = @interface.pkg.i18n or {}
         for lng, res of i18n =>
@@ -206,8 +210,10 @@ block.class.prototype = Object.create(Object.prototype) <<< do
             .map -> it.url or it
         )
       .then ~>
-        # TODO documenting? or let it be private?
-        @csscope.local = (it or []) ++ (if @extend => @extend.csscope.local or [] else [])
+        @csscope.local = (it or [])
+        if !@extend => return
+        if @extend-style == true => @csscope.local ++= (@extend.csscope.local or [])
+        else if @extend-dom == \overwrite => @csscope.local ++= (@extend.csscope.local).slice(1)
       .catch (e) ~>
         console.error e
         node = document.createElement("div")
