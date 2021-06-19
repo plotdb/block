@@ -1,6 +1,6 @@
 # Change Logs
 
-## v1.4.6 (upcoming)
+## v1.4.6
 
  - add `id` for block.class in replace of manual composition of name and version.
  - tweak code flow and remove unnecessary check.
