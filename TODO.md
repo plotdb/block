@@ -5,7 +5,7 @@
      - we can by default enabling i18n and can be configured with pkg.dom-processor
      - processor can be available in block.processor.i18n 
      - run with block.class as context, or auxiliary object.
-     - i18n can use following schema:
+     - i18n can use following schema: ( how to support multi-attributes? )
 
     div(t="text to translate")
     div(t="text to translate",t-attr="attr-name-if-applicable")
