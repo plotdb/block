@@ -2,6 +2,8 @@ rescope = if window? => window.rescope else if module? and require? => require "
 
 sanitize = (code) -> (code or '')
 
+e404 = -> Promise.reject(new Error! <<< {name: \lderror, id: 404})
+
 rid = ->
   while true
     id = "b-#{Math.random!toString(36).substring(2)}"
@@ -62,48 +64,59 @@ block.manager = (opt={}) ->
   @proxy = {}
   @running = {}
   @set-registry opt.registry
+  @fallback = opt.fallback or null
+  @_fetch = opt.fetch or null
   @init = proxise.once ~> @_init!
   @init!
   @
 
 block.manager.prototype = Object.create(Object.prototype) <<< do
   _init: -> block.init!
+  set-fallback: -> @fallback = it
   set-registry: ->
     @reg = it or ''
     if typeof(@reg) == \string => if @reg and @reg[* - 1] != \/ => @reg += \/
   set: (opt = {}) ->
     opts = if Array.isArray(opt) => opt else [opt]
     Promise.all(opts.map (obj) ~>
-      {name,version} = obj
+      {name,version,path} = obj
       b = if obj instanceof block.class => obj else obj.block
-      @hash{}[name][version] = b
+      @hash{}[name][version][path or 'index.html'] = b
       b.init!
     )
-  get-url: ({name, version}) ->
-    if typeof(@reg) == \function => @reg {name, version}
-    else return "#{@reg or ''}/block/#{name}/#{version}"
+  get-url: ({name, version, path}) ->
+    if typeof(@reg) == \function => @reg {name, version, path}
+    else return "#{@reg or ''}/block/#{name}/#{version}/#{path or 'index.html'}"
+
+  fetch: (opt) ->
+    if @_fetch => return Promise.resolve(@_fetch opt)
+    url = @get-url(opt{name,version,path})
+    if !url => return e404!
+    ld$.fetch url, {method: \GET}, {type: \text}
 
   # TODO parse semantic versioning for better cache performance.
   _get: (opt) ->
-    [n,v] = [opt.name, opt.version or \latest]
+    [n,v,p] = [opt.name, opt.version or \latest, opt.path or 'index.html']
     if !(n and v) => return Promise.reject(new Error! <<< {name: "lderror", id: 1015})
-    if @hash{}[n][v]? and !opt.force =>
-      return if @hash[n][v] => Promise.resolve(@hash[n][v])
-      else Promise.reject(new Error! <<< {name: "lderror", id: 404})
-    if @running{}[n][v] == true => return
-    @running[n][v] = true
-    ld$.fetch @get-url(opt{name,version}) , {method: \GET}, {type: \text}
+    if @hash{}[n]{}[v][p]? and !opt.force => return Promise.resolve(@hash[n][v][p])
+    if @running{}[n]{}[v][p] == true => return
+    @running[n][v][p] = true
+    @fetch opt{name,version,path}
+      .then ~> if it => return it else return e404!
+      .catch ~>
+        if !@fallback => return Promise.reject(e)
+        @fallback.get opt
       .then (ret = {}) ~>
-        b = new block.class({code: ret, name: n, version: v, manager: @})
-        @set obj = ({name: n, version: v} <<< {block: b})
+        b = new block.class({code: ret, name: n, version: v, path: p, manager: @})
+        @set obj = ({name: n, version: v, path: p} <<< {block: b})
         if ret.version and ret.version != v => @set(obj <<< {version: ret.version})
         b.init!then -> b
       .then ~>
-        @proxy[n][v].resolve it
+        @proxy[n][v][p].resolve it
         return it
-      .finally ~> @running[n][v] = false
+      .finally ~> @running[n][v][p] = false
       .catch (e) ~>
-        @proxy[n][v].reject e
+        @proxy[n][v][p].reject e
         return Promise.reject e
 
   get: (opt = {}) ->
@@ -111,9 +124,9 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     Promise.all(
       opts.map (opt = {}) ~>
         if typeof(opt) == \string => opt = parse-name-string(opt)
-        [n,v] = [opt.name, opt.version or \latest]
-        if !@proxy{}[n][v] => @proxy[n][v] = proxise (opt) ~> @_get(opt)
-        @proxy[n][v] opt
+        [n,v,p] = [opt.name, opt.version or \latest, opt.path or 'index.html']
+        if !@proxy{}[n]{}[v][p] => @proxy[n][v][p] = proxise (opt) ~> @_get(opt)
+        @proxy[n][v][p] opt
     ).then -> if Array.isArray(opt) => return it else return it.0
 
 block.class = (opt={}) ->
@@ -122,7 +135,7 @@ block.class = (opt={}) ->
   @_ctx = {} # libraries context. may inherited from extended base class.
   @csscope = {global: [], local: []} # css libraries. may be either global or local.
   # manager is used for recursively get extended block.
-  @ <<< opt{name, version, manager}
+  @ <<< opt{name, version, path, manager}
   code = opt.code
   if opt.root => code = (if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root).innerHTML
   if typeof(code) == \function => code = code!
@@ -168,7 +181,11 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         else (v or {}))
         if !@interface => @interface = {}
         @interface.{}pkg
-        @id = "#{@interface.pkg.name or rid!}@#{@interface.pkg.version or rid!}"
+        if !@name => @name = @interface.pkg.name
+        if !@version => @version = @interface.pkg.version
+        if !@path => @path = @interface.pkg.path
+        @id = "#{@name or rid!}@#{@version or rid!}/#{@path or 'index.html'}"
+
         document.body.appendChild(@style-node = document.createElement("style"))
         @style-node.setAttribute \type, 'text/css'
         @style-node.textContent = ret = csscope {scope: "*[scope~=#{@scope}]", css: @style, scope-test: "[scope]"}

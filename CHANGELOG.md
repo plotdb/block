@@ -1,5 +1,12 @@
 # Change Logs
 
+## v1.5.0
+
+ - add concept of `path` in block definition
+ - add concept of `fallback` and `fetch` in block.mananger
+ - use name and version from constructing instead of from module pkg metadata, so the name/version/path data is consistnent and we don't have to define 
+
+
 ## v1.4.9
 
  - fix bug: rid.hash is not defined before using.

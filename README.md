@@ -53,14 +53,15 @@ Script can either be an object described as below, or a function returning that 
 
 ## Block Naming and Accessing
 
-To use a block, we need to know how to identify it. Like npm modules, blocks are defined with a `name` and a `version`, where:
+To use a block, we need to know how to identify it. Like npm modules, blocks are defined with a `name`, a `version` and an optional `path`, where:
 
  - `name`: use the naming convention as npm. e.g., `@loadingio/spinner`
  - `version`: sematic versioning, tag or hash value. e.g., `0.0.1`
+ - `path`: path of the block definition file inside the module `name@version`. `index.html` if omitted.
 
 To access a block with its name, we need a manager ( `block.manager` ):
 
-    manager = new block.manager registry: ({name,version}) -> "/block/#name/#version/index.html"
+    manager = new block.manager registry: ({name,version,path}) -> "/block/#name/#version/#path/index.html"
     mananger.init!
       .then -> manager.get({name: "my-block", version: "0.1.0"})
       .then (block) -> ...
@@ -100,18 +101,18 @@ either way we have to provide a way to load, register, cache these blocks - that
 
  - `constructor(opts)`: create a new block.manager object before using it with opts:
    - `registry`: either function or string, tell `block.manager` where to find remote blocks.
-     - `function({name,version})`: return URL for given `name` and `version` of a block.
+     - `function({name,version,path})`: return URL for given `name`, `version` and `path` of a block.
      - `string`: the registry base url. block.manager will look up blocks under this url with this rule:
-       - `/block/<name>/<version>/index.html`
+       - `/block/<name>/<version>/<path>`
  - `setRegistry(v)`: update `registry` dynamically.
    - `v`: can be a function or string, similar to the option in constructor.
- - `set({name,version,block}): register a block with `name` and `version`.
+ - `set({name,version,path,block}): register a block with `name`, `version` and `path`.
    - `block`: a `block-class` object, explained below.
    - `set` also accepts Array of {name,version,block} object for batching `set`.
- - `getUrl({name,version})`: get corresponding url for a block with `name` and `version`.
- - `get({name,version,force})`: return a `block-class` object corresponding to a block with `name` and `version`.
+ - `getUrl({name,version,path})`: get corresponding url for a block with `name`, `version` and `path`.
+ - `get({name,version,path,force})`: return a `block-class` object corresponding to `name`, `version` and `path`.
    - `force`: by default, `block.manager` caches result. set `force` to true to force `block.manager` re-fetch data.
-   - `get` also accept an array of `{name,version,force}` tuples for batching `get`.
+   - `get` also accept an array of `{name,version,path,force}` tuples for batching `get`.
       - in this case, `get` returns an array of `block.class`.
 
 
@@ -124,6 +125,7 @@ either way we have to provide a way to load, register, cache these blocks - that
  - `constructor(opt)` with following options:
    - `name`: block name. mandatory.
    - `version`: block version. mandatory.
+   - `path`: block path. optional. `index.html` if omitted.
    - `code`: use to create DOM / style / internal object. it can be one of following:
      - a function. should return either html code or object; returned value will be parsed by corresponding rules.
      - a string, providing HTML code. structure of HTML should follow the definition of a block.
@@ -143,7 +145,8 @@ either way we have to provide a way to load, register, cache these blocks - that
 and following private members:
 
  - `name`: name of this block.
- - `version`: name of this block.
+ - `version`: version of this block.
+ - `path`: path of this block.
  - `manager`: block manager to use when resolving recursive blocks.
  - `dom`: block DOM tree.
  - `scope`: unique id randomly generated each time when `block.class` is created mainly for scoping purpose.
@@ -157,8 +160,8 @@ and following private members:
    - This will also be used as prototype of the instance object, created by `factory` method below.
  - `factory`: constructor for generating an object defined by `script` part.
  - `id`: unique name for this block.
-   - "name@version" or randomly generated one if `name` and `version` is omitted in `pkg` described below.
- - `_ctx`: js context object from `rescope`.
+   - "name@version/path" or randomly generated one if `name` and `version` is not available.
+ - `\_ctx`: js context object from `rescope`.
  - `csscope`
    - `local`: scope list of css for local scope.
    - `global`: scope list of css scope name for global scope.
@@ -222,7 +225,7 @@ and following private members:
     - child block always overwrite parents' interface in an inheritance chain, if available
  - `exports(global)`: for sharing block as a JS library. return objects to export. optional
    - (TBD) user can use a block as a library by adding it in the `dependencies` config, such as:
-     - [{name: "some-block", version: "some-vesion"}, ...]
+     - [{name: "some-block", version: "some-vesion", path: "path-to-file"}, ...]
 
 All members are optional thus the minimal definition will be an empty object or even `undefined`:
 
@@ -234,13 +237,16 @@ All members are optional thus the minimal definition will be an empty object or 
 The `pkg` field of a block interface is defined as:
 
  - `author`: author name. optional
- - `name`: block name. Follow NPM package naming convention. required.
- - `version`: Semver string. required.
+ - `name`: block name. Follow NPM package naming convention. optional.
+ - `version`: Semver string. optional.
+    - `name` and `version` is not always necessary if the current block definition is not a standalone package but inside some package.
+ - `path`: path of the block definition file in the module. optional.
  - `license`: License. required
  - `description`: description of this block. optional
- - `extend`: optional. block identifier ( `name@version` or `{name, version}` ) of block to extend.
+ - `extend`: optional. block identifier ( `name@version` or `{name, version, path}` ) of block to extend.
    - `name`: parent block's name
    - `version`: parent block's version.
+   - `path`: path of the block definition file.
    - `dom`: default true. can be any of following:
      - `true`: use parent's DOM if set true.
      - `false`: completely ignore extended DOM in any ancestor.
@@ -259,7 +265,7 @@ The `pkg` field of a block interface is defined as:
      - `type`: default `js`. either `css` or `js`.
        - (TBD) support `block` type for preloading block / export block library.
      - `url`: path of required module.
-       - generated from name + version if omitted. ( TODO )
+       - generated from name + version + path if omitted. ( TODO )
      - `name`: name of required module ( TODO )
      - `version`: version of required module ( TODO )
      - `mode`: use to control when this module should be loaded. ( TODO )
