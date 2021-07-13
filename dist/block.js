@@ -149,12 +149,12 @@
         ? opt
         : [opt];
       return Promise.all(opts.map(function(obj){
-        var name, version, path, b, ref$;
+        var name, version, path, b, ref$, ref1$;
         name = obj.name, version = obj.version, path = obj.path;
         b = obj instanceof block['class']
           ? obj
           : obj.block;
-        ((ref$ = this$.hash)[name] || (ref$[name] = {}))[version][path || 'index.html'] = b;
+        ((ref$ = (ref1$ = this$.hash)[name] || (ref1$[name] = {}))[version] || (ref$[version] = {}))[path || 'index.html'] = b;
         return b.init();
       }));
     },
@@ -213,7 +213,7 @@
         } else {
           return e404();
         }
-      })['catch'](function(){
+      })['catch'](function(e){
         if (!this$.fallback) {
           return Promise.reject(e);
         }

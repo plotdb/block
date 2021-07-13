@@ -1,5 +1,11 @@
 # Change Logs
 
+## v1.5.1
+
+ - bug fix: add missing `e` in exception handler in manager get function
+ - bug fix: in manager, ensure object exist before storing cache data in it
+
+
 ## v1.5.0
 
  - add concept of `path` in block definition

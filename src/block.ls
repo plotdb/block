@@ -81,7 +81,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     Promise.all(opts.map (obj) ~>
       {name,version,path} = obj
       b = if obj instanceof block.class => obj else obj.block
-      @hash{}[name][version][path or 'index.html'] = b
+      @hash{}[name]{}[version][path or 'index.html'] = b
       b.init!
     )
   get-url: ({name, version, path}) ->
@@ -103,7 +103,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     @running[n][v][p] = true
     @fetch opt{name,version,path}
       .then ~> if it => return it else return e404!
-      .catch ~>
+      .catch (e) ~>
         if !@fallback => return Promise.reject(e)
         @fallback.get opt
       .then (ret = {}) ~>
