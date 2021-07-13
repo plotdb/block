@@ -213,6 +213,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       .then ~>
         @csscope.local = (it or [])
         if !@extend => return
+        @csscope.global ++= (@extend.csscope.global or [])
         if @extend-style == true => @csscope.local ++= (@extend.csscope.local or [])
         else if @extend-dom == \overwrite => @csscope.local ++= (@extend.csscope.local).slice(1)
       .catch (e) ~>

@@ -400,6 +400,7 @@
         if (!this$.extend) {
           return;
         }
+        (ref$ = this$.csscope).global = ref$.global.concat(this$.extend.csscope.global || []);
         if (this$.extendStyle === true) {
           return (ref$ = this$.csscope).local = ref$.local.concat(this$.extend.csscope.local || []);
         } else if (this$.extendDom === 'overwrite') {
