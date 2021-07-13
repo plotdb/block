@@ -1,5 +1,11 @@
 # Change Logs
 
+## v1.4.9
+
+ - fix bug: rid.hash is not defined before using.
+ - fix bug: global CSS rules from base class are not applied
+
+
 ## v1.4.8
 
  - fix bug: should by-pass scope which style is not extended
