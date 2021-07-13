@@ -234,7 +234,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         if @extend-style == true => @csscope.local ++= (@extend.csscope.local or [])
         else if @extend-dom == \overwrite => @csscope.local ++= (@extend.csscope.local).slice(1)
       .catch (e) ~>
-        console.error e
+        console.error "[@plotdb/block] init block {name: #{@name}, version: #{@version}, path: #{@path or ''}}", e
         node = document.createElement("div")
         node.innerText = "failed"
         @ <<< interface: {}, style-node: {}, factory: (-> @), dependencies: []

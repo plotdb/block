@@ -1,5 +1,10 @@
 # Change Logs
 
+## v1.5.2
+
+ - show block name/version/path when init fail
+
+
 ## v1.5.1
 
  - bug fix: add missing `e` in exception handler in manager get function

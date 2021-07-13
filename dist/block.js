@@ -455,7 +455,7 @@
         }
       })['catch'](function(e){
         var node;
-        console.error(e);
+        console.error("[@plotdb/block] init block {name: " + this$.name + ", version: " + this$.version + ", path: " + (this$.path || '') + "}", e);
         node = document.createElement("div");
         node.innerText = "failed";
         return this$['interface'] = {}, this$.styleNode = {}, this$.factory = function(){
