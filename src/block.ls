@@ -8,6 +8,7 @@ rid = ->
     if !rid.hash[id] => break
   rid.hash[id] = true
   return id
+rid.hash = {}
 
 parse-name-string = (n) ->
   n = n.split('@')

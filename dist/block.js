@@ -18,6 +18,7 @@
     rid.hash[id] = true;
     return id;
   };
+  rid.hash = {};
   parseNameString = function(n){
     var ref$, v;
     n = n.split('@');
