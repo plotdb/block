@@ -235,3 +235,6 @@ registry
  * i18n
    - 怎辦?
    - 已大致搞定.
+   - use chainedbackend / resources
+     - https://www.i18next.com/how-to/backend-fallback#browser-fallback-with-local-bundled-translations
+     - https://www.i18next.com/overview/getting-started
