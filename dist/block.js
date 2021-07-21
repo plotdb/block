@@ -86,6 +86,11 @@
     },
     use: function(it){
       return this.module = it;
+    },
+    addResourceBundle: function(lng, id, resource, deep, overwrite){
+      deep == null && (deep = true);
+      overwrite == null && (overwrite = true);
+      return block.i18n.module.addResourceBundle(lng, id, resource, deep, overwrite);
     }
   };
   block.global = {
@@ -660,6 +665,15 @@
               context: gtx,
               pubsub: this$.pubsub,
               i18n: {
+                addResourceBundles: function(resources){
+                  var lng, res, results$ = [];
+                  resources == null && (resources = {});
+                  for (lng in resources) {
+                    res = resources[lng];
+                    results$.push(block.i18n.addResourceBundle(lng, this$.block.id, res));
+                  }
+                  return results$;
+                },
                 t: function(it){
                   return this$.block.i18n(it);
                 }

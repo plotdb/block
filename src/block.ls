@@ -46,6 +46,8 @@ block.i18n =
     add-resource-bundle: (lng, ns, res, deep, overwrite) -> @res{}[lng][ns] = res
     res: {}
   use: -> @module = it
+  add-resource-bundle: (lng, id, resource, deep = true, overwrite = true) ->
+    block.i18n.module.add-resource-bundle lng, id, resource, deep, overwrite
 
 block.global =
   csscope:
@@ -354,7 +356,13 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
           payload = {
             root: node, parent: parent,
             ctx: gtx, context: gtx,
-            pubsub: @pubsub, i18n: {t: ~> @block.i18n(it)}, t: ~> @block.i18n(it)
+            pubsub: @pubsub
+            i18n:
+              add-resource-bundles: (resources = {}) ~>
+                for lng, res of resources =>
+                  block.i18n.add-resource-bundle lng, @block.id, res
+              t: ~> @block.i18n(it)
+            t: ~> @block.i18n(it)
             data: @data
           }
           if type == \init => @obj.push(o = new b.factory payload)

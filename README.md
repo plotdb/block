@@ -209,7 +209,7 @@ and following private members:
 `block.instance` is just a generic object for managing block life cycle. Every block has another object, serves as the internal object that provides real dynamics of the block. This object is created along with `block.instance`, and it's interface is implemented by developers with the following spec:
 
  - `pkg`: block information, described below. optional.
- - `init({root, context, parent, pubsub, data, t})`: initializing a block. optional.
+ - `init({root, context, parent, pubsub, data, t, i18n})`: initializing a block. optional.
    - `root`: root element
    - `context`: dependencies in an object.
    - `parent`: object for the direct base block.
@@ -218,7 +218,13 @@ and following private members:
         - return value will be passed and resolved to the returned promise of `fire`.
       - `fire(event, params): fire `event`. return promise.
    - `data`: data passing to `create`. optional and up to user.
-   - `t(text)`: translation function based on local, base class and global i18n information.
+   - `t(text)`: translation function based on local, base class and global i18n information. shorthand of `i18n.t`.
+   - `i18n`: i18n related helpers including:
+     - `t(text)`: as described above.
+     - `addResourceBundles(res)`: dynamically adding i18n resources. sample `res`:
+        
+        { "zh-TW": {"string", "文字"}, "en-US": {"string": "string"} }
+
  - `destroy({root, context})`: destroying a block. optional.
  - `interface`: for accessing custom object. optional.
     - either a function returning interface object, or the interface object itself.

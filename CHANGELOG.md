@@ -1,5 +1,10 @@
 # Change Logs
 
+## v1.5.3
+
+ - add `i18n.addResourceBundles` in block.instance for dynamically adding i18n resources.
+
+
 ## v1.5.2
 
  - show block name/version/path when init fail
