@@ -3,7 +3,7 @@
   "name": "@plotdb/block",
   "license": "MIT",
   "description": "block",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "main": "dist/block.js",
   "homepage": "https://github.com/plotdb/block",
   "files": [
@@ -47,7 +47,7 @@
   },
   "peerDependencies": {
     "@plotdb/csscope": "^0.4.0",
-    "@plotdb/rescope": "^1.1.8",
+    "@plotdb/rescope": "^2.0.1",
     "dompurify": "^2.2.6",
     "proxise": "^0.1.2"
   },

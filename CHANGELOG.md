@@ -1,5 +1,10 @@
 # Change Logs
 
+## v1.6.1
+
+ - fix rescope upgrade mistake in package.json
+
+
 ## v1.6.0
 
  - upgrade rescope to `2.0.1`
