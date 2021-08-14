@@ -3,7 +3,7 @@
   "name": "@plotdb/block",
   "license": "MIT",
   "description": "block",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "main": "dist/block.js",
   "homepage": "https://github.com/plotdb/block",
   "files": [
@@ -26,7 +26,7 @@
     "@plotdb/csscope": "^0.4.0",
     "@plotdb/datadom": "0.0.4",
     "@plotdb/json0": "0.0.1",
-    "@plotdb/rescope": "^1.1.8",
+    "@plotdb/rescope": "^2.0.1",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.5.2",
     "bootstrap.ldui": "github:loadingio/bootstrap.ldui",

@@ -1,5 +1,10 @@
 # Change Logs
 
+## v1.6.0
+
+ - upgrade rescope to `2.0.1`
+
+
 ## v1.5.3
 
  - add `i18n.addResourceBundles` in block.instance for dynamically adding i18n resources.
