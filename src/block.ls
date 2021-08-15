@@ -69,11 +69,21 @@ block.manager = (opt={}) ->
   @fallback = opt.fallback or null
   @_fetch = opt.fetch or null
   @init = proxise.once ~> @_init!
+  @rescope = if opt.rescope instanceof rescope => opt.rescope
+  else if opt.rescope? or opt.module-registry =>
+    new rescope {global: window, registry: opt.rescope or opt.module-registry }
+  else block.rescope
+  @csscope = if opt.csscope instanceof csscope => opt.csscope
+  else if opt.csscope? or opt.module-registry =>
+    new csscope {registry: opt.csscope or opt.module-registry}
+  else block.csscope
   @init!
   @
 
 block.manager.prototype = Object.create(Object.prototype) <<< do
-  _init: -> block.init!
+  _init: ->
+    if @rescope == block.rescope => block.init!
+    else @rescope.init!
   set-fallback: -> @fallback = it
   set-registry: ->
     @reg = it or ''
@@ -135,7 +145,7 @@ block.class = (opt={}) ->
   @opt = opt
   @scope = "_" + Math.random!toString(36)substring(2)
   @_ctx = {} # libraries context. may inherited from extended base class.
-  @csscope = {global: [], local: []} # css libraries. may be either global or local.
+  @csscopes = {global: [], local: []} # css libraries. may be either global or local.
   # manager is used for recursively get extended block.
   @ <<< opt{name, version, path, manager}
   code = opt.code
@@ -215,26 +225,26 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @dependencies = if Array.isArray(@interface.pkg.dependencies) => @interface.pkg.dependencies
         else [v for k,v of (@interface.pkg.dependencies or {})]
         if @extend => @_ctx = @extend.context!
-        block.rescope.load @dependencies.filter(-> /\.js$/.exec(it.url or it) or it.type == \js), @_ctx
+        @manager.rescope.load @dependencies.filter(-> !it.type or it.type == \js), @_ctx
       .then ~>
-        block.csscope.load(
+        @manager.csscope.load(
           @dependencies
-            .filter -> (/\.css$/.exec(it.url or it) or it.type == \css) and it.global == true
+            .filter -> (/\.css$/.exec(it.url or it.path or it) or it.type == \css) and it.global == true
             .map -> it.url or it
         )
       .then ~>
-        @{}csscope.global = (it or [])
-        block.csscope.load(
+        @csscopes.global = (it or [])
+        @manager.csscope.load(
           @dependencies
-            .filter -> (/\.css$/.exec(it.url or it) or it.type == \css) and it.global != true
+            .filter -> (/\.css$/.exec(it.url or it.path or it) or it.type == \css) and it.global != true
             .map -> it.url or it
         )
       .then ~>
-        @csscope.local = (it or [])
+        @csscopes.local = (it or [])
         if !@extend => return
-        @csscope.global ++= (@extend.csscope.global or [])
-        if @extend-style == true => @csscope.local ++= (@extend.csscope.local or [])
-        else if @extend-dom == \overwrite => @csscope.local ++= (@extend.csscope.local).slice(1)
+        @csscopes.global ++= (@extend.csscopes.global or [])
+        if @extend-style == true => @csscopes.local ++= (@extend.csscopes.local or [])
+        else if @extend-dom == \overwrite => @csscopes.local ++= (@extend.csscopes.local).slice(1)
       .catch (e) ~>
         console.error "[@plotdb/block] init block {name: #{@name}, version: #{@version}, path: #{@path or ''}}", e
         node = document.createElement("div")
@@ -281,7 +291,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     if opt.data => @data = opt.data
     root = opt.root
     root = if !root => null else if typeof(root) == \string => document.querySelector(root) else root
-    block.global.csscope.apply @block.csscope.global
+    block.global.csscope.apply @block.csscopes.global
     if !root => node = null
     else
       node = @dom!
@@ -295,7 +305,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
       node.setAttribute \scope, s.join(' ')
       node.classList.add.apply(
         node.classList,
-        @block.csscope.local.map(->it.scope) ++ @block.csscope.global.map(->it.scope)
+        @block.csscopes.local.map(->it.scope) ++ @block.csscopes.global.map(->it.scope)
       )
       root.appendChild node
 
@@ -350,8 +360,8 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
           return p
         b = list[idx]
         # if we don't want dependencies from base class, use b.dependencies:
-        #   block.rescope.context (b.dependencies or []).filter(->it.type != \css), (ctx) ~>
-        block.rescope.context b._ctx.{}local, (ctx) ~>
+        #   @block.manager.rescope.context (b.dependencies or []).filter(->it.type != \css), (ctx) ~>
+        @block.manager.rescope.context b._ctx.{}local, (ctx) ~>
           gtx <<< ctx
           payload = {
             root: node, parent: parent,

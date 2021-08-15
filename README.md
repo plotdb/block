@@ -104,6 +104,12 @@ either way we have to provide a way to load, register, cache these blocks - that
      - `function({name,version,path})`: return URL for given `name`, `version` and `path` of a block.
      - `string`: the registry base url. block.manager will look up blocks under this url with this rule:
        - `/block/<name>/<version>/<path>`
+   - `rescope`: optional. either a rescope object, or a registry function for rescope object as follow
+     - `function({name,version,path})`: return URL for given `name`, `version` and `path` of a module file.
+   - `csscope`: optional. either a csscope object, or a registry function for csscope object as follow
+     - `function({name,version,path})`: return URL for given `name`, `version` and `path` of a module file.
+   - `moduleRegistry`: optional. as a shorthand, provide registry for both `rescope` and `csscope`
+     - omitted for either rescope and csscope if provided correspondingly.
  - `setRegistry(v)`: update `registry` dynamically.
    - `v`: can be a function or string, similar to the option in constructor.
  - `set({name,version,path,block}): register a block with `name`, `version` and `path`.
@@ -114,6 +120,8 @@ either way we have to provide a way to load, register, cache these blocks - that
    - `force`: by default, `block.manager` caches result. set `force` to true to force `block.manager` re-fetch data.
    - `get` also accept an array of `{name,version,path,force}` tuples for batching `get`.
       - in this case, `get` returns an array of `block.class`.
+ - `rescope`: rescope object, either global one or customized one.
+ - `csscope`: csscope object, either global one or customized one.
 
 
 ### block.class
@@ -162,7 +170,7 @@ and following private members:
  - `id`: unique name for this block.
    - "name@version/path" or randomly generated one if `name` and `version` is not available.
  - `\_ctx`: js context object from `rescope`.
- - `csscope`
+ - `csscopes`
    - `local`: scope list of css for local scope.
    - `global`: scope list of css scope name for global scope.
  - `extend`: extended block, as a `block.class` object.

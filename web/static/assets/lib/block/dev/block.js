@@ -128,12 +128,31 @@
     this.init = proxise.once(function(){
       return this$._init();
     });
+    this.rescope = opt.rescope instanceof rescope
+      ? opt.rescope
+      : opt.rescope != null || opt.moduleRegistry
+        ? new rescope({
+          global: window,
+          registry: opt.rescope || opt.moduleRegistry
+        })
+        : block.rescope;
+    this.csscope = opt.csscope instanceof csscope
+      ? opt.csscope
+      : opt.csscope != null || opt.moduleRegistry
+        ? new csscope({
+          registry: opt.csscope || opt.moduleRegistry
+        })
+        : block.csscope;
     this.init();
     return this;
   };
   block.manager.prototype = import$(Object.create(Object.prototype), {
     _init: function(){
-      return block.init();
+      if (this.rescope === block.rescope) {
+        return block.init();
+      } else {
+        return this.rescope.init();
+      }
     },
     setFallback: function(it){
       return this.fallback = it;
@@ -289,7 +308,7 @@
     this.opt = opt;
     this.scope = "_" + Math.random().toString(36).substring(2);
     this._ctx = {};
-    this.csscope = {
+    this.csscopes = {
       global: [],
       local: []
     };
@@ -430,33 +449,33 @@
         if (this$.extend) {
           this$._ctx = this$.extend.context();
         }
-        return block.rescope.load(this$.dependencies.filter(function(it){
-          return /\.js$/.exec(it.url || it) || it.type === 'js';
+        return this$.manager.rescope.load(this$.dependencies.filter(function(it){
+          return !it.type || it.type === 'js';
         }), this$._ctx);
       }).then(function(){
-        return block.csscope.load(this$.dependencies.filter(function(it){
-          return (/\.css$/.exec(it.url || it) || it.type === 'css') && it.global === true;
+        return this$.manager.csscope.load(this$.dependencies.filter(function(it){
+          return (/\.css$/.exec(it.url || it.path || it) || it.type === 'css') && it.global === true;
         }).map(function(it){
           return it.url || it;
         }));
       }).then(function(it){
-        (this$.csscope || (this$.csscope = {})).global = it || [];
-        return block.csscope.load(this$.dependencies.filter(function(it){
-          return (/\.css$/.exec(it.url || it) || it.type === 'css') && it.global !== true;
+        this$.csscopes.global = it || [];
+        return this$.manager.csscope.load(this$.dependencies.filter(function(it){
+          return (/\.css$/.exec(it.url || it.path || it) || it.type === 'css') && it.global !== true;
         }).map(function(it){
           return it.url || it;
         }));
       }).then(function(it){
         var ref$;
-        this$.csscope.local = it || [];
+        this$.csscopes.local = it || [];
         if (!this$.extend) {
           return;
         }
-        (ref$ = this$.csscope).global = ref$.global.concat(this$.extend.csscope.global || []);
+        (ref$ = this$.csscopes).global = ref$.global.concat(this$.extend.csscopes.global || []);
         if (this$.extendStyle === true) {
-          return (ref$ = this$.csscope).local = ref$.local.concat(this$.extend.csscope.local || []);
+          return (ref$ = this$.csscopes).local = ref$.local.concat(this$.extend.csscopes.local || []);
         } else if (this$.extendDom === 'overwrite') {
-          return (ref$ = this$.csscope).local = ref$.local.concat(this$.extend.csscope.local.slice(1));
+          return (ref$ = this$.csscopes).local = ref$.local.concat(this$.extend.csscopes.local.slice(1));
         }
       })['catch'](function(e){
         var node;
@@ -543,7 +562,7 @@
       root = !root
         ? null
         : typeof root === 'string' ? document.querySelector(root) : root;
-      block.global.csscope.apply(this.block.csscope.global);
+      block.global.csscope.apply(this.block.csscopes.global);
       if (!root) {
         node = null;
       } else {
@@ -561,9 +580,9 @@
           s.push(exts[i + 1].scope);
         }
         node.setAttribute('scope', s.join(' '));
-        node.classList.add.apply(node.classList, this.block.csscope.local.map(function(it){
+        node.classList.add.apply(node.classList, this.block.csscopes.local.map(function(it){
           return it.scope;
-        }).concat(this.block.csscope.global.map(function(it){
+        }).concat(this.block.csscopes.global.map(function(it){
           return it.scope;
         })));
         root.appendChild(node);
@@ -655,7 +674,7 @@
             return p;
           }
           b = list[idx];
-          return block.rescope.context((ref$ = b._ctx).local || (ref$.local = {}), function(ctx){
+          return this$.block.manager.rescope.context((ref$ = b._ctx).local || (ref$.local = {}), function(ctx){
             var payload, o;
             import$(gtx, ctx);
             payload = {

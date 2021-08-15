@@ -1,5 +1,12 @@
 # Change Logs
 
+## v1.7.0
+
+ - support module style( `{name,version,path}` ) style url
+ - support customizing `registry` in rescope and csscope
+ - rename `block.class`'s `csscope` to `csscopes` to better distinguish it from `block.manager`s `csscope`.
+
+
 ## v1.6.1
 
  - fix rescope upgrade mistake in package.json
