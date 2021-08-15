@@ -2,7 +2,7 @@
 
 ## v1.7.2
 
- - fix dependency loading: detect resource type automatically beforing resource loading.
+ - fix dependency loading: detect resource type automatically before resource loading.
 
 
 ## v1.7.1
