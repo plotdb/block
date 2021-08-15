@@ -1,5 +1,10 @@
 # Change Logs
 
+## v1.7.3
+
+ - fix bug: csscope in block.manager should be `csscope.manager`
+
+
 ## v1.7.2
 
  - fix dependency loading: detect resource type automatically before resource loading.

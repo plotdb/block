@@ -139,7 +139,7 @@
     this.csscope = opt.csscope instanceof csscope
       ? opt.csscope
       : opt.csscope != null || opt.moduleRegistry
-        ? new csscope({
+        ? new csscope.manager({
           registry: opt.csscope || opt.moduleRegistry
         })
         : block.csscope;

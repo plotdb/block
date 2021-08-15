@@ -75,7 +75,7 @@ block.manager = (opt={}) ->
   else block.rescope
   @csscope = if opt.csscope instanceof csscope => opt.csscope
   else if opt.csscope? or opt.module-registry =>
-    new csscope {registry: opt.csscope or opt.module-registry}
+    new csscope.manager {registry: opt.csscope or opt.module-registry}
   else block.csscope
   @init!
   @
