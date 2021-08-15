@@ -224,19 +224,24 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       .then ~>
         @dependencies = if Array.isArray(@interface.pkg.dependencies) => @interface.pkg.dependencies
         else [v for k,v of (@interface.pkg.dependencies or {})]
+        @dependencies.map ->
+          if it.type => return
+          if /\.js$/.exec(it.url or it.path or it) => it.type = \js
+          else if /\.css$/.exec(it.url or it.path or it) => it.type = \css
+          else it.type = \js # default js type
         if @extend => @_ctx = @extend.context!
         @manager.rescope.load @dependencies.filter(-> !it.type or it.type == \js), @_ctx
       .then ~>
         @manager.csscope.load(
           @dependencies
-            .filter -> (/\.css$/.exec(it.url or it.path or it) or it.type == \css) and it.global == true
+            .filter -> it.type == \css and it.global == true
             .map -> it.url or it
         )
       .then ~>
         @csscopes.global = (it or [])
         @manager.csscope.load(
           @dependencies
-            .filter -> (/\.css$/.exec(it.url or it.path or it) or it.type == \css) and it.global != true
+            .filter -> it.type == \css and it.global != true
             .map -> it.url or it
         )
       .then ~>

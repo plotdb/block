@@ -446,6 +446,18 @@
             }
             return results$;
           }.call(this$));
+        this$.dependencies.map(function(it){
+          if (it.type) {
+            return;
+          }
+          if (/\.js$/.exec(it.url || it.path || it)) {
+            return it.type = 'js';
+          } else if (/\.css$/.exec(it.url || it.path || it)) {
+            return it.type = 'css';
+          } else {
+            return it.type = 'js';
+          }
+        });
         if (this$.extend) {
           this$._ctx = this$.extend.context();
         }
@@ -454,14 +466,14 @@
         }), this$._ctx);
       }).then(function(){
         return this$.manager.csscope.load(this$.dependencies.filter(function(it){
-          return (/\.css$/.exec(it.url || it.path || it) || it.type === 'css') && it.global === true;
+          return it.type === 'css' && it.global === true;
         }).map(function(it){
           return it.url || it;
         }));
       }).then(function(it){
         this$.csscopes.global = it || [];
         return this$.manager.csscope.load(this$.dependencies.filter(function(it){
-          return (/\.css$/.exec(it.url || it.path || it) || it.type === 'css') && it.global !== true;
+          return it.type === 'css' && it.global !== true;
         }).map(function(it){
           return it.url || it;
         }));

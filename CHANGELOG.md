@@ -1,5 +1,10 @@
 # Change Logs
 
+## v1.7.2
+
+ - fix dependency loading: detect resource type automatically beforing resource loading.
+
+
 ## v1.7.1
 
  - fix csscope upgrade mistake in package.json
