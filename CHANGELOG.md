@@ -1,5 +1,10 @@
 # Change Logs
 
+## v1.7.1
+
+ - fix csscope upgrade mistake in package.json
+
+
 ## v1.7.0
 
  - support module style( `{name,version,path}` ) style url

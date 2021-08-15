@@ -3,7 +3,7 @@
   "name": "@plotdb/block",
   "license": "MIT",
   "description": "block",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "main": "dist/block.js",
   "homepage": "https://github.com/plotdb/block",
   "files": [
@@ -23,10 +23,10 @@
   "devDependencies": {
     "@loadingio/debounce.js": "0.0.1",
     "@loadingio/ldquery": "^2.0.0",
-    "@plotdb/csscope": "^0.4.0",
+    "@plotdb/csscope": "^0.5.0",
     "@plotdb/datadom": "0.0.4",
     "@plotdb/json0": "0.0.1",
-    "@plotdb/rescope": "^2.0.1",
+    "@plotdb/rescope": "^2.1.0",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.5.2",
     "bootstrap.ldui": "github:loadingio/bootstrap.ldui",
@@ -46,8 +46,8 @@
     "uglifycss": "^0.0.29"
   },
   "peerDependencies": {
-    "@plotdb/csscope": "^0.4.0",
-    "@plotdb/rescope": "^2.0.1",
+    "@plotdb/csscope": "^0.5.0",
+    "@plotdb/rescope": "^2.1.0",
     "dompurify": "^2.2.6",
     "proxise": "^0.1.2"
   },
