@@ -1,5 +1,10 @@
 # Change Logs
 
+## v1.7.4
+
+ - fix bug: skip `undefined` when translating 
+
+
 ## v1.7.3
 
  - fix bug: csscope in block.manager should be `csscope.manager`

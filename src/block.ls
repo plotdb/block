@@ -38,6 +38,7 @@ block.i18n =
       vs = if Array.isArray(v) => v else [v]
       lng = @lng
       for i from 0 til vs.length =>
+        if !vs[i] => continue
         [ns, ...t] = vs[i].split(':')
         t = t.join(':')
         if @res{}[lng]{}[ns][t] => return that

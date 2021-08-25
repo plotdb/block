@@ -67,6 +67,9 @@
         lng = this.lng;
         for (i$ = 0, to$ = vs.length; i$ < to$; ++i$) {
           i = i$;
+          if (!vs[i]) {
+            continue;
+          }
           ref$ = vs[i].split(':'), ns = ref$[0], t = slice$.call(ref$, 1);
           t = t.join(':');
           if (that = ((ref$ = (ref1$ = this.res)[lng] || (ref1$[lng] = {}))[ns] || (ref$[ns] = {}))[t]) {
