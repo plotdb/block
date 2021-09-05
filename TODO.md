@@ -1,3 +1,7 @@
+ - dependency: support multiple files in one declaration. e.g., 
+
+    {name: "@plotdb/module", version: "main", path: ["index.js", "index.css"]}
+
  - by pass dom should ( probably bypass style? )
  - exception within module may not be tracked.
    - e.g., we can't know the correct line number when exception occurred in `chart.render` in `@plotdb/chart`.
