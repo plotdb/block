@@ -316,6 +316,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
         node.classList,
         @block.csscopes.local.map(->it.scope) ++ @block.csscopes.global.map(->it.scope)
       )
+      if opt.before => root.insertBefore node, opt.before
       root.appendChild node
 
     @run({node, type: \init})

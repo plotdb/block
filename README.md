@@ -204,9 +204,11 @@ Please note that `obj` (block's internal object) is not the `block.instance` obj
 
  - `constructor(opts)` with following options:
    - `block`: block definition ( `block.class` ) for this instance.
- - `attach({root})`: attach DOM of this instance to a specific node ( `root` ).
-   - in the meantime, a block `obj` is created via `block.class`'s factory method and stored in `@obj` member.
+ - `attach({root, before})`: attach DOM of this instance to a specific node ( `root` ).
    - return promise.
+   - when run, a block `obj` is created via `block.class`'s factory method and stored in `@obj` member.
+   - when root is omitted, attach block in headless mode ( for pure script )
+   - attach DOM by `appendChild` when `before` is omitted, and by `insertBefore` otherwise.
  - `detach()`: detach DOM. return promise.
  - `update(ops)`: update `datadom` based on provided ops ( array of operational transformation ).
  - `i18n(text)`: return translated text based on the current context.
