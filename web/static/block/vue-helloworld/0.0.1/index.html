@@ -1,10 +1,11 @@
-<div class="outer" block="inline">Vue: {{message}}<script>({
+<span class="outer">Vue: {{message}}<script>({
   pkg: {
     dependencies: ["https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"]
   },
   init: function(arg$){
-    var root, context, app;
+    var root, context, Vue, app;
     root = arg$.root, context = arg$.context;
+    Vue = context.Vue;
     return app = new Vue({
       el: root,
       data: {
@@ -12,4 +13,4 @@
       }
     });
   }
-});</script></div>
+});</script></span>

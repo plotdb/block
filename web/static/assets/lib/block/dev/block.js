@@ -616,6 +616,9 @@
         }).concat(this.block.csscopes.global.map(function(it){
           return it.scope;
         })));
+        if (opt.before) {
+          root.insertBefore(node, opt.before);
+        }
         root.appendChild(node);
       }
       return this.run({
