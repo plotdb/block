@@ -12,7 +12,10 @@ block head
       width: 100%
       height: 100%
 block body
-  #container
+  .position-fixed.z-fixed.w-100.h-100.ldld.running.ld-over-full-inverse(ld="loader",style="top:0;left:0")
+    .ld.ld-spinner.ld-spin
+  #container(ld="container")
+    .w-1024.mx-auto(ld="inner")
   .form-long-answer hi
 block script
   +script("js/index.js")

@@ -1,18 +1,27 @@
+<-(->it.apply {}) _
+
 code = """
 <div style="color:red">11</div>
-<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onload="alert('onload');"/>
+<img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onload="console.log('base64 image loaded with html code in string.');"/>
 <script type="text/javascript">
-console.log('script tag');
+console.log('script tag in code in string run');
 </script>
 <style type="text/css">
 html,body { background: yellow }
 </style>
 """
 
-load-sample = ({name}) ->
+@view = view = new ldview do
+  root: document.body
+  handler:
+    container: (->), inner: (->)
+    loader: ({node}) ~> node.classList.toggle \running, !@inited
+
+
+load-sample = ({name, root}) ->
   manager.get {name, version: "0.0.1"}
     .then -> it.create!
-    .then -> it.attach {root: document.getElementById(\container)}
+    .then -> it.attach {root: root or view.get('container')}
     .catch -> console.log "failed to load block #name", it
 
 lc = {}
@@ -22,8 +31,8 @@ manager = new block.manager do
     lib: ({name, version, path}) -> "/assets/block/#name/#version/#path"
 manager.init!
   .then -> manager.set new block.class {name: "test", version: "0.0.1", code, manager}
-  .then -> load-sample name: \react-helloworld
-  .then -> load-sample name: \vue-helloworld
+  .then -> load-sample name: \react-helloworld, root: view.get('inner')
+  .then -> load-sample name: \vue-helloworld, root: view.get('inner')
   .then -> load-sample name: \long-answer
   .then -> load-sample name: \cta
   .then -> load-sample name: \columns
@@ -32,6 +41,10 @@ manager.init!
   .then -> load-sample name: \landing
   .then -> load-sample name: \child
   .catch -> console.log ">", it
+  .then ~>
+    console.log \done.
+    @inited = true
+    @view.render!
 /*
   .then -> manager.get {name: "landing-col2", version: "0.0.1"}
   .then -> it.create!
