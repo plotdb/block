@@ -1,9 +1,10 @@
 # Change Logs
 
-## v2.0.2 (upcoming)
+## v2.0.2
 
  - add `before` parameter in `attach` for insertBefore style attachment.
  - remove useless `index.css` since users can design their own style
+ - fix bug: peer dependencies version incorrect
 
 
 ## v2.0.1
