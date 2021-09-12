@@ -1,5 +1,17 @@
 # Change Logs
 
+## v2.0.0
+
+ - simplify config by replacing `registry` with `registry.block` and `moduleRegistry` with `registry.lib`.
+   - if only `registry.lib` is provided, it will be used also for `registry.block`.
+ - support `type` in registry by passing type as `block` when requesting block modules.
+ - accept additional param `type` in registry function for distinguishing `js`, `css`, `block` and others.
+ - rename `setRegistry` to `registry`.
+ - rename internal variable `reg` to `_reg`.
+ - rename `set-fallback` to `chain`
+ - rename internal variable `fallback` to `_chain`.
+
+
 ## v1.7.4
 
  - fix bug: skip `undefined` when translating 

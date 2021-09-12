@@ -16,7 +16,7 @@ load-sample = ({name}) ->
     .catch -> console.log "failed to load block #name", it
 
 lc = {}
-manager = new block.manager registry: ({name, version}) -> "/block/#name/#version/index.html"
+manager = new block.manager block: ({name, version}) -> "/block/#name/#version/index.html"
 manager.init!
   .then -> manager.set new block.class {name: "test", version: "0.0.1", code}
   .then -> load-sample name: \react-helloworld

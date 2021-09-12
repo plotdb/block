@@ -66,18 +66,12 @@ block.manager = (opt={}) ->
   @hash = {}
   @proxy = {}
   @running = {}
-  @set-registry opt.registry
-  @fallback = opt.fallback or null
+  @_chain = opt.chain or null
   @_fetch = opt.fetch or null
   @init = proxise.once ~> @_init!
-  @rescope = if opt.rescope instanceof rescope => opt.rescope
-  else if opt.rescope? or opt.module-registry =>
-    new rescope {global: window, registry: opt.rescope or opt.module-registry }
-  else block.rescope
-  @csscope = if opt.csscope instanceof csscope => opt.csscope
-  else if opt.csscope? or opt.module-registry =>
-    new csscope.manager {registry: opt.csscope or opt.module-registry}
-  else block.csscope
+  @rescope = if opt.rescope instanceof rescope => opt.rescope else block.rescope
+  @csscope = if opt.csscope instanceof csscope => opt.csscope else block.csscope
+  if opt.registry => @registry opt.registry
   @init!
   @
 
@@ -85,10 +79,18 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
   _init: ->
     if @rescope == block.rescope => block.init!
     else @rescope.init!
-  set-fallback: -> @fallback = it
-  set-registry: ->
-    @reg = it or ''
-    if typeof(@reg) == \string => if @reg and @reg[* - 1] != \/ => @reg += \/
+  chain: -> @_chain = it
+  registry: ->
+    if typeof(it) == \string => lib = block = it
+    else {lib,block} = (it or {})
+    if lib? =>
+      if @rescope == block.rescope => @rescope = new rescope {global: window}
+      if @csscope == block.csscope => @csscope = new csscope!
+      @rescope.registry lib
+      @csscope.registry lib
+    if block? =>
+      @_reg = it or ''
+      if typeof(@_reg) == \string => if @_reg and @_reg[* - 1] != \/ => @_reg += \/
   set: (opt = {}) ->
     opts = if Array.isArray(opt) => opt else [opt]
     Promise.all(opts.map (obj) ~>
@@ -98,8 +100,8 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
       b.init!
     )
   get-url: ({name, version, path}) ->
-    if typeof(@reg) == \function => @reg {name, version, path}
-    else return "#{@reg or ''}/block/#{name}/#{version}/#{path or 'index.html'}"
+    if typeof(@_reg) == \function => @_reg {name, version, path, type: \block}
+    else return "#{@_reg or ''}/assets/block/#{name}/#{version}/#{path or 'index.html'}"
 
   fetch: (opt) ->
     if @_fetch => return Promise.resolve(@_fetch opt)
@@ -117,8 +119,8 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     @fetch opt{name,version,path}
       .then ~> if it => return it else return e404!
       .catch (e) ~>
-        if !@fallback => return Promise.reject(e)
-        @fallback.get opt
+        if !@_chain => return Promise.reject(e)
+        @_chain.get opt
       .then (ret = {}) ~>
         b = new block.class({code: ret, name: n, version: v, path: p, manager: @})
         @set obj = ({name: n, version: v, path: p} <<< {block: b})

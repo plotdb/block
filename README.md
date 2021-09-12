@@ -104,14 +104,19 @@ either way we have to provide a way to load, register, cache these blocks - that
      - `function({name,version,path})`: return URL for given `name`, `version` and `path` of a block.
      - `string`: the registry base url. block.manager will look up blocks under this url with this rule:
        - `/block/<name>/<version>/<path>`
-   - `rescope`: optional. either a rescope object, or a registry function for rescope object as follow
-     - `function({name,version,path})`: return URL for given `name`, `version` and `path` of a module file.
-   - `csscope`: optional. either a csscope object, or a registry function for csscope object as follow
-     - `function({name,version,path})`: return URL for given `name`, `version` and `path` of a module file.
-   - `moduleRegistry`: optional. as a shorthand, provide registry for both `rescope` and `csscope`
-     - omitted for either rescope and csscope if provided correspondingly.
- - `setRegistry(v)`: update `registry` dynamically.
-   - `v`: can be a function or string, similar to the option in constructor.
+     - this will be used for both block and libraries. To distinquish them, use:
+
+       registry: {lib: (-> ...), block: (-> ...)}   
+
+     - `registry.lib` will be used for querying block if `registry.block` is omitted.
+
+   - `rescope`: optional. should be a `@plotdb/rescope` object if provided.
+     - will replace internal rescope object if provided.
+   - `csscope`: optional. should be a `@plotdb/csscope` object if provied.
+     - will replace internal csscope object if provided.
+   - `chain`: optional. fallback manager for chaining block lookup if requested block is not found in current manager.
+ - `registry(v)`: update `registry` dynamically.
+   - `v`: can be a function, string or an object, similar to the option in constructor.
  - `set({name,version,path,block}): register a block with `name`, `version` and `path`.
    - `block`: a `block-class` object, explained below.
    - `set` also accepts Array of {name,version,block} object for batching `set`.
@@ -120,6 +125,7 @@ either way we have to provide a way to load, register, cache these blocks - that
    - `force`: by default, `block.manager` caches result. set `force` to true to force `block.manager` re-fetch data.
    - `get` also accept an array of `{name,version,path,force}` tuples for batching `get`.
       - in this case, `get` returns an array of `block.class`.
+ - `chain(mgr)`: set a fallback manager for chaining lookup of requested block.
  - `rescope`: rescope object, either global one or customized one.
  - `csscope`: csscope object, either global one or customized one.
 

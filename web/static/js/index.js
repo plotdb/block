@@ -18,7 +18,7 @@ loadSample = function(arg$){
 };
 lc = {};
 manager = new block.manager({
-  registry: function(arg$){
+  block: function(arg$){
     var name, version;
     name = arg$.name, version = arg$.version;
     return "/block/" + name + "/" + version + "/index.html";

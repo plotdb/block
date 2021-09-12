@@ -125,27 +125,20 @@
     this.hash = {};
     this.proxy = {};
     this.running = {};
-    this.setRegistry(opt.registry);
-    this.fallback = opt.fallback || null;
+    this._chain = opt.chain || null;
     this._fetch = opt.fetch || null;
     this.init = proxise.once(function(){
       return this$._init();
     });
     this.rescope = opt.rescope instanceof rescope
       ? opt.rescope
-      : opt.rescope != null || opt.moduleRegistry
-        ? new rescope({
-          global: window,
-          registry: opt.rescope || opt.moduleRegistry
-        })
-        : block.rescope;
+      : block.rescope;
     this.csscope = opt.csscope instanceof csscope
       ? opt.csscope
-      : opt.csscope != null || opt.moduleRegistry
-        ? new csscope.manager({
-          registry: opt.csscope || opt.moduleRegistry
-        })
-        : block.csscope;
+      : block.csscope;
+    if (opt.registry) {
+      this.registry(opt.registry);
+    }
     this.init();
     return this;
   };
@@ -157,15 +150,34 @@
         return this.rescope.init();
       }
     },
-    setFallback: function(it){
-      return this.fallback = it;
+    chain: function(it){
+      return this._chain = it;
     },
-    setRegistry: function(it){
-      var ref$;
-      this.reg = it || '';
-      if (typeof this.reg === 'string') {
-        if (this.reg && (ref$ = this.reg)[ref$.length - 1] !== '/') {
-          return this.reg += '/';
+    registry: function(it){
+      var lib, block, ref$;
+      if (typeof it === 'string') {
+        lib = block = it;
+      } else {
+        ref$ = it || {}, lib = ref$.lib, block = ref$.block;
+      }
+      if (lib != null) {
+        if (this.rescope === block.rescope) {
+          this.rescope = new rescope({
+            global: window
+          });
+        }
+        if (this.csscope === block.csscope) {
+          this.csscope = new csscope();
+        }
+        this.rescope.registry(lib);
+        this.csscope.registry(lib);
+      }
+      if (block != null) {
+        this._reg = it || '';
+        if (typeof this._reg === 'string') {
+          if (this._reg && (ref$ = this._reg)[ref$.length - 1] !== '/') {
+            return this._reg += '/';
+          }
         }
       }
     },
@@ -188,14 +200,15 @@
     getUrl: function(arg$){
       var name, version, path;
       name = arg$.name, version = arg$.version, path = arg$.path;
-      if (typeof this.reg === 'function') {
-        return this.reg({
+      if (typeof this._reg === 'function') {
+        return this._reg({
           name: name,
           version: version,
-          path: path
+          path: path,
+          type: 'block'
         });
       } else {
-        return (this.reg || '') + "/block/" + name + "/" + version + "/" + (path || 'index.html');
+        return (this._reg || '') + "/assets/block/" + name + "/" + version + "/" + (path || 'index.html');
       }
     },
     fetch: function(opt){
@@ -241,10 +254,10 @@
           return e404();
         }
       })['catch'](function(e){
-        if (!this$.fallback) {
+        if (!this$._chain) {
           return Promise.reject(e);
         }
-        return this$.fallback.get(opt);
+        return this$._chain.get(opt);
       }).then(function(ret){
         var b, obj;
         ret == null && (ret = {});
