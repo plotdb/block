@@ -18,17 +18,25 @@ loadSample = function(arg$){
 };
 lc = {};
 manager = new block.manager({
-  block: function(arg$){
-    var name, version;
-    name = arg$.name, version = arg$.version;
-    return "/block/" + name + "/" + version + "/index.html";
+  registry: {
+    block: function(arg$){
+      var name, version;
+      name = arg$.name, version = arg$.version;
+      return "/block/" + name + "/" + version + "/index.html";
+    },
+    lib: function(arg$){
+      var name, version, path;
+      name = arg$.name, version = arg$.version, path = arg$.path;
+      return "/assets/block/" + name + "/" + version + "/" + path;
+    }
   }
 });
 manager.init().then(function(){
   return manager.set(new block['class']({
     name: "test",
     version: "0.0.1",
-    code: code
+    code: code,
+    manager: manager
   }));
 }).then(function(){
   return loadSample({

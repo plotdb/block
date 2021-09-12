@@ -332,6 +332,9 @@
     this.version = opt.version;
     this.path = opt.path;
     this.manager = opt.manager;
+    if (!this.manager) {
+      console.log(warn("manager is mandatory when constructing block.class"));
+    }
     code = opt.code;
     if (opt.root) {
       code = (typeof opt.root === 'string'
@@ -477,7 +480,6 @@
         if (this$.extend) {
           this$._ctx = this$.extend.context();
         }
-        console.log('here', this$.manager);
         return this$.manager.rescope.load(this$.dependencies.filter(function(it){
           return !it.type || it.type === 'js';
         }), this$._ctx);

@@ -1,5 +1,11 @@
 # Change Logs
 
+## v2.0.1
+
+ - fix bug: setting registry uses incorrect parameter for updating `_reg`
+ - warn when block.class is constructed without `manager`.
+
+
 ## v2.0.0
 
  - simplify config by replacing `registry` with `registry.block` and `moduleRegistry` with `registry.lib`.

@@ -137,6 +137,7 @@ either way we have to provide a way to load, register, cache these blocks - that
 `block.class` provides following APIs:
 
  - `constructor(opt)` with following options:
+   - `manager`: default block manager for this class. mandatory
    - `name`: block name. mandatory.
    - `version`: block version. mandatory.
    - `path`: block path. optional. `index.html` if omitted.

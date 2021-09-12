@@ -16,9 +16,12 @@ load-sample = ({name}) ->
     .catch -> console.log "failed to load block #name", it
 
 lc = {}
-manager = new block.manager block: ({name, version}) -> "/block/#name/#version/index.html"
+manager = new block.manager do
+  registry:
+    block: ({name, version}) -> "/block/#name/#version/index.html"
+    lib: ({name, version, path}) -> "/assets/block/#name/#version/#path"
 manager.init!
-  .then -> manager.set new block.class {name: "test", version: "0.0.1", code}
+  .then -> manager.set new block.class {name: "test", version: "0.0.1", code, manager}
   .then -> load-sample name: \react-helloworld
   .then -> load-sample name: \vue-helloworld
   .then -> load-sample name: \long-answer

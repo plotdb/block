@@ -173,7 +173,7 @@
         this.csscope.registry(lib);
       }
       if (block != null) {
-        this._reg = it || '';
+        this._reg = block || '';
         if (typeof this._reg === 'string') {
           if (this._reg && (ref$ = this._reg)[ref$.length - 1] !== '/') {
             return this._reg += '/';
@@ -332,6 +332,9 @@
     this.version = opt.version;
     this.path = opt.path;
     this.manager = opt.manager;
+    if (!this.manager) {
+      console.log(warn("manager is mandatory when constructing block.class"));
+    }
     code = opt.code;
     if (opt.root) {
       code = (typeof opt.root === 'string'
