@@ -9,11 +9,6 @@ echo "building block.ls -> block.js ..."
 echo "minify block.js -> block.min.js ..."
 ./node_modules/.bin/uglifyjs dist/block.js > dist/block.min.js
 
-echo "build src/block.styl -> dist/block.css ..."
-./node_modules/.bin/stylus -p src/block.styl > dist/block.css
-echo "minifying block.css ..."
-./node_modules/.bin/uglifycss dist/block.css > dist/block.min.css
-
 echo "copy dist to web ..."
 rm -rf web/static/assets/lib/block/dev/
 mkdir -p web/static/assets/lib/block/dev/
