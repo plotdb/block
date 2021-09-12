@@ -173,7 +173,7 @@
         this.csscope.registry(lib);
       }
       if (block != null) {
-        this._reg = it || '';
+        this._reg = block || '';
         if (typeof this._reg === 'string') {
           if (this._reg && (ref$ = this._reg)[ref$.length - 1] !== '/') {
             return this._reg += '/';
@@ -477,6 +477,7 @@
         if (this$.extend) {
           this$._ctx = this$.extend.context();
         }
+        console.log('here', this$.manager);
         return this$.manager.rescope.load(this$.dependencies.filter(function(it){
           return !it.type || it.type === 'js';
         }), this$._ctx);
