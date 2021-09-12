@@ -1,5 +1,11 @@
 # Change Logs
 
+## v2.0.2 (upcoming)
+
+ - add `before` parameter in `attach` for insertBefore style attachment.
+ - remove useless `index.css` since users can design their own style
+
+
 ## v2.0.1
 
  - fix bug: setting registry uses incorrect parameter for updating `_reg`
