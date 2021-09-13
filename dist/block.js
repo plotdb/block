@@ -193,8 +193,7 @@
         b = obj instanceof block['class']
           ? obj
           : obj.block;
-        ((ref$ = (ref1$ = this$.hash)[name] || (ref1$[name] = {}))[version] || (ref$[version] = {}))[path || 'index.html'] = b;
-        return b.init();
+        return ((ref$ = (ref1$ = this$.hash)[name] || (ref1$[name] = {}))[version] || (ref$[version] = {}))[path || 'index.html'] = b;
       }));
     },
     getUrl: function(arg$){
@@ -277,9 +276,7 @@
         if (ret.version && ret.version !== v) {
           this$.set((obj.version = ret.version, obj));
         }
-        return b.init().then(function(){
-          return b;
-        });
+        return b;
       }).then(function(it){
         this$.proxy[n][v][p].resolve(it);
         return it;
@@ -383,7 +380,6 @@
     this.init = proxise.once(function(){
       return this$._init();
     });
-    this.init();
     return this;
   };
   block['class'].prototype = import$(Object.create(Object.prototype), {
@@ -532,16 +528,19 @@
       }), [t]));
     },
     create: function(opt){
-      var ret;
+      var this$ = this;
       opt == null && (opt = {});
-      ret = new block.instance({
-        block: this,
-        name: this.name,
-        version: this.version,
-        data: opt.data
-      });
-      return ret.init().then(function(){
-        return ret;
+      return this.init().then(function(){
+        var ret;
+        ret = new block.instance({
+          block: this$,
+          name: this$.name,
+          version: this$.version,
+          data: opt.data
+        });
+        return ret.init().then(function(){
+          return ret;
+        });
       });
     },
     resolvePlugAndCloneNode: function(child, byPass){

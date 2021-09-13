@@ -97,7 +97,6 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
       {name,version,path} = obj
       b = if obj instanceof block.class => obj else obj.block
       @hash{}[name]{}[version][path or 'index.html'] = b
-      b.init!
     )
   get-url: ({name, version, path}) ->
     if typeof(@_reg) == \function => @_reg {name, version, path, type: \block}
@@ -125,7 +124,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         b = new block.class({code: ret, name: n, version: v, path: p, manager: @})
         @set obj = ({name: n, version: v, path: p} <<< {block: b})
         if ret.version and ret.version != v => @set(obj <<< {version: ret.version})
-        b.init!then -> b
+        b
       .then ~>
         @proxy[n][v][p].resolve it
         return it
@@ -179,8 +178,8 @@ block.class = (opt={}) ->
       .join \\n
     @[n] = if v? and v => v else (@[n] or "")
   @node = node
+  # we dont init until create is called, because we may not use it even if it's loaded.
   @init = proxise.once ~> @_init!
-  @init!
   @
 
 # use document fragment ( yet datadom doesn't work with #document-fragment )
@@ -269,6 +268,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     block.i18n.module.t( ["#id:#t"] ++ (@extends.map -> "#{it.id}:#t") ++ [t] )
 
   create: (opt={}) ->
+    # defer init in create since we may not use this block even if we load it.
+    <~ @init!then _
     ret = new block.instance {block: @, name: @name, version: @version, data: opt.data}
     ret.init!then -> ret
 

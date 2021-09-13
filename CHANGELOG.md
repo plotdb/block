@@ -1,5 +1,10 @@
 # Change Logs
 
+## v2.0.3
+
+ - defer block.class initialization until create since we may not use an added block eventually.
+
+
 ## v2.0.2
 
  - add `before` parameter in `attach` for insertBefore style attachment.
