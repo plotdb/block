@@ -1,5 +1,10 @@
 # Change Logs
 
+## v2.0.4
+
+ - fix bug: passing function to block.manager's `registry` doesn't work.
+
+
 ## v2.0.3
 
  - defer block.class initialization until create since we may not use an added block eventually.

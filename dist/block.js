@@ -154,8 +154,8 @@
       return this._chain = it;
     },
     registry: function(it){
-      var lib, block, ref$;
-      if (typeof it === 'string') {
+      var ref$, lib, block;
+      if ((ref$ = typeof it) === 'string' || ref$ === 'function') {
         lib = block = it;
       } else {
         ref$ = it || {}, lib = ref$.lib, block = ref$.block;

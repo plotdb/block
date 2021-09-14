@@ -81,7 +81,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     else @rescope.init!
   chain: -> @_chain = it
   registry: ->
-    if typeof(it) == \string => lib = block = it
+    if typeof(it) in <[string function]> => lib = block = it
     else {lib,block} = (it or {})
     if lib? =>
       if @rescope == block.rescope => @rescope = new rescope {global: window}
