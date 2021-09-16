@@ -80,16 +80,15 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     if @rescope == block.rescope => block.init!
     else @rescope.init!
   chain: -> @_chain = it
-  registry: ->
-    if typeof(it) in <[string function]> => lib = block = it
-    else {lib,block} = (it or {})
-    if lib? =>
+  registry: (r) ->
+    if typeof(r) in <[string function]> => r = {lib: r, block: r}
+    if r.lib? =>
       if @rescope == block.rescope => @rescope = new rescope {global: window}
-      if @csscope == block.csscope => @csscope = new csscope!
-      @rescope.registry lib
-      @csscope.registry lib
-    if block? =>
-      @_reg = block or ''
+      if @csscope == block.csscope => @csscope = new csscope.manager!
+      @rescope.registry r.lib
+      @csscope.registry r.lib
+    if r.block? =>
+      @_reg = r.block or ''
       if typeof(@_reg) == \string => if @_reg and @_reg[* - 1] != \/ => @_reg += \/
   set: (opt = {}) ->
     opts = if Array.isArray(opt) => opt else [opt]
@@ -99,8 +98,8 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
       @hash{}[name]{}[version][path or 'index.html'] = b
     )
   get-url: ({name, version, path}) ->
-    if typeof(@_reg) == \function => @_reg {name, version, path, type: \block}
-    else return "#{@_reg or ''}/assets/block/#{name}/#{version}/#{path or 'index.html'}"
+    return if typeof(@_reg) == \function => @_reg {name, version, path, type: \block}
+    else "#{@_reg or ''}/assets/block/#{name}/#{version}/#{path or 'index.html'}"
 
   fetch: (opt) ->
     if @_fetch => return Promise.resolve(@_fetch opt)

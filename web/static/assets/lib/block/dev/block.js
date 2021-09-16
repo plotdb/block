@@ -153,27 +153,28 @@
     chain: function(it){
       return this._chain = it;
     },
-    registry: function(it){
-      var ref$, lib, block;
-      if ((ref$ = typeof it) === 'string' || ref$ === 'function') {
-        lib = block = it;
-      } else {
-        ref$ = it || {}, lib = ref$.lib, block = ref$.block;
+    registry: function(r){
+      var ref$;
+      if ((ref$ = typeof r) === 'string' || ref$ === 'function') {
+        r = {
+          lib: r,
+          block: r
+        };
       }
-      if (lib != null) {
+      if (r.lib != null) {
         if (this.rescope === block.rescope) {
           this.rescope = new rescope({
             global: window
           });
         }
         if (this.csscope === block.csscope) {
-          this.csscope = new csscope();
+          this.csscope = new csscope.manager();
         }
-        this.rescope.registry(lib);
-        this.csscope.registry(lib);
+        this.rescope.registry(r.lib);
+        this.csscope.registry(r.lib);
       }
-      if (block != null) {
-        this._reg = block || '';
+      if (r.block != null) {
+        this._reg = r.block || '';
         if (typeof this._reg === 'string') {
           if (this._reg && (ref$ = this._reg)[ref$.length - 1] !== '/') {
             return this._reg += '/';
@@ -199,16 +200,14 @@
     getUrl: function(arg$){
       var name, version, path;
       name = arg$.name, version = arg$.version, path = arg$.path;
-      if (typeof this._reg === 'function') {
-        return this._reg({
+      return typeof this._reg === 'function'
+        ? this._reg({
           name: name,
           version: version,
           path: path,
           type: 'block'
-        });
-      } else {
-        return (this._reg || '') + "/assets/block/" + name + "/" + version + "/" + (path || 'index.html');
-      }
+        })
+        : (this._reg || '') + "/assets/block/" + name + "/" + version + "/" + (path || 'index.html');
     },
     fetch: function(opt){
       var url;

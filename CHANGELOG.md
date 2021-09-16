@@ -1,5 +1,10 @@
 # Change Logs
 
+## v2.0.5
+
+ - fix bug: `block` overwritten by local variable in `registry`
+
+
 ## v2.0.4
 
  - fix bug: passing function to block.manager's `registry` doesn't work.
