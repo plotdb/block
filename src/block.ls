@@ -158,7 +158,6 @@ block.class = (opt={}) ->
     div = document.createElement("div")
     div.innerHTML = @code
     if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
-    node = div.childNodes.0
   else if typeof(code) == \object =>
     @script = code.script
     @style = code.style
@@ -167,15 +166,22 @@ block.class = (opt={}) ->
     div = document.createElement("div")
     div.innerHTML = @code
     if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
-    node = div.childNodes.0
-  if !node => node = document.createElement(\div)
 
   # remove functional elements before sending them into datadom.
+  # div but not node: we will get node later so get all func elements via div first.
   <[script style link]>.map (n) ~>
-    v = Array.from(node.querySelectorAll(n))
+    v = Array.from((node or div).querySelectorAll(n))
       .map ~> it.parentNode.removeChild(it); it.textContent
       .join \\n
     @[n] = if v? and v => v else (@[n] or "")
+
+  if !node and div =>
+    for i from 0 til div.childNodes.length =>
+      if (node = div.childNodes[i]).nodeType == Element.ELEMENT_NODE => break
+  if !node => node = document.createElement(\div)
+  if node.nodeType != Element.ELEMENT_NODE =>
+    console.log warn "root of DOM definition of a block should be an Element"
+
   @node = node
   # we dont init until create is called, because we may not use it even if it's loaded.
   @init = proxise.once ~> @_init!

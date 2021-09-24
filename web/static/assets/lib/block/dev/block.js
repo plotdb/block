@@ -315,7 +315,7 @@
     }
   });
   block['class'] = function(opt){
-    var code, div, node, this$ = this;
+    var code, div, i$, to$, i, node, this$ = this;
     opt == null && (opt = {});
     this.opt = opt;
     this.scope = "_" + Math.random().toString(36).substring(2);
@@ -347,7 +347,6 @@
       if (div.childNodes.length > 1) {
         console.warn("DOM definition of a block should contain only one root.");
       }
-      node = div.childNodes[0];
     } else if (typeof code === 'object') {
       this.script = code.script;
       this.style = code.style;
@@ -360,14 +359,10 @@
       if (div.childNodes.length > 1) {
         console.warn("DOM definition of a block should contain only one root.");
       }
-      node = div.childNodes[0];
-    }
-    if (!node) {
-      node = document.createElement('div');
     }
     ['script', 'style', 'link'].map(function(n){
       var v;
-      v = Array.from(node.querySelectorAll(n)).map(function(it){
+      v = Array.from((node || div).querySelectorAll(n)).map(function(it){
         it.parentNode.removeChild(it);
         return it.textContent;
       }).join('\n');
@@ -375,6 +370,20 @@
         ? v
         : this$[n] || "";
     });
+    if (!node && div) {
+      for (i$ = 0, to$ = div.childNodes.length; i$ < to$; ++i$) {
+        i = i$;
+        if ((node = div.childNodes[i]).nodeType === Element.ELEMENT_NODE) {
+          break;
+        }
+      }
+    }
+    if (!node) {
+      node = document.createElement('div');
+    }
+    if (node.nodeType !== Element.ELEMENT_NODE) {
+      console.log(warn("root of DOM definition of a block should be an Element"));
+    }
     this.node = node;
     this.init = proxise.once(function(){
       return this$._init();

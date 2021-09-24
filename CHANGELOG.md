@@ -1,5 +1,11 @@
 # Change Logs
 
+## v2.0.7
+
+ - while giving warning, still try to make multi-root DOM works.
+ - give warning when block DOM root is a non-element.
+
+
 ## v2.0.6
 
  - remove `dompurify` dependency.
