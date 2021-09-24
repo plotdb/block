@@ -33,7 +33,6 @@
     "body-parser": "^1.19.0",
     "bootstrap": "^4.5.2",
     "bootstrap.native": "^3.0.15",
-    "dompurify": "^2.2.6",
     "fedep": "0.0.12",
     "jsoneditor": "^9.1.1",
     "ldbutton": "^1.0.2",
@@ -51,7 +50,6 @@
   "peerDependencies": {
     "@plotdb/csscope": "^1.0.0",
     "@plotdb/rescope": "^3.0.0",
-    "dompurify": "^2.2.6",
     "proxise": "^0.1.2"
   },
   "frontendDependencies": {
@@ -63,7 +61,6 @@
       "@loadingio/debounce.js",
       "@loadingio/loading.css",
       "@loadingio/bootstrap.ext",
-      "dompurify",
       "ldview",
       "ldloader",
       "ldbutton",
