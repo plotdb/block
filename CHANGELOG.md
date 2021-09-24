@@ -1,5 +1,11 @@
 # Change Logs
 
+## v2.0.6
+
+ - remove `dompurify` dependency.
+ - adopt new csscope spec
+
+
 ## v2.0.5
 
  - fix bug: `block` overwritten by local variable in `registry`

@@ -410,7 +410,8 @@
         document.body.appendChild(this$.styleNode = document.createElement("style"));
         this$.styleNode.setAttribute('type', 'text/css');
         this$.styleNode.textContent = ret = csscope({
-          scope: "*[scope~=" + this$.scope + "]",
+          rule: "*[scope~=" + this$.scope + "]",
+          name: this$.scope,
           css: this$.style,
           scopeTest: "[scope]"
         });

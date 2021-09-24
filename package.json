@@ -25,7 +25,7 @@
     "@loadingio/debounce.js": "0.0.1",
     "@loadingio/ldquery": "^2.0.0",
     "@loadingio/loading.css": "^2.0.1",
-    "@plotdb/csscope": "^1.0.0",
+    "@plotdb/csscope": "^2.0.0",
     "@plotdb/datadom": "0.0.4",
     "@plotdb/json0": "0.0.1",
     "@plotdb/rescope": "^3.0.0",
@@ -48,7 +48,7 @@
     "uglifycss": "^0.0.29"
   },
   "peerDependencies": {
-    "@plotdb/csscope": "^1.0.0",
+    "@plotdb/csscope": "^2.0.0",
     "@plotdb/rescope": "^3.0.0",
     "proxise": "^0.1.2"
   },

@@ -202,7 +202,9 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 
         document.body.appendChild(@style-node = document.createElement("style"))
         @style-node.setAttribute \type, 'text/css'
-        @style-node.textContent = ret = csscope {scope: "*[scope~=#{@scope}]", css: @style, scope-test: "[scope]"}
+        @style-node.textContent = ret = csscope {
+          rule: "*[scope~=#{@scope}]", name: @scope, css: @style, scope-test: "[scope]"
+        }
         @factory = (...args) -> @
         @factory.prototype = Object.create(Object.prototype) <<< {
           init: (->), destroy: (->)
