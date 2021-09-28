@@ -343,12 +343,19 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
 
   _transform: (node) ->
     # i18n transformer
+    _ = (n) ~>
+      if n.nodeType == Element.TEXT_NODE =>
+        n.parentNode.replaceChild document.createTextNode(@i18n(n.textContent)), n
+      else
+        for i from 0 til n.attributes.length =>
+          {name,value} = n.attributes[i]
+          if !(ret = /^t-(.+)$/.exec(name)) => continue
+          n.setAttribute ret.1, @i18n(value or '')
+        if (v = n.getAttribute(\t)) => return n.textContent = @i18n v
+        for i from 0 til n.childNodes.length => _ n.childNodes[i]
     Array.from(node.querySelectorAll '[t]')
-      .map (n) ~>
-        if !(v = n.getAttribute(\t)) => return
-        v = @i18n(v)
-        if n.hasAttribute \t-attr => n.setAttribute n.getAttribute(\t-attr), v
-        else n.textContent = v
+      .filter (n) -> n.hasAttribute(\t)
+      .map (n) ~> _ n
     return node
 
   dom: ->

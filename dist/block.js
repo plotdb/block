@@ -658,18 +658,34 @@
       return this.datadom.update(ops);
     },
     _transform: function(node){
-      var this$ = this;
-      Array.from(node.querySelectorAll('[t]')).map(function(n){
-        var v;
-        if (!(v = n.getAttribute('t'))) {
-          return;
-        }
-        v = this$.i18n(v);
-        if (n.hasAttribute('t-attr')) {
-          return n.setAttribute(n.getAttribute('t-attr'), v);
+      var _, this$ = this;
+      _ = function(n){
+        var i$, to$, i, ref$, name, value, ret, v, results$ = [];
+        if (n.nodeType === Element.TEXT_NODE) {
+          return n.parentNode.replaceChild(document.createTextNode(this$.i18n(n.textContent)), n);
         } else {
-          return n.textContent = v;
+          for (i$ = 0, to$ = n.attributes.length; i$ < to$; ++i$) {
+            i = i$;
+            ref$ = n.attributes[i], name = ref$.name, value = ref$.value;
+            if (!(ret = /^t-(.+)$/.exec(name))) {
+              continue;
+            }
+            n.setAttribute(ret[1], this$.i18n(value || ''));
+          }
+          if (v = n.getAttribute('t')) {
+            return n.textContent = this$.i18n(v);
+          }
+          for (i$ = 0, to$ = n.childNodes.length; i$ < to$; ++i$) {
+            i = i$;
+            results$.push(_(n.childNodes[i]));
+          }
+          return results$;
         }
+      };
+      Array.from(node.querySelectorAll('[t]')).filter(function(n){
+        return n.hasAttribute('t');
+      }).map(function(n){
+        return _(n);
       });
       return node;
     },

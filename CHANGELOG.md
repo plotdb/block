@@ -1,5 +1,12 @@
 # Change Logs
 
+## v2.1.0
+
+ - dont use `t-attr` for attribute i18n since it only works for single attribute. use t-xxx instead.
+ - use `textContent` for i18n if attribute value for `t` is not available.
+ - support recursive i18n transformation
+
+
 ## v2.0.7
 
  - while giving warning, still try to make multi-root DOM works.
