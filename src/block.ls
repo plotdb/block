@@ -1,7 +1,5 @@
 rescope = if window? => window.rescope else if module? and require? => require "@plotdb/rescope" else null
 
-sanitize = (code) -> (code or '')
-
 e404 = -> Promise.reject(new Error! <<< {name: \lderror, id: 404})
 
 rid = ->
@@ -21,6 +19,7 @@ parse-name-string = (n) ->
 # Following code is for reference.
 #sanitize-real = (code) ->
 #  DOMPurify.sanitize( (code or ''), { ADD_TAGS: <[script style plug]>, ADD_ATTR: <[ld ld-each block plug]> })
+sanitize = (code) -> (code or '')
 
 pubsub = ->
   @subs = {}
