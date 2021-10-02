@@ -1,5 +1,10 @@
 # Change Logs
 
+## v2.1.1 (upcoming)
+
+ - fix typo "console.log warn" to "console.warn"
+
+
 ## v2.1.0
 
  - dont use `t-attr` for attribute i18n since it only works for single attribute. use t-xxx instead.

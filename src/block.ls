@@ -148,7 +148,7 @@ block.class = (opt={}) ->
   @csscopes = {global: [], local: []} # css libraries. may be either global or local.
   # manager is used for recursively get extended block.
   @ <<< opt{name, version, path, manager}
-  if !@manager => console.log warn "manager is mandatory when constructing block.class"
+  if !@manager => console.warn "manager is mandatory when constructing block.class"
   code = opt.code
   if opt.root => code = (if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root).innerHTML
   if typeof(code) == \function => code = code!

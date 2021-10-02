@@ -329,7 +329,7 @@
     this.path = opt.path;
     this.manager = opt.manager;
     if (!this.manager) {
-      console.log(warn("manager is mandatory when constructing block.class"));
+      console.warn("manager is mandatory when constructing block.class");
     }
     code = opt.code;
     if (opt.root) {
