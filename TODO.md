@@ -1,3 +1,4 @@
+ - prevent circular dependencies ( extend self ) and provide proper error
  - dependency: support multiple files in one declaration. e.g., 
 
     {name: "@plotdb/module", version: "main", path: ["index.js", "index.css"]}
