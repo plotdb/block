@@ -3,6 +3,7 @@
 ## v2.1.1 (upcoming)
 
  - fix typo "console.log warn" to "console.warn"
+ - minimize js file further with `-c -m` option
 
 
 ## v2.1.0

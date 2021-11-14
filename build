@@ -7,7 +7,7 @@ mkdir -p dist
 echo "building block.ls -> block.js ..."
 ./node_modules/.bin/lsc -cp src/block.ls > dist/block.js
 echo "minify block.js -> block.min.js ..."
-./node_modules/.bin/uglifyjs dist/block.js > dist/block.min.js
+./node_modules/.bin/uglifyjs dist/block.js -m -c > dist/block.min.js
 
 echo "copy dist to web ..."
 rm -rf web/static/assets/lib/block/dev/
