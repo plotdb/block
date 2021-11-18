@@ -150,7 +150,11 @@ block.class = (opt={}) ->
   @ <<< opt{name, version, path, manager}
   if !@manager => console.warn "manager is mandatory when constructing block.class"
   code = opt.code
+
+  # TODO how about cloneNode + query directly, instead of DOM->innerHTML->DOM?
+  # this may be useful for optimization if used along with Declarative Shadow DOM
   if opt.root => code = (if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root).innerHTML
+
   if typeof(code) == \function => code = code!
   if typeof(code) == \string =>
     @code = sanitize code
@@ -166,22 +170,26 @@ block.class = (opt={}) ->
     div.innerHTML = @code
     if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
 
+  # TODO @script may involve `eval` below in `init`; to optimize, we may prebundle this directly as JS.
   # remove functional elements before sending them into datadom.
   # div but not node: we will get node later so get all func elements via div first.
   <[script style link]>.map (n) ~>
     v = Array.from((node or div).querySelectorAll(n))
       .map ~> it.parentNode.removeChild(it); it.textContent
       .join \\n
+    # TODO should concat with previous result?
+    # @[n] = (@[n] or '') + (if v? and v => v else '')
     @[n] = if v? and v => v else (@[n] or "")
 
+  # TODO there is no node before here. why check?
   if !node and div =>
     for i from 0 til div.childNodes.length =>
       if (node = div.childNodes[i]).nodeType == Element.ELEMENT_NODE => break
   if !node => node = document.createElement(\div)
   if node.nodeType != Element.ELEMENT_NODE =>
     console.log warn "root of DOM definition of a block should be an Element"
-
   @node = node
+
   # we dont init until create is called, because we may not use it even if it's loaded.
   @init = proxise.once ~> @_init!
   @
@@ -194,6 +202,9 @@ block.class.prototype = Object.create(Object.prototype) <<< do
   _init: ->
     block.init!
       .then ~>
+        # TODO see constructor above about @script
+        # This involves eval which compile separatedly, may induce inefficiency.
+        # eventaully we will want this to be interpreted directly by browser in batch.
         @interface = (if @script instanceof Function => @script!
         else if typeof(@script) == \object => @script
         else if (v = eval(@script or '')) instanceof Function => v!
@@ -207,6 +218,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 
         document.body.appendChild(@style-node = document.createElement("style"))
         @style-node.setAttribute \type, 'text/css'
+
+        # TODO @style takes 2nd parse here. we should support rule passing mechanism
         @style-node.textContent = ret = csscope {
           rule: "*[scope~=#{@scope}]", name: @scope, css: @style, scope-test: "[scope]"
         }
@@ -261,6 +274,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         else if @extend-dom == \overwrite => @csscopes.local ++= (@extend.csscopes.local).slice(1)
       .catch (e) ~>
         console.error "[@plotdb/block] init block {name: #{@name}, version: #{@version}, path: #{@path or ''}}", e
+        # TODO seems useless, unless we set it to @node?
         node = document.createElement("div")
         node.innerText = "failed"
         @ <<< interface: {}, style-node: {}, factory: (-> @), dependencies: []
