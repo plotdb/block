@@ -4,6 +4,11 @@
 
  - fix typo "console.log warn" to "console.warn"
  - minimize js file further with `-c -m` option
+ - trim block code in case of unwanted text children
+ - support constructing block.class based on DOM Node
+ - support DOM Node as constructor parameter
+ - use base64-ed id as scope name
+ - only scope CSS if `@style` is available
 
 
 ## v2.1.0

@@ -1,0 +1,46 @@
+<!DOCTYPE html><html><head><base href="/"><link rel="stylesheet" type="text/css" href="assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/@loadingio/bootstrap.ext/main/index.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldiconfont/main/ldif.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldcover/main/ldcv.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldbutton/main/ldbtn.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldloader/main/ldld.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/@loadingio/loading.css/main/loading.min.css"><link rel="stylesheet" type="text/css" href="css/index.css"></head><body><div class="w-1024 rwd mx-auto my-4"><div><p>use <code>opt.root</code> (red) and <code>opt.code</code> (yellow) from block node in template</p>
+</div><div class="d-flex flex-wrap align-items-center justify-content-center" id="root1" style="gap:1em"></div><template><div class="p-2"><h3>opt.root</h3><style type="text/css">h3 { color: #f00; padding: 5px; margin: 0 }</style><script>({
+  init: function(arg$){
+    var root;
+    root = arg$.root;
+    root.style.background = ['#000', '#222', '#444', '#666'][Math.floor(Math.random() * 4)];
+    return console.log('inited.');
+  }
+});</script></div><div class="p-2"><h3>opt.code</h3><style type="text/css">h3 { color: #ff0; padding: 5px; margin: 0 }</style><script>({
+  init: function(arg$){
+    var root;
+    root = arg$.root;
+    root.style.background = ['#000', '#222', '#444', '#666'][Math.floor(Math.random() * 4)];
+    return console.log('inited.');
+  }
+});</script></div></template></div><script type="text/javascript" src="assets/lib/proxise/main/proxise.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/json0/main/json0.min.js"></script><script type="text/javascript" src="assets/lib/bootstrap.native/main/bootstrap-native-v4.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/debounce.js/main/debounce.min.js"></script><script type="text/javascript" src="assets/lib/ldcover/main/ldcv.min.js"></script><script type="text/javascript" src="assets/lib/ldloader/main/ldld.min.js"></script><script type="text/javascript" src="assets/lib/ldview/main/index.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/datadom/main/datadom.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/csscope/main/csscope.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/rescope/main/rescope.min.js"></script><script type="text/javascript" src="assets/lib/dompurify/main/purify.min.js"></script><script type="text/javascript" src="assets/lib/block/dev/block.js"></script><script>var template, mgr, cls1, cls2, ps1;
+template = ld$.find('template', 0);
+mgr = new block.manager();
+cls1 = new block['class']({
+  manager: mgr,
+  root: template.content.childNodes[0].cloneNode(true)
+});
+cls2 = new block['class']({
+  manager: mgr,
+  code: template.content.childNodes[1].outerHTML
+});
+ps1 = [0, 1, 2, 3, 4].map(function(){
+  return cls1.create().then(function(bi){
+    return bi.attach({
+      root: root1
+    });
+  });
+});
+Promise.all(ps1).then(function(){
+  var i$, i, results$ = [];
+  for (i$ = 0; i$ < 5; ++i$) {
+    i = i$;
+    results$.push(cls2.create().then(fn$));
+  }
+  return results$;
+  function fn$(bi){
+    return bi.attach({
+      root: root1
+    });
+  }
+});</script></body></html>

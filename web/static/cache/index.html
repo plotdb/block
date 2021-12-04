@@ -1,0 +1,121 @@
+<!DOCTYPE html><html><head><base href="/"><style type="text/css">h1 {
+  color: #f00;
+}
+</style><link rel="stylesheet" type="text/css" href="assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/@loadingio/bootstrap.ext/main/index.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldiconfont/main/ldif.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldcover/main/ldcv.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldbutton/main/ldbtn.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldloader/main/ldld.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/@loadingio/loading.css/main/loading.min.css"><link rel="stylesheet" type="text/css" href="css/index.css"></head><body><template><div block="@plotdb/sample1@main"><h1>hi</h1></div><div block="@plotdb/sample2@main"><h1>hi</h1></div><style type="@plotdb/block">[scope=_QHBsb3RkYi9zYW1wbGUxQG1haW4vaW5kZXguaHRtbA__] h1 { color: #00f }
+[scope=_QHBsb3RkYi9zYW1wbGUyQG1haW4vaW5kZXguaHRtbA__] h1 { color: #0ff }</style><script type="text/javascript">document.currentScript['import'](function(){
+  console.log("initing");
+  return {
+    "@plotdb/sample1@main": {
+      init: function(){},
+      'interface': function(){
+        return {
+          name: 1
+        };
+      }
+    },
+    "@plotdb/sample2@main": {
+      init: function(){},
+      'interface': function(){
+        return {
+          name: 2
+        };
+      }
+    }
+  };
+});</script></template><div class="w-1024 rwd mx-auto my-4"><h1>outside</h1><div class="rounded shadow-sm border p-4"></div></div><script type="text/javascript" src="assets/lib/proxise/main/proxise.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/json0/main/json0.min.js"></script><script type="text/javascript" src="assets/lib/bootstrap.native/main/bootstrap-native-v4.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/debounce.js/main/debounce.min.js"></script><script type="text/javascript" src="assets/lib/ldcover/main/ldcv.min.js"></script><script type="text/javascript" src="assets/lib/ldloader/main/ldld.min.js"></script><script type="text/javascript" src="assets/lib/ldview/main/index.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/datadom/main/datadom.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/csscope/main/csscope.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/rescope/main/rescope.min.js"></script><script type="text/javascript" src="assets/lib/dompurify/main/purify.min.js"></script><script type="text/javascript" src="assets/lib/block/dev/block.js"></script><script type="text/javascript" src="/assets/lib/block/dev/block.js"></script><script>(function(it){
+  return it.apply({});
+})(function(){
+  var tmp, node, parseBundle, mgr, obj, this$ = this;
+  window.blah = function(cb){
+    return this$.code = cb();
+  };
+  tmp = ld$.find('template', 0);
+  node = tmp.content;
+  parseBundle = function(opt){
+    var root, k, ref$, node, ret, ref1$, name, version, path, bc, this$ = this;
+    opt == null && (opt = {});
+    this.root = root = typeof opt.root === 'string'
+      ? document.querySelector(opt.root)
+      : opt.root;
+    if (root.content) {
+      this.root = root = root.content;
+    }
+    this.nodes = {};
+    this.classes = {};
+    this.codes = {};
+    this.mgr = opt.manager;
+    this.nodes = {};
+    this.classes = {};
+    Array.from(root.childNodes).map(function(n){
+      if (n.nodeName === 'SCRIPT') {
+        return this$.script = n;
+      } else if (n.nodeName === 'STYLE') {
+        return this$.style = n.cloneNode(true);
+      } else {
+        return this$.nodes[n.getAttribute('block')] = n;
+      }
+    });
+    if (this.script) {
+      this.script['import'] = function(it){
+        return this$.codes = it();
+      };
+      this.style.setAttribute('type', 'text/javascript');
+      document.body.appendChild(this.script);
+    }
+    if (this.style) {
+      this.style.setAttribute('type', 'text/css');
+      document.body.appendChild(this.style);
+    }
+    for (k in ref$ = this.nodes) {
+      node = ref$[k];
+      ret = /^(@?[^@]+)@([^:]+)(:.+)?/.exec(k);
+      ref1$ = [ret[1], ret[2], (ret[3] || '').replace(/^:/, '') || ''], name = ref1$[0], version = ref1$[1], path = ref1$[2];
+      this.classes[k] = bc = new block['class']({
+        manager: this.mgr,
+        name: name,
+        version: version,
+        path: path,
+        code: {
+          script: this.codes[k],
+          dom: node,
+          style: ""
+        }
+      });
+      this.mgr.set(bc);
+    }
+    return this;
+  };
+  mgr = new block.manager();
+  obj = parseBundle.call({}, {
+    root: ld$.find('template', 0),
+    manager: mgr
+  });
+  mgr.get({
+    name: "@plotdb/sample1",
+    version: "main"
+  }).then(function(bc){
+    return bc.create().then(function(bi){
+      return bi.attach({
+        root: document.body
+      }).then(function(){
+        return bi['interface']();
+      }).then(function(it){
+        return console.log(it);
+      });
+    });
+  });
+  return mgr.get({
+    name: "@plotdb/sample2",
+    version: "main"
+  }).then(function(bc){
+    return bc.create().then(function(bi){
+      return bi.attach({
+        root: document.body
+      }).then(function(){
+        return bi['interface']();
+      }).then(function(it){
+        return console.log(it);
+      });
+    });
+  });
+});</script></body></html>

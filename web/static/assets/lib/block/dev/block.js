@@ -315,10 +315,10 @@
     }
   });
   block['class'] = function(opt){
-    var code, div, i$, to$, i, node, this$ = this;
+    var code, node, div, dom, i$, to$, i, this$ = this;
     opt == null && (opt = {});
     this.opt = opt;
-    this.scope = "_" + Math.random().toString(36).substring(2);
+    this.scope = opt.scope || null;
     this._ctx = {};
     this.csscopes = {
       global: [],
@@ -333,31 +333,38 @@
     }
     code = opt.code;
     if (opt.root) {
-      code = (typeof opt.root === 'string'
+      node = typeof opt.root === 'string'
         ? document.querySelector(opt.root)
-        : opt.root).innerHTML;
-    }
-    if (typeof code === 'function') {
-      code = code();
-    }
-    if (typeof code === 'string') {
-      this.code = sanitize(code);
-      div = document.createElement("div");
-      div.innerHTML = this.code;
-      if (div.childNodes.length > 1) {
-        console.warn("DOM definition of a block should contain only one root.");
+        : opt.root;
+    } else {
+      if (typeof code === 'function') {
+        code = code();
       }
-    } else if (typeof code === 'object') {
-      this.script = code.script;
-      this.style = code.style;
-      code = code.dom instanceof Function
-        ? code.dom()
-        : code.dom;
-      this.code = sanitize(code);
-      div = document.createElement("div");
-      div.innerHTML = this.code;
-      if (div.childNodes.length > 1) {
-        console.warn("DOM definition of a block should contain only one root.");
+      if (typeof code === 'string') {
+        code = sanitize(code);
+        div = document.createElement("div");
+        div.innerHTML = (code || '').trim();
+        if (div.childNodes.length > 1) {
+          console.warn("DOM definition of a block should contain only one root.");
+        }
+      } else if (typeof code === 'object') {
+        this.script = code.script;
+        this.style = code.style;
+        this.style = code.style;
+        this.script = code.script;
+        dom = code.dom instanceof Function
+          ? code.dom()
+          : code.dom;
+        if (dom instanceof Element) {
+          node = dom;
+        } else {
+          code = sanitize(dom);
+          div = document.createElement("div");
+          div.innerHTML = code;
+          if (div.childNodes.length > 1) {
+            console.warn("DOM definition of a block should contain only one root.");
+          }
+        }
       }
     }
     ['script', 'style', 'link'].map(function(n){
@@ -416,14 +423,19 @@
           this$.path = this$['interface'].pkg.path;
         }
         this$.id = (this$.name || rid()) + "@" + (this$.version || rid()) + "/" + (this$.path || 'index.html');
-        document.body.appendChild(this$.styleNode = document.createElement("style"));
-        this$.styleNode.setAttribute('type', 'text/css');
-        this$.styleNode.textContent = ret = csscope({
-          rule: "*[scope~=" + this$.scope + "]",
-          name: this$.scope,
-          css: this$.style,
-          scopeTest: "[scope]"
-        });
+        if (!this$.scope) {
+          this$.scope = '_' + btoa(this$.id).replace(/=/g, '_');
+        }
+        if (this$.style) {
+          document.body.appendChild(this$.styleNode = document.createElement("style"));
+          this$.styleNode.setAttribute('type', 'text/css');
+          this$.styleNode.textContent = ret = csscope({
+            rule: "*[scope~=" + this$.scope + "]",
+            name: this$.scope,
+            css: this$.style,
+            scopeTest: "[scope]"
+          });
+        }
         this$.factory = function(){
           var args, res$, i$, to$;
           res$ = [];

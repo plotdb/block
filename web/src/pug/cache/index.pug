@@ -1,0 +1,28 @@
+extends /base.pug
+block prehead
+  base(href="/")
+  style(type="text/css"): :stylus
+    h1
+      color: #f00
+block body
+  template
+    div(block="@plotdb/sample1@main")
+      h1 hi
+    div(block="@plotdb/sample2@main")
+      h1 hi
+    style(type="@plotdb/block").
+      [scope=_QHBsb3RkYi9zYW1wbGUxQG1haW4vaW5kZXguaHRtbA__] h1 { color: #00f }
+      [scope=_QHBsb3RkYi9zYW1wbGUyQG1haW4vaW5kZXguaHRtbA__] h1 { color: #0ff }
+    script(type="text/javascript"): :lsc
+      document.currentScript.import ->
+        console.log "initing"
+        "@plotdb/sample1@main": {init: (->), interface: -> {name: 1}}
+        "@plotdb/sample2@main": {init: (->), interface: -> {name: 2}}
+
+
+  .w-1024.rwd.mx-auto.my-4
+    h1 outside
+    .rounded.shadow-sm.border.p-4
+block script
+  +script("/assets/lib/block/dev/block.js")
+  script: include:lsc index.ls

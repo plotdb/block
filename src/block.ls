@@ -143,7 +143,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
 
 block.class = (opt={}) ->
   @opt = opt
-  @scope = "_" + Math.random!toString(36)substring(2)
+  @scope = opt.scope or null # will be regen in `init` if null
   @_ctx = {} # libraries context. may inherited from extended base class.
   @csscopes = {global: [], local: []} # css libraries. may be either global or local.
   # manager is used for recursively get extended block.
@@ -153,23 +153,27 @@ block.class = (opt={}) ->
 
   # TODO how about cloneNode + query directly, instead of DOM->innerHTML->DOM?
   # this may be useful for optimization if used along with Declarative Shadow DOM
-  if opt.root => code = (if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root).innerHTML
-
-  if typeof(code) == \function => code = code!
-  if typeof(code) == \string =>
-    @code = sanitize code
-    div = document.createElement("div")
-    div.innerHTML = @code
-    if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
-  else if typeof(code) == \object =>
-    @script = code.script
-    @style = code.style
-    code = if code.dom instanceof Function => code.dom! else code.dom
-    @code = sanitize code
-    div = document.createElement("div")
-    div.innerHTML = @code
-    if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
-
+  if opt.root =>
+    node = if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root
+  else
+    if typeof(code) == \function => code = code!
+    if typeof(code) == \string =>
+      code = sanitize code
+      div = document.createElement("div")
+      # in case of unwanted space which creates more than 1 child.
+      div.innerHTML = (code or '').trim!
+      if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
+    else if typeof(code) == \object =>
+      @script = code.script # can be either a string, object or function
+      @style = code.style # should be string or CSSRuleList(todo)
+      @ <<< code{style, script}
+      dom = if code.dom instanceof Function => code.dom! else code.dom
+      if dom instanceof Element => node = dom
+      else
+        code = sanitize dom
+        div = document.createElement("div")
+        div.innerHTML = code
+        if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
   # TODO @script may involve `eval` below in `init`; to optimize, we may prebundle this directly as JS.
   # remove functional elements before sending them into datadom.
   # div but not node: we will get node later so get all func elements via div first.
@@ -180,8 +184,6 @@ block.class = (opt={}) ->
     # TODO should concat with previous result?
     # @[n] = (@[n] or '') + (if v? and v => v else '')
     @[n] = if v? and v => v else (@[n] or "")
-
-  # TODO there is no node before here. why check?
   if !node and div =>
     for i from 0 til div.childNodes.length =>
       if (node = div.childNodes[i]).nodeType == Element.ELEMENT_NODE => break
@@ -195,7 +197,7 @@ block.class = (opt={}) ->
   @
 
 # use document fragment ( yet datadom doesn't work with #document-fragment )
-# @frag = document.createRange!.createContextualFragment(@code)
+# @frag = document.createRange!.createContextualFragment(code)
 # domtree = @frag.cloneNode(true)
 
 block.class.prototype = Object.create(Object.prototype) <<< do
@@ -215,14 +217,21 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         if !@version => @version = @interface.pkg.version
         if !@path => @path = @interface.pkg.path
         @id = "#{@name or rid!}@#{@version or rid!}/#{@path or 'index.html'}"
+        # TODO better scope format?
+        # use base64 id for a stable scope. scope may be pre-given, set in constructor.
+        if !@scope => @scope = '_' + btoa(@id).replace(/=/g,'_')
 
-        document.body.appendChild(@style-node = document.createElement("style"))
-        @style-node.setAttribute \type, 'text/css'
+        # only create style-node if we have style.
+        # this is useful when we use bundler with pre-scoped css.
+        # TODO we may need an additional flag for explicitly telling block to whether do scoping or not.
+        if @style =>
+          document.body.appendChild(@style-node = document.createElement("style"))
+          @style-node.setAttribute \type, 'text/css'
+          # TODO @style takes 2nd parse here. we should support rule passing mechanism
+          @style-node.textContent = ret = csscope {
+            rule: "*[scope~=#{@scope}]", name: @scope, css: @style, scope-test: "[scope]"
+          }
 
-        # TODO @style takes 2nd parse here. we should support rule passing mechanism
-        @style-node.textContent = ret = csscope {
-          rule: "*[scope~=#{@scope}]", name: @scope, css: @style, scope-test: "[scope]"
-        }
         @factory = (...args) -> @
         @factory.prototype = Object.create(Object.prototype) <<< {
           init: (->), destroy: (->)
