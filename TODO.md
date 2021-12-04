@@ -1,3 +1,12 @@
+ - optimization
+   - use block to wrap css + js in HTML.
+     - make it possible to inject into html with declarative shadow dom
+       - or at least indirectly throught loader script.
+     - eval once all the bundle with DOMParser
+       - https://developer.mozilla.org/en-US/docs/Web/API/DOMParser
+       - what happens for js css when using DOMParser?
+     - recursively retrieve blocks based on @plotdb/block's rule, listing all dependencies and bundle them.
+
  - prevent circular dependencies ( extend self ) and provide proper error
  - dependency: support multiple files in one declaration. e.g., 
 
@@ -15,4 +24,3 @@
 
     div(t="text to translate")
     div(t="text to translate",t-attr="attr-name-if-applicable")
-     
