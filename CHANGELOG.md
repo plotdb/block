@@ -9,6 +9,7 @@
  - support DOM Node as constructor parameter
  - use base64-ed id as scope name
  - only scope CSS if `@style` is available
+ - support nodejs context
 
 
 ## v2.1.0
