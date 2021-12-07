@@ -1,4 +1,6 @@
 rescope = if window? => window.rescope else if module? and require? => require "@plotdb/rescope" else null
+csscope = if window? => window.csscope else if module? and require? => require "@plotdb/csscope" else null
+proxise = if window? => window.proxise else if module? and require? => require "proxise" else null
 
 e404 = -> Promise.reject(new Error! <<< {name: \lderror, id: 404})
 
@@ -59,7 +61,7 @@ block.global =
       if ret.length => document.body.classList.add.apply document.body.classList, ret
 
 block.init = proxise.once ~> block.rescope.init!
-block.rescope = new rescope global: window
+block.rescope = new rescope global: if window? => window else global
 block.csscope = new csscope.manager!
 block.manager = (opt={}) ->
   @hash = {}
@@ -151,8 +153,6 @@ block.class = (opt={}) ->
   if !@manager => console.warn "manager is mandatory when constructing block.class"
   code = opt.code
 
-  # TODO how about cloneNode + query directly, instead of DOM->innerHTML->DOM?
-  # this may be useful for optimization if used along with Declarative Shadow DOM
   if opt.root =>
     node = if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root
   else
@@ -432,4 +432,4 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     #  @obj = new @block.factory {root: node, context}
 
 if module? => module.exports = block
-if window? => window.block = block
+else if window? => window.block = block
