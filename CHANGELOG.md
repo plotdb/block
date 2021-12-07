@@ -10,6 +10,9 @@
  - use base64-ed id as scope name
  - only scope CSS if `@style` is available
  - support nodejs context
+ - remove ldquery dependency
+ - `main` as default version since latest / main(version in use) are different concept
+ - support rescope v3 and v4
 
 
 ## v2.1.0

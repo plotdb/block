@@ -1,8 +1,23 @@
-rescope = if window? => window.rescope else if module? and require? => require "@plotdb/rescope" else null
+var win, doc
+
+rescope = if window? => window.rescope else if module? and require? => require "@plotdb/rescope/dist/v4" else null
 csscope = if window? => window.csscope else if module? and require? => require "@plotdb/csscope" else null
 proxise = if window? => window.proxise else if module? and require? => require "proxise" else null
+fetch = if window? => window.fetch else if module? and require? => require "node-fetch" else null
 
 e404 = -> Promise.reject(new Error! <<< {name: \lderror, id: 404})
+
+_fetch = (u, c) ->
+  (ret) <- fetch u, c .then _
+  if ret and ret.ok => return ret.text!
+  if !ret => return Promise.reject(new Error("404") <<< {name: \lderror, id: 404})
+  ret.clone!text!then (t) ->
+    i = ret.status or 404
+    e = new Error("#i #t") <<< {name: \lderror, id: i, message: t}
+    try
+      if (j = JSON.parse(t)) and j.name == \lderror => e <<< j <<< {json: j}
+    catch err
+    return Promise.reject e
 
 rid = ->
   while true
@@ -32,6 +47,10 @@ pubsub.prototype = Object.create(Object.prototype) <<< do
   on: (name, cb) -> @subs[][name].push cb
 
 block = {}
+block.env = ->
+  [win, doc] := [it, it.document]
+  rescope.env win
+  csscope.env win
 block.i18n =
   module:
     lng: \en
@@ -58,11 +77,15 @@ block.global =
       ret = ret
         .filter ~> !@hash[it.url]
         .map ~> @hash[it.url] = it.scope
-      if ret.length => document.body.classList.add.apply document.body.classList, ret
+      if ret.length => doc.body.classList.add.apply doc.body.classList, ret
 
-block.init = proxise.once ~> block.rescope.init!
-block.rescope = new rescope global: if window? => window else global
-block.csscope = new csscope.manager!
+block.init = proxise.once ~> if block._rescope => block._rescope.init!
+block.rescope = ->
+  if !block._rescope => block._rescope = new rescope global: if win? => win else global
+  block._rescope
+block.csscope = ->
+  if !block._csscope => block._csscope = new csscope.manager!
+  block._csscope
 block.manager = (opt={}) ->
   @hash = {}
   @proxy = {}
@@ -70,22 +93,22 @@ block.manager = (opt={}) ->
   @_chain = opt.chain or null
   @_fetch = opt.fetch or null
   @init = proxise.once ~> @_init!
-  @rescope = if opt.rescope instanceof rescope => opt.rescope else block.rescope
-  @csscope = if opt.csscope instanceof csscope => opt.csscope else block.csscope
+  @rescope = if opt.rescope instanceof rescope => opt.rescope else block.rescope!
+  @csscope = if opt.csscope instanceof csscope => opt.csscope else block.csscope!
   if opt.registry => @registry opt.registry
   @init!
   @
 
 block.manager.prototype = Object.create(Object.prototype) <<< do
   _init: ->
-    if @rescope == block.rescope => block.init!
+    if @rescope == block.rescope! => block.init!
     else @rescope.init!
   chain: -> @_chain = it
   registry: (r) ->
     if typeof(r) in <[string function]> => r = {lib: r, block: r}
     if r.lib? =>
-      if @rescope == block.rescope => @rescope = new rescope {global: window}
-      if @csscope == block.csscope => @csscope = new csscope.manager!
+      if @rescope == block.rescope! => @rescope = new rescope {global: win}
+      if @csscope == block.csscope! => @csscope = new csscope.manager!
       @rescope.registry r.lib
       @csscope.registry r.lib
     if r.block? =>
@@ -100,17 +123,17 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     )
   get-url: ({name, version, path}) ->
     return if typeof(@_reg) == \function => @_reg {name, version, path, type: \block}
-    else "#{@_reg or ''}/assets/block/#{name}/#{version}/#{path or 'index.html'}"
+    else "#{@_reg or ''}/assets/block/#{name}/#{version or 'main'}/#{path or 'index.html'}"
 
   fetch: (opt) ->
     if @_fetch => return Promise.resolve(@_fetch opt)
     url = @get-url(opt{name,version,path})
     if !url => return e404!
-    ld$.fetch url, {method: \GET}, {type: \text}
+    _fetch url, {method: \GET}
 
   # TODO parse semantic versioning for better cache performance.
   _get: (opt) ->
-    [n,v,p] = [opt.name, opt.version or \latest, opt.path or 'index.html']
+    [n,v,p] = [opt.name, opt.version or \main, opt.path or 'index.html']
     if !(n and v) => return Promise.reject(new Error! <<< {name: "lderror", id: 1015})
     if @hash{}[n]{}[v][p]? and !opt.force => return Promise.resolve(@hash[n][v][p])
     if @running{}[n]{}[v][p] == true => return
@@ -138,7 +161,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     Promise.all(
       opts.map (opt = {}) ~>
         if typeof(opt) == \string => opt = parse-name-string(opt)
-        [n,v,p] = [opt.name, opt.version or \latest, opt.path or 'index.html']
+        [n,v,p] = [opt.name, opt.version or \main, opt.path or 'index.html']
         if !@proxy{}[n]{}[v][p] => @proxy[n][v][p] = proxise (opt) ~> @_get(opt)
         @proxy[n][v][p] opt
     ).then -> if Array.isArray(opt) => return it else return it.0
@@ -154,12 +177,12 @@ block.class = (opt={}) ->
   code = opt.code
 
   if opt.root =>
-    node = if typeof(opt.root) == \string => document.querySelector(opt.root) else opt.root
+    node = if typeof(opt.root) == \string => doc.querySelector(opt.root) else opt.root
   else
     if typeof(code) == \function => code = code!
     if typeof(code) == \string =>
       code = sanitize code
-      div = document.createElement("div")
+      div = doc.createElement("div")
       # in case of unwanted space which creates more than 1 child.
       div.innerHTML = (code or '').trim!
       if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
@@ -168,10 +191,10 @@ block.class = (opt={}) ->
       @style = code.style # should be string or CSSRuleList(todo)
       @ <<< code{style, script}
       dom = if code.dom instanceof Function => code.dom! else code.dom
-      if dom instanceof Element => node = dom
+      if dom instanceof win.Element => node = dom
       else
         code = sanitize dom
-        div = document.createElement("div")
+        div = doc.createElement("div")
         div.innerHTML = code
         if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
   # TODO @script may involve `eval` below in `init`; to optimize, we may prebundle this directly as JS.
@@ -186,9 +209,9 @@ block.class = (opt={}) ->
     @[n] = if v? and v => v else (@[n] or "")
   if !node and div =>
     for i from 0 til div.childNodes.length =>
-      if (node = div.childNodes[i]).nodeType == Element.ELEMENT_NODE => break
-  if !node => node = document.createElement(\div)
-  if node.nodeType != Element.ELEMENT_NODE =>
+      if (node = div.childNodes[i]).nodeType == win.Element.ELEMENT_NODE => break
+  if !node => node = doc.createElement(\div)
+  if node.nodeType != win.Element.ELEMENT_NODE =>
     console.log warn "root of DOM definition of a block should be an Element"
   @node = node
 
@@ -225,7 +248,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         # this is useful when we use bundler with pre-scoped css.
         # TODO we may need an additional flag for explicitly telling block to whether do scoping or not.
         if @style =>
-          document.body.appendChild(@style-node = document.createElement("style"))
+          doc.body.appendChild(@style-node = doc.createElement("style"))
           @style-node.setAttribute \type, 'text/css'
           # TODO @style takes 2nd parse here. we should support rule passing mechanism
           @style-node.textContent = ret = csscope {
@@ -285,7 +308,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       .catch (e) ~>
         console.error "[@plotdb/block] init block {name: #{@name}, version: #{@version}, path: #{@path or ''}}", e
         # TODO seems useless, unless we set it to @node?
-        node = document.createElement("div")
+        node = doc.createElement("div")
         node.innerText = "failed"
         @ <<< interface: {}, style-node: {}, factory: (-> @), dependencies: []
 
@@ -330,7 +353,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
   attach: (opt = {}) ->
     if opt.data => @data = opt.data
     root = opt.root
-    root = if !root => null else if typeof(root) == \string => document.querySelector(root) else root
+    root = if !root => null else if typeof(root) == \string => doc.querySelector(root) else root
     block.global.csscope.apply @block.csscopes.global
     if !root => node = null
     else
@@ -367,8 +390,8 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
   _transform: (node) ->
     # i18n transformer
     _ = (n) ~>
-      if n.nodeType == Element.TEXT_NODE =>
-        n.parentNode.replaceChild document.createTextNode(@i18n(n.textContent)), n
+      if n.nodeType == win.Element.TEXT_NODE =>
+        n.parentNode.replaceChild doc.createTextNode(@i18n(n.textContent)), n
       else
         for i from 0 til n.attributes.length =>
           {name,value} = n.attributes[i]
@@ -436,5 +459,6 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     #block.rescope.context @block.dependencies.filter(->it.type != \css), (context) ~>
     #  @obj = new @block.factory {root: node, context}
 
+block.env if self? => self else globalThis
 if module? => module.exports = block
 else if window? => window.block = block
