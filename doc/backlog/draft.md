@@ -1,5 +1,3 @@
-
-
 ## environment api?
  - get mode ( 確認當前模式 )
 
