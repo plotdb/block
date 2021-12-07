@@ -261,6 +261,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
           else if /\.css$/.exec(it.url or it.path or it) => it.type = \css
           else it.type = \js # default js type
         if @extend => @_ctx = @extend.context!
+        else if rescope.proxin => @_ctx = new rescope.proxin!
         @manager.rescope.load @dependencies.filter(-> !it.type or it.type == \js), @_ctx
       .then ~>
         @manager.csscope.load(
@@ -408,7 +409,10 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
         b = list[idx]
         # if we don't want dependencies from base class, use b.dependencies:
         #   @block.manager.rescope.context (b.dependencies or []).filter(->it.type != \css), (ctx) ~>
-        @block.manager.rescope.context b._ctx.{}local, (ctx) ~>
+        # this is exactly the same with ctx = b._ctx.{}local with rescope < v3, see below
+        # we are migrating to v4 so keep it here before we verify its correctness
+        ## @block.manager.rescope.context b._ctx.{}local, (ctx) ~>
+        ((ctx) ~>
           gtx <<< ctx
           payload = {
             root: node, parent: parent,
@@ -425,6 +429,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
           if type == \init => @obj.push(o = new b.factory payload)
           ps.push if (o = @obj[idx]) => @obj[idx][type](payload) else null
           _ list, idx + 1, gtx, o
+        ) if b._ctx.ctx => b._ctx.ctx! else b._ctx.{}local # use `{}local` for rescope < v4
       _ cs, 0, {}
 
     ## original, no inheritance structure

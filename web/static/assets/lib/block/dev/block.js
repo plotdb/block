@@ -502,6 +502,8 @@
         });
         if (this$.extend) {
           this$._ctx = this$.extend.context();
+        } else if (rescope.proxin) {
+          this$._ctx = new rescope.proxin();
         }
         return this$.manager.rescope.load(this$.dependencies.filter(function(it){
           return !it.type || it.type === 'js';
@@ -750,7 +752,7 @@
             return p;
           }
           b = list[idx];
-          return this$.block.manager.rescope.context((ref$ = b._ctx).local || (ref$.local = {}), function(ctx){
+          return function(ctx){
             var payload, o;
             import$(gtx, ctx);
             payload = {
@@ -783,7 +785,9 @@
             }
             ps.push((o = this$.obj[idx]) ? this$.obj[idx][type](payload) : null);
             return _(list, idx + 1, gtx, o);
-          });
+          }(b._ctx.ctx
+            ? b._ctx.ctx()
+            : (ref$ = b._ctx).local || (ref$.local = {}));
         };
         return _(cs, 0, {});
       });
