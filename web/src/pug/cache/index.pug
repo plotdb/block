@@ -23,6 +23,9 @@ block body
   .w-1024.rwd.mx-auto.my-4
     h1 outside
     .rounded.shadow-sm.border.p-4
+    #container.rounded.shadow-sm.border.p-4
 block script
+  +script("/assets/lib/ldfile/main/index.js")
+  +script("/assets/lib/@plotdb/rescope/main/v4.js")
   +script("/assets/lib/block/dev/block.js")
-  script: include:lsc index.ls
+  +script("/js/cache/index.js")
