@@ -15,7 +15,7 @@ cp dist/index.min.js dist/block.min.js
 
 
 echo "copy dist to web ..."
-rm -rf web/static/assets/lib/block/dev/
-mkdir -p web/static/assets/lib/block/dev/
-cp -R dist/* web/static/assets/lib/block/dev/
+rm -rf web/static/assets/lib/@plotdb/block/dev/
+mkdir -p web/static/assets/lib/@plotdb/block/dev/
+cp -R dist/* web/static/assets/lib/@plotdb/block/dev/
 
