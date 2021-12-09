@@ -1,5 +1,11 @@
 # Change Logs
 
+
+## v3.0.0
+
+ - rename `block.js` to `index.js` - remove `block.js` and `block.min.js`
+
+
 ## v2.1.2
 
  - upgrade proxise for nodejs support
