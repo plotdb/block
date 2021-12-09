@@ -171,7 +171,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     _ = (list, blocks = [], deps = {js: [], css: []}) ->
       if !list.length => return Promise.resolve {blocks, deps}
       bd = list.splice 0, 1 .0
-      ld$.fetch mgr.get-url(bd), {method: \GET}, {type: \text}
+      _fetch mgr.get-url(bd), {method: \GET}
         .then ->
           node = doc.createElement \div
           node.innerHTML = it
@@ -215,7 +215,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     mgr = opt.manager or @
     lc = {}
     if !opt.root =>
-      p = if opt.url => ld$.fetch opt.url, {method: \GET}, {type: \text}
+      p = if opt.url => _fetch opt.url, {method: \GET}
       else Promise.resolve(opt.code)
       p = p.then (c) ->
         if !block.debundle-node => document.body.appendChild block.debundle-node = doc.createElement \div

@@ -384,10 +384,8 @@
           });
         }
         bd = list.splice(0, 1)[0];
-        return ld$.fetch(mgr.getUrl(bd), {
+        return _fetch(mgr.getUrl(bd), {
           method: 'GET'
-        }, {
-          type: 'text'
         }).then(function(it){
           var node, id, ref$, js, css, ret;
           node = doc.createElement('div');
@@ -457,10 +455,8 @@
       lc = {};
       if (!opt.root) {
         p = opt.url
-          ? ld$.fetch(opt.url, {
+          ? _fetch(opt.url, {
             method: 'GET'
-          }, {
-            type: 'text'
           })
           : Promise.resolve(opt.code);
         p = p.then(function(c){

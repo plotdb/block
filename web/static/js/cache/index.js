@@ -12,7 +12,7 @@
       return "/block/" + name + "/" + version + "/" + (path || 'index.html');
     }
   });
-  if (false) {
+  if (true) {
     mgr.bundle({
       blocks: [
         {
@@ -26,12 +26,7 @@
           version: '0.0.1'
         }
       ]
-    }).then(function(it){
-      return ldfile.download({
-        data: it,
-        name: "bundle-4.html"
-      });
-    });
+    }).then(function(){});
   }
   testload = function(bd){
     return mgr.get(bd).then(function(bc){

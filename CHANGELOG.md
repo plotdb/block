@@ -13,6 +13,7 @@
  - remove ldquery dependency
  - `main` as default version since latest / main(version in use) are different concept
  - support rescope v3 and v4
+ - remove ldquery dependency
 
 
 ## v2.1.0

@@ -5,14 +5,13 @@ node = tmp.content
 
 mgr = new block.manager registry: ({name, version, path, type}) -> "/block/#name/#version/#{path or 'index.html'}"
 
-if false =>
+if true =>
   mgr.bundle {blocks: [
     * name: 'cta', version: '0.0.1'
     * name: 'long-answer', version: '0.0.1'
     * name: 'sample', version: '0.0.1'
   ]}
-    .then ->
-      ldfile.download data: it, name: "bundle-4.html"
+    .then -> #ldfile.download data: it, name: "bundled-blocks.html"
 
 testload = (bd) ->
   mgr.get bd
