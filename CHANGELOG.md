@@ -1,5 +1,10 @@
 # Change Logs
 
+## v2.1.2
+
+ - upgrade proxise for nodejs support
+
+
 ## v2.1.1
 
  - fix typo "console.log warn" to "console.warn"

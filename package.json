@@ -3,8 +3,8 @@
   "name": "@plotdb/block",
   "license": "MIT",
   "description": "block",
-  "version": "2.1.1",
-  "main": "dist/block.js",
+  "version": "2.1.2",
+  "main": "dist/index.js",
   "homepage": "https://github.com/plotdb/block",
   "files": [
     "dist/**/*"
@@ -22,18 +22,18 @@
   },
   "devDependencies": {
     "@loadingio/bootstrap.ext": "^0.0.1",
-    "@loadingio/debounce.js": "0.0.1",
+    "@loadingio/debounce.js": "^0.0.1",
     "@loadingio/ldquery": "^2.0.0",
     "@loadingio/loading.css": "^2.0.1",
     "@plotdb/csscope": "^3.0.0",
-    "@plotdb/datadom": "0.0.4",
-    "@plotdb/json0": "0.0.1",
+    "@plotdb/datadom": "^0.0.4",
+    "@plotdb/json0": "^0.0.1",
     "@plotdb/rescope": "^4.0.0",
-    "@zbryikt/template": "^2.3.16",
+    "@zbryikt/template": "^2.3.31",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.5.2",
     "bootstrap.native": "^3.0.15",
-    "fedep": "0.0.17",
+    "fedep": "^0.0.17",
     "jsdom": "^19.0.0",
     "jsoneditor": "^9.1.1",
     "ldbutton": "^1.0.2",
@@ -43,16 +43,16 @@
     "ldloader": "^1.2.1",
     "ldview": "^0.2.2",
     "livescript": "^1.6.0",
-    "proxise": "^0.1.2",
-    "sharedb-wrapper": "github:zbryikt/sharedb-wrapper",
-    "stylus": "^0.54.5",
-    "uglify-js": "=3.2.0",
+    "proxise": "^0.1.6",
+    "sharedb-wrapper": "^1.0.0",
+    "stylus": "^0.55.0",
+    "uglify-js": "^3.2.0",
     "uglifycss": "^0.0.29"
   },
   "peerDependencies": {
     "@plotdb/csscope": "^3.0.0",
     "@plotdb/rescope": "^4.0.0",
-    "proxise": "^0.1.2"
+    "proxise": "^0.1.6"
   },
   "frontendDependencies": {
     "root": "web/static/assets/lib",
