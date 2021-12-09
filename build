@@ -4,10 +4,15 @@ echo "prepare..."
 rm -rf dist
 mkdir -p dist
 
-echo "building block.ls -> block.js ..."
-./node_modules/.bin/lsc -cp src/block.ls > dist/block.js
-echo "minify block.js -> block.min.js ..."
-./node_modules/.bin/uglifyjs dist/block.js -m -c > dist/block.min.js
+echo "building index.ls -> index.js ..."
+./node_modules/.bin/lsc -cp src/index.ls > dist/index.js
+echo "minify index.js -> index.min.js ..."
+./node_modules/.bin/uglifyjs dist/index.js -m -c > dist/index.min.js
+
+echo "still generated deprecated file names ..."
+cp dist/index.js dist/block.js
+cp dist/index.min.js dist/block.min.js
+
 
 echo "copy dist to web ..."
 rm -rf web/static/assets/lib/block/dev/
