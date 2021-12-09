@@ -3,7 +3,7 @@
   var win, doc, rescope, csscope, proxise, fetch, e404, _fetch, rid, parseNameString, sanitize, pubsub, block, slice$ = [].slice;
   rescope = typeof window != 'undefined' && window !== null
     ? window.rescope
-    : (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null) ? require("@plotdb/rescope/dist/v4") : null;
+    : (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null) ? require("@plotdb/rescope") : null;
   csscope = typeof window != 'undefined' && window !== null
     ? window.csscope
     : (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null) ? require("@plotdb/csscope") : null;
@@ -92,8 +92,12 @@
   block.env = function(it){
     var ref$;
     ref$ = [it, it.document], win = ref$[0], doc = ref$[1];
-    rescope.env(win);
-    return csscope.env(win);
+    if (rescope.env) {
+      rescope.env(win);
+    }
+    if (rescope.env) {
+      return csscope.env(win);
+    }
   };
   block.i18n = {
     module: {
@@ -141,9 +145,9 @@
       apply: function(ret){
         var this$ = this;
         ret = ret.filter(function(it){
-          return !this$.hash[it.url];
+          return !this$.hash[it.id || it.url];
         }).map(function(it){
-          return this$.hash[it.url] = it.scope;
+          return this$.hash[it.id || it.url] = it.scope;
         });
         if (ret.length) {
           return doc.body.classList.add.apply(doc.body.classList, ret);
@@ -361,6 +365,170 @@
           return it[0];
         }
       });
+    },
+    bundle: function(opt){
+      var mgr, _;
+      opt == null && (opt = {});
+      mgr = opt.manager || this;
+      _ = function(list, blocks, deps){
+        var bd;
+        blocks == null && (blocks = []);
+        deps == null && (deps = {
+          js: [],
+          css: []
+        });
+        if (!list.length) {
+          return Promise.resolve({
+            blocks: blocks,
+            deps: deps
+          });
+        }
+        bd = list.splice(0, 1)[0];
+        return ld$.fetch(mgr.getUrl(bd), {
+          method: 'GET'
+        }, {
+          type: 'text'
+        }).then(function(it){
+          var node, id, ref$, js, css, ret;
+          node = doc.createElement('div');
+          node.innerHTML = it;
+          if (node.childNodes.length > 1) {
+            console.warn("DOM definition of a block should contain only one root.");
+          }
+          id = bd.name + "@" + bd.version + ":" + (bd.path || 'index.html');
+          ref$ = ['script', 'style'].map(function(n){
+            return Array.from(node.querySelectorAll(n)).map(function(it){
+              it.parentNode.removeChild(it);
+              return it.textContent;
+            }).join('\n');
+          }), js = ref$[0], css = ref$[1];
+          node.childNodes[0].setAttribute('block', id);
+          ret = eval(js) || {};
+          if ((ret.pkg || (ret.pkg = {})).extend) {
+            list.push((ret.pkg || (ret.pkg = {})).extend);
+          }
+          deps.js = deps.js.concat(((ret.pkg || (ret.pkg = {})).dependencies || []).filter(function(it){
+            return it.type === 'js' || /\.js/.exec(it.path || it || '');
+          }));
+          deps.css = deps.css.concat(((ret.pkg || (ret.pkg = {})).dependencies || []).filter(function(it){
+            return it.type === 'css' || /\.css/.exec(it.path || it || '');
+          }));
+          blocks.push({
+            js: js,
+            css: css,
+            html: node.innerHTML,
+            bd: bd,
+            id: id
+          });
+          return _(list, blocks, deps);
+        });
+      };
+      return _(opt.blocks || (opt.blocks = [])).then(function(arg$){
+        var blocks, deps;
+        blocks = arg$.blocks, deps = arg$.deps;
+        return Promise.all([mgr.csscope.bundle(deps.css), mgr.rescope.bundle(deps.js)]).then(function(arg$){
+          var depcss, depjs, js, css, html;
+          depcss = arg$[0], depjs = arg$[1];
+          js = blocks.map(function(b){
+            return "\"" + b.id + "\": " + (b.js || '""').replace(/;$/, '');
+          });
+          js = "document.currentScript.import({" + js.join(',\n') + "});";
+          css = blocks.map(function(b){
+            var scope;
+            scope = csscope.scope(b);
+            return csscope({
+              rule: "*[scope~=" + scope + "]",
+              name: scope,
+              css: b.css || '',
+              scopeTest: "[scope]"
+            });
+          }).join('\n');
+          html = blocks.map(function(it){
+            return it.html || '';
+          }).join('\n');
+          return "<template>\n  " + html + "\n  <style type=\"text/css\">" + css + depcss + "</style>\n  <script type=\"text/javascript\">" + js + depjs + "</script>\n</template>";
+        });
+      });
+    },
+    debundle: function(opt){
+      var mgr, lc, p;
+      opt == null && (opt = {});
+      mgr = opt.manager || this;
+      lc = {};
+      if (!opt.root) {
+        p = opt.url
+          ? ld$.fetch(opt.url, {
+            method: 'GET'
+          }, {
+            type: 'text'
+          })
+          : Promise.resolve(opt.code);
+        p = p.then(function(c){
+          var div;
+          if (!block.debundleNode) {
+            document.body.appendChild(block.debundleNode = doc.createElement('div'));
+          }
+          block.debundleNode.appendChild(div = doc.createElement('div'));
+          div.innerHTML = c;
+          return div.querySelector('template');
+        });
+      } else {
+        p = Promise.resolve(typeof opt.root === 'string'
+          ? doc.querySelector(opt.root)
+          : opt.root);
+      }
+      return p.then(function(root){
+        var ref$, nodes, classes, s, k, node, ret, name, version, path, bc, results$ = [];
+        if (root.content) {
+          root = root.content;
+        }
+        ref$ = [{}, {}], nodes = ref$[0], classes = ref$[1];
+        Array.from(root.childNodes).map(function(n){
+          var id;
+          if (n.nodeType !== doc.ELEMENT_NODE) {
+            return;
+          }
+          if (n.nodeName === 'SCRIPT') {
+            return lc.script = n.cloneNode(true);
+          } else if (n.nodeName === 'STYLE') {
+            return lc.style = n.cloneNode(true);
+          } else if (!(id = n.getAttribute('block'))) {} else {
+            return nodes[id] = n;
+          }
+        });
+        if (lc.script) {
+          s = doc.createElement('script');
+          s.textContent = lc.script.textContent;
+          lc.script = s;
+          lc.script['import'] = function(it){
+            return lc.codes = it;
+          };
+          lc.script.setAttribute('type', 'text/javascript');
+          doc.body.appendChild(lc.script);
+        }
+        if (lc.style) {
+          lc.style.setAttribute('type', 'text/css');
+          doc.body.appendChild(lc.style);
+        }
+        for (k in nodes) {
+          node = nodes[k];
+          ret = /^(@?[^@]+)@([^:]+)(:.+)?/.exec(k);
+          ref$ = [ret[1], ret[2], (ret[3] || '').replace(/^:/, '') || ''], name = ref$[0], version = ref$[1], path = ref$[2];
+          bc = new block['class']({
+            manager: mgr,
+            name: name,
+            version: version,
+            path: path,
+            code: {
+              script: lc.codes[k],
+              dom: node,
+              style: ""
+            }
+          });
+          results$.push(mgr.set(bc));
+        }
+        return results$;
+      });
     }
   });
   block['class'] = function(opt){
@@ -473,7 +641,7 @@
         }
         this$.id = (this$.name || rid()) + "@" + (this$.version || rid()) + "/" + (this$.path || 'index.html');
         if (!this$.scope) {
-          this$.scope = '_' + btoa(this$.id).replace(/=/g, '_');
+          this$.scope = csscope.scope(this$);
         }
         if (this$.style) {
           doc.body.appendChild(this$.styleNode = doc.createElement("style"));

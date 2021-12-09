@@ -1,6 +1,6 @@
 var win, doc
 
-rescope = if window? => window.rescope else if module? and require? => require "@plotdb/rescope/dist/v4" else null
+rescope = if window? => window.rescope else if module? and require? => require "@plotdb/rescope" else null
 csscope = if window? => window.csscope else if module? and require? => require "@plotdb/csscope" else null
 proxise = if window? => window.proxise else if module? and require? => require "proxise" else null
 fetch = if window? => window.fetch else if module? and require? => require "node-fetch" else null
@@ -49,8 +49,8 @@ pubsub.prototype = Object.create(Object.prototype) <<< do
 block = {}
 block.env = ->
   [win, doc] := [it, it.document]
-  rescope.env win
-  csscope.env win
+  if rescope.env => rescope.env win
+  if rescope.env => csscope.env win
 block.i18n =
   module:
     lng: \en
@@ -75,8 +75,8 @@ block.global =
     hash: {}
     apply: (ret) ->
       ret = ret
-        .filter ~> !@hash[it.url]
-        .map ~> @hash[it.url] = it.scope
+        .filter ~> !@hash[it.id or it.url]
+        .map ~> @hash[it.id or it.url] = it.scope
       if ret.length => doc.body.classList.add.apply doc.body.classList, ret
 
 block.init = proxise.once ~> if block._rescope => block._rescope.init!
@@ -166,6 +166,93 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         @proxy[n][v][p] opt
     ).then -> if Array.isArray(opt) => return it else return it.0
 
+  bundle: (opt = {}) ->
+    mgr = opt.manager or @
+    _ = (list, blocks = [], deps = {js: [], css: []}) ->
+      if !list.length => return Promise.resolve {blocks, deps}
+      bd = list.splice 0, 1 .0
+      ld$.fetch mgr.get-url(bd), {method: \GET}, {type: \text}
+        .then ->
+          node = doc.createElement \div
+          node.innerHTML = it
+          if node.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
+          id = "#{bd.name}@#{bd.version}:#{bd.path or 'index.html'}"
+          [js,css] = <[script style]>.map (n)->
+            Array.from(node.querySelectorAll n)
+              .map -> it.parentNode.removeChild(it); it.textContent
+              .join \\n
+          node.childNodes.0.setAttribute \block, id
+          ret = eval(js) or {}
+          if ret.{}pkg.extend => list.push ret.{}pkg.extend
+          deps.js ++= (ret.{}pkg.dependencies or []).filter -> it.type == \js or /\.js/.exec((it.path or it or ''))
+          deps.css ++= (ret.{}pkg.dependencies or []).filter -> it.type == \css or /\.css/.exec((it.path or it or ''))
+          blocks.push {js, css, html: node.innerHTML, bd, id}
+          return _ list, blocks, deps
+    _ opt.[]blocks
+      .then ({blocks, deps}) ->
+        Promise.all [
+          mgr.csscope.bundle(deps.css),
+          mgr.rescope.bundle(deps.js)
+        ]
+          .then ([depcss, depjs]) ->
+            js = blocks.map (b) -> "\"#{b.id}\": #{(b.js or '""').replace(/;$/,'')}"
+            js = "document.currentScript.import({#{js.join(',\n')}});"
+            css = blocks
+              .map (b) ->
+                scope = csscope.scope b
+                csscope {rule: "*[scope~=#{scope}]", name: scope, css: (b.css or ''), scope-test: "[scope]"}
+              .join \\n
+            html = blocks.map(-> it.html or '').join(\\n)
+            return """
+            <template>
+              #html
+              <style type="text/css">#css#depcss</style>
+              <script type="text/javascript">#js#depjs</script>
+            </template>
+            """
+
+  debundle: (opt = {}) ->
+    mgr = opt.manager or @
+    lc = {}
+    if !opt.root =>
+      p = if opt.url => ld$.fetch opt.url, {method: \GET}, {type: \text}
+      else Promise.resolve(opt.code)
+      p = p.then (c) ->
+        if !block.debundle-node => document.body.appendChild block.debundle-node = doc.createElement \div
+        block.debundle-node.appendChild(div = doc.createElement \div)
+        div.innerHTML = c
+        div.querySelector('template')
+    else p = Promise.resolve( if typeof(opt.root) == \string => doc.querySelector(opt.root) else opt.root )
+    p.then (root) ->
+      if root.content => root = root.content
+      [nodes, classes] = [{}, {}]
+      Array.from(root.childNodes).map (n) ~>
+        if n.nodeType != doc.ELEMENT_NODE => return
+        if n.nodeName == \SCRIPT => lc.script = n.cloneNode true
+        else if n.nodeName == \STYLE => lc.style = n.cloneNode true
+        else if !(id = n.getAttribute(\block)) => return
+        else nodes[id] = n
+      if lc.script =>
+        # needed if lc.script is loaded from fetch + innerHTML
+        s = doc.createElement \script
+        s.textContent = lc.script.textContent
+        lc.script = s
+        lc.script.import = ~> lc.codes = it
+        lc.script.setAttribute \type, \text/javascript
+        doc.body.appendChild lc.script
+      if lc.style =>
+        lc.style.setAttribute \type, \text/css
+        doc.body.appendChild lc.style
+      for k,node of nodes =>
+        ret = /^(@?[^@]+)@([^:]+)(:.+)?/.exec(k)
+        [name, version, path] = [ret.1, ret.2, ((ret.3 or '').replace(/^:/,'') or '')]
+        bc = new block.class {
+          manager: mgr, name: name, version: version, path: path,
+          code: script: lc.codes[k], dom: node, style: ""
+        }
+        mgr.set bc
+
+
 block.class = (opt={}) ->
   @opt = opt
   @scope = opt.scope or null # will be regen in `init` if null
@@ -241,8 +328,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         if !@path => @path = @interface.pkg.path
         @id = "#{@name or rid!}@#{@version or rid!}/#{@path or 'index.html'}"
         # TODO better scope format?
-        # use base64 id for a stable scope. scope may be pre-given, set in constructor.
-        if !@scope => @scope = '_' + btoa(@id).replace(/=/g,'_')
+        # use csscope for a stable scope name ( base64 ). scope may be pre-given, set in constructor.
+        if !@scope => @scope = csscope.scope(@)
 
         # only create style-node if we have style.
         # this is useful when we use bundler with pre-scoped css.
