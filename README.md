@@ -323,6 +323,13 @@ use `block.i18n.use(...)` to switch the core i18n module, which should at least 
 These API are intentionally aligned with `i18next`. Check [i18next documentation](https://www.i18next.com/overview/api) for more information about these API.
 
 
+A sample setup with `i18next` and `@plotdb/block`:
+
+    i18next.init({supportedLng: ["en", "zh-TW"], fallbackLng: "en"})
+      .then(function() { i18next.changeLanguage("zh-TW"); })
+      .then(function() { block.i18n.use(i18next); })
+
+
 ## Why block
 
 At first we just want to make web editing easier across expertise, and *block design* ( see [future of web design comes in blocks](https://thecode.co/block-web-design/), [Editor.js](https://editorjs.io/) ) seems to be a trend in web design. It's similar to web components but we will have to do more for making visually editing possible.
