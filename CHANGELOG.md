@@ -1,6 +1,6 @@
 # Change Logs
 
-## v3.0.1 (upcoming)
+## v3.0.1
 
  - fix bug: script in inline bundle doesn't run, because the passed object may be function.
    - fix by running it if it's a function.
