@@ -497,7 +497,7 @@
           s.textContent = lc.script.textContent;
           lc.script = s;
           lc.script['import'] = function(it){
-            return lc.codes = it;
+            return lc.codes = typeof it === 'function' ? it() : it;
           };
           lc.script.setAttribute('type', 'text/javascript');
           doc.body.appendChild(lc.script);

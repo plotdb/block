@@ -237,7 +237,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         s = doc.createElement \script
         s.textContent = lc.script.textContent
         lc.script = s
-        lc.script.import = ~> lc.codes = it
+        lc.script.import = ~> lc.codes = if typeof(it) == \function => it! else it
         lc.script.setAttribute \type, \text/javascript
         doc.body.appendChild lc.script
       if lc.style =>
