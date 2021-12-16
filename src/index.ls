@@ -371,6 +371,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
           else if /\.css$/.exec(it.url or it.path or it) => it.type = \css
           else it.type = \js # default js type
         if @extend => @_ctx = @extend.context!
+        else if rescope.dual-context => @_ctx = rescope.dual-context!
+        # no dual-context in rescope <= 4.0.1. just a backlog, can be removed in future update.
         else if rescope.proxin => @_ctx = new rescope.proxin!
         @manager.rescope.load @dependencies.filter(-> !it.type or it.type == \js), @_ctx
       .then ~>

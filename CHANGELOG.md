@@ -4,6 +4,7 @@
 
  - fix bug: script in inline bundle doesn't run, because the passed object may be function.
    - fix by running it if it's a function.
+ - support rescope.dual-context for multi-phase lib loading bug fixing
 
 
 ## v3.0.0

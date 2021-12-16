@@ -709,6 +709,8 @@
         });
         if (this$.extend) {
           this$._ctx = this$.extend.context();
+        } else if (rescope.dualContext) {
+          this$._ctx = rescope.dualContext();
         } else if (rescope.proxin) {
           this$._ctx = new rescope.proxin();
         }
