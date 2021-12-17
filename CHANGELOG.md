@@ -1,5 +1,12 @@
 # Change Logs
 
+## v3.0.2
+
+ - add a dummy `transform` function for (re)transform DOM
+ - support re-translate for i18n transformation
+ - expose `changeLanguage` in block.i18n for interface abstraction
+
+
 ## v3.0.1
 
  - fix bug: script in inline bundle doesn't run, because the passed object may be function.

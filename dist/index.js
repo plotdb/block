@@ -137,6 +137,9 @@
       deep == null && (deep = true);
       overwrite == null && (overwrite = true);
       return block.i18n.module.addResourceBundle(lng, id, resource, deep, overwrite);
+    },
+    changeLanguage: function(it){
+      return block.i18n.module.changeLanguage(it);
     }
   };
   block.global = {
@@ -891,6 +894,7 @@
       _ = function(n){
         var i$, to$, i, ref$, name, value, ret, v, results$ = [];
         if (n.nodeType === win.Element.TEXT_NODE) {
+          n.parentNode.setAttribute('t', n.textContent);
           return n.parentNode.replaceChild(doc.createTextNode(this$.i18n(n.textContent)), n);
         } else {
           for (i$ = 0, to$ = n.attributes.length; i$ < to$; ++i$) {
@@ -917,6 +921,11 @@
         return _(n);
       });
       return node;
+    },
+    transform: function(name){
+      if (name === 'i18n') {
+        return this._transform(this.node);
+      }
     },
     dom: function(){
       var that;

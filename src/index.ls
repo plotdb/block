@@ -69,6 +69,7 @@ block.i18n =
   use: -> @module = it
   add-resource-bundle: (lng, id, resource, deep = true, overwrite = true) ->
     block.i18n.module.add-resource-bundle lng, id, resource, deep, overwrite
+  change-language: -> block.i18n.module.change-language it
 
 block.global =
   csscope:
@@ -480,6 +481,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     # i18n transformer
     _ = (n) ~>
       if n.nodeType == win.Element.TEXT_NODE =>
+        n.parentNode.setAttribute \t, n.textContent
         n.parentNode.replaceChild doc.createTextNode(@i18n(n.textContent)), n
       else
         for i from 0 til n.attributes.length =>
@@ -492,6 +494,12 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
       .filter (n) -> n.hasAttribute(\t)
       .map (n) ~> _ n
     return node
+
+  # TODO this is a simplified interface for doing DOM transformation.
+  # it's expected to be publicly accessible for end users to apply expected transformation
+  # so we are going to have a plugin / transformation mechanism underneath in the future;
+  # for now we just accept a single parameter which is the name, and only accept `i18n` as its name.
+  transform: (name) -> if name == \i18n => @_transform @node
 
   dom: ->
     if @node => return that
