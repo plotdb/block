@@ -341,7 +341,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         if !@name => @name = @interface.pkg.name
         if !@version => @version = @interface.pkg.version
         if !@path => @path = @interface.pkg.path
-        @id = "#{@name or rid!}@#{@version or rid!}/#{@path or 'index.html'}"
+        @id = "#{@name or rid!}@#{@version or rid!}:#{@path or 'index.html'}"
         # TODO better scope format?
         # use csscope for a stable scope name ( base64 ). scope may be pre-given, set in constructor.
         if !@scope => @scope = csscope.scope(@)

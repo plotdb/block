@@ -652,7 +652,7 @@
         if (!this$.path) {
           this$.path = this$['interface'].pkg.path;
         }
-        this$.id = (this$.name || rid()) + "@" + (this$.version || rid()) + "/" + (this$.path || 'index.html');
+        this$.id = (this$.name || rid()) + "@" + (this$.version || rid()) + ":" + (this$.path || 'index.html');
         if (!this$.scope) {
           this$.scope = csscope.scope(this$);
         }

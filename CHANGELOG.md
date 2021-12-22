@@ -4,6 +4,7 @@
 
  - a `module` object is provided to block js, which can be used to export block defition.
  - dedup blocks in bundler
+ - fix typo in id generation
 
 
 ## v3.0.3
