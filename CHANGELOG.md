@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.0.1 (upcoming)
+
+ - upgrade `@plotdb/csscope` and `@plotdb/rescope` dependencies
+
+
 ## v4.0.0
 
  - a `module` object is provided to block js, which can be used to export block defition.
