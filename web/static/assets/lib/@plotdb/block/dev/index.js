@@ -370,11 +370,12 @@
       });
     },
     bundle: function(opt){
-      var mgr, _;
+      var mgr, hash, _;
       opt == null && (opt = {});
       mgr = opt.manager || this;
+      hash = {};
       _ = function(list, blocks, deps){
-        var bd;
+        var bd, id;
         blocks == null && (blocks = []);
         deps == null && (deps = {
           js: [],
@@ -387,16 +388,21 @@
           });
         }
         bd = list.splice(0, 1)[0];
+        id = bd.name + "@" + bd.version + ":" + (bd.path || 'index.html');
+        if (hash[id]) {
+          return Promise.resolve().then(function(){
+            return _(list, blocks, deps);
+          });
+        }
         return _fetch(mgr.getUrl(bd), {
           method: 'GET'
         }).then(function(it){
-          var node, id, ref$, js, css, ret;
+          var node, ref$, js, css, ret, b;
           node = doc.createElement('div');
           node.innerHTML = it;
           if (node.childNodes.length > 1) {
             console.warn("DOM definition of a block should contain only one root.");
           }
-          id = bd.name + "@" + bd.version + ":" + (bd.path || 'index.html');
           ref$ = ['script', 'style'].map(function(n){
             return Array.from(node.querySelectorAll(n)).map(function(it){
               it.parentNode.removeChild(it);
@@ -404,7 +410,10 @@
             }).join('\n');
           }), js = ref$[0], css = ref$[1];
           node.childNodes[0].setAttribute('block', id);
-          ret = eval(js) || {};
+          ret = eval("(function(module){" + (js || '') + ";return module.exports;})({})");
+          if (ret instanceof Function) {
+            ret = ret();
+          }
           if ((ret.pkg || (ret.pkg = {})).extend) {
             list.push((ret.pkg || (ret.pkg = {})).extend);
           }
@@ -414,14 +423,15 @@
           deps.css = deps.css.concat(((ret.pkg || (ret.pkg = {})).dependencies || []).filter(function(it){
             return it.type === 'css' || /\.css/.exec(it.path || it || '');
           }));
-          js = "(function(){" + js + "}())";
-          blocks.push({
+          js = "((function(module){" + (js || '') + ";return module.exports;})({}))";
+          blocks.push(b = {
             js: js,
             css: css,
             html: node.innerHTML,
             bd: bd,
             id: id
           });
+          hash[id] = b;
           return _(list, blocks, deps);
         });
       };
@@ -432,7 +442,7 @@
           var depcss, depjsCache, js, depcssCache, css, html;
           depcss = arg$[0], depjsCache = arg$[1];
           js = blocks.map(function(b){
-            return "\"" + b.id + "\": " + (b.js || '""').replace(/;$/, '');
+            return "\"" + b.id + "\":" + (b.js || '""');
           });
           js = "document.currentScript.import({" + js.join(',\n') + "});";
           depcssCache = deps.css.map(function(o){
@@ -451,7 +461,7 @@
           html = blocks.map(function(it){
             return it.html || '';
           }).join('\n');
-          return "<template>\n  " + html + "\n  <style type=\"text/css\">" + css + depcss + "</style>\n  <script type=\"text/javascript\">" + js + depjs + ";" + depcssCache + "</script>\n</template>";
+          return "<template>\n  " + html + "\n  <style type=\"text/css\">" + css + depcss + "</style>\n  <script type=\"text/javascript\">" + js + depjsCache + ";" + depcssCache + "</script>\n</template>";
         });
       });
     },
@@ -626,7 +636,7 @@
           ? this$.script()
           : typeof this$.script === 'object'
             ? this$.script
-            : (v = eval(this$.script || '')) instanceof Function
+            : (v = eval("(function(module){" + (this$.script || '') + ";return module.exports;})({})")) instanceof Function
               ? v()
               : v || {};
         if (!this$['interface']) {

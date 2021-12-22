@@ -12,15 +12,14 @@ Frontend module library with following features:
 
 install `@plotdb/block` along with all necessary js libraries:
 
-    npm install @plotdb/block @plotdb/rescope @plotdb/csscope proxise dompurify
+    npm install @plotdb/block @plotdb/rescope @plotdb/csscope proxise
 
 and include them:
 
-    <script src="path-to/proxise.js"></script>
-    <script src="path-to/csscope.js"></script>
-    <script src="path-to/rescope.js"></script>
-    <script src="path-to/purify.js"></script>
-    <script src="path-to/block.js"></script>
+    <script src="path-to-proxise/dist/index.min.js"></script>
+    <script src="path-to-csscope/dist/index.min.js"></script>
+    <script src="path-to-rescope/dist/index.min.js"></script>
+    <script src="path-to-block/dist/index.min.js"></script>
 
 
 ## Concept
@@ -46,7 +45,7 @@ There is no preferred languages for creae this file. Users can write script in `
       style(type="@plotdb/block"): :stylus
         h1 { color: #543; }
       script(type="@plotdb/block"): :lsc
-        { init: -> console.log \loaded. }
+        module.export = { init: -> console.log \loaded. };
 
 Script can either be an object described as below, or a function returning that object. Styles will be automatically scoped and limited in this block.
 
@@ -255,6 +254,10 @@ and following private members:
 All members are optional thus the minimal definition will be an empty object or even `undefined`:
 
     {}
+
+Use `module.exports` to explicitly export the desired object:
+
+    module.exports = { .... };
 
 
 #### Block Information

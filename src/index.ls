@@ -169,27 +169,31 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
 
   bundle: (opt = {}) ->
     mgr = opt.manager or @
+    hash = {}
     _ = (list, blocks = [], deps = {js: [], css: []}) ->
       if !list.length => return Promise.resolve {blocks, deps}
       bd = list.splice 0, 1 .0
+      id = "#{bd.name}@#{bd.version}:#{bd.path or 'index.html'}"
+      if hash[id] => return Promise.resolve!then -> _ list, blocks, deps
       _fetch mgr.get-url(bd), {method: \GET}
         .then ->
           node = doc.createElement \div
           node.innerHTML = it
           if node.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
-          id = "#{bd.name}@#{bd.version}:#{bd.path or 'index.html'}"
           [js,css] = <[script style]>.map (n)->
             Array.from(node.querySelectorAll n)
               .map -> it.parentNode.removeChild(it); it.textContent
               .join \\n
           node.childNodes.0.setAttribute \block, id
-          ret = eval(js) or {}
+          ret = eval("(function(module){#{js or ''};return module.exports;})({})")
+          if ret instanceof Function => ret = ret!
           if ret.{}pkg.extend => list.push ret.{}pkg.extend
           deps.js ++= (ret.{}pkg.dependencies or []).filter -> it.type == \js or /\.js/.exec((it.path or it or ''))
           deps.css ++= (ret.{}pkg.dependencies or []).filter -> it.type == \css or /\.css/.exec((it.path or it or ''))
           # we expect js to be sth like function body, so we should wrap it with a function.
-          js = "(function(){#{js}}())"
-          blocks.push {js, css, html: node.innerHTML, bd, id}
+          js = "((function(module){#{js or ''};return module.exports;})({}))"
+          blocks.push b = {js, css, html: node.innerHTML, bd, id}
+          hash[id] = b
           return _ list, blocks, deps
     _ opt.[]blocks
       .then ({blocks, deps}) ->
@@ -198,7 +202,9 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
           mgr.rescope.bundle(deps.js)
         ]
           .then ([depcss, depjs-cache]) ->
-            js = blocks.map (b) -> "\"#{b.id}\": #{(b.js or '""').replace(/;$/,'')}"
+            js = blocks.map (b) ->
+              "\"#{b.id}\":#{b.js or '""'}"
+              #"\"#{b.id}\":(function(module){#{(b.js or '""').replace(/;$/,'')};return module.exports;}({}))"
             js = "document.currentScript.import({#{js.join(',\n')}});"
             # we fill csscope cache with empty content but proper id and scope
             # so it won't do anything except recognizing this.
@@ -216,7 +222,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
             <template>
               #html
               <style type="text/css">#css#depcss</style>
-              <script type="text/javascript">#js#depjs;#depcss-cache</script>
+              <script type="text/javascript">#js#depjs-cache;#depcss-cache</script>
             </template>
             """
 
@@ -328,7 +334,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         # eventaully we will want this to be interpreted directly by browser in batch.
         @interface = (if @script instanceof Function => @script!
         else if typeof(@script) == \object => @script
-        else if (v = eval(@script or '')) instanceof Function => v!
+        else if (v = eval("(function(module){#{@script or ''};return module.exports;})({})")) instanceof Function => v!
         else (v or {}))
         if !@interface => @interface = {}
         @interface.{}pkg
