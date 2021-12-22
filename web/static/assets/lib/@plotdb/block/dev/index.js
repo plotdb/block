@@ -414,6 +414,7 @@
           deps.css = deps.css.concat(((ret.pkg || (ret.pkg = {})).dependencies || []).filter(function(it){
             return it.type === 'css' || /\.css/.exec(it.path || it || '');
           }));
+          js = "(function(){" + js + "}())";
           blocks.push({
             js: js,
             css: css,
@@ -428,12 +429,15 @@
         var blocks, deps;
         blocks = arg$.blocks, deps = arg$.deps;
         return Promise.all([mgr.csscope.bundle(deps.css), mgr.rescope.bundle(deps.js)]).then(function(arg$){
-          var depcss, depjs, js, css, html;
-          depcss = arg$[0], depjs = arg$[1];
+          var depcss, depjsCache, js, depcssCache, css, html;
+          depcss = arg$[0], depjsCache = arg$[1];
           js = blocks.map(function(b){
             return "\"" + b.id + "\": " + (b.js || '""').replace(/;$/, '');
           });
           js = "document.currentScript.import({" + js.join(',\n') + "});";
+          depcssCache = deps.css.map(function(o){
+            return "csscope.cache(" + JSON.stringify((o.inited = true, o.scope = csscope.scope(o), o)) + ")";
+          }).join(';');
           css = blocks.map(function(b){
             var scope;
             scope = csscope.scope(b);
@@ -447,7 +451,7 @@
           html = blocks.map(function(it){
             return it.html || '';
           }).join('\n');
-          return "<template>\n  " + html + "\n  <style type=\"text/css\">" + css + depcss + "</style>\n  <script type=\"text/javascript\">" + js + depjs + "</script>\n</template>";
+          return "<template>\n  " + html + "\n  <style type=\"text/css\">" + css + depcss + "</style>\n  <script type=\"text/javascript\">" + js + depjs + ";" + depcssCache + "</script>\n</template>";
         });
       });
     },

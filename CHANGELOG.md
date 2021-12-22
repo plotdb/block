@@ -1,5 +1,12 @@
 # Change Logs
 
+## v3.0.3
+
+ - properly wrap js code in bundler to prevent from syntax error
+ - still provide cache information in csscope so it won't still fetch CSS from registry
+ - upgrade rescope and csscope
+
+
 ## v3.0.2
 
  - add a dummy `transform` function for (re)transform DOM

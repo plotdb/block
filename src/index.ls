@@ -187,6 +187,8 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
           if ret.{}pkg.extend => list.push ret.{}pkg.extend
           deps.js ++= (ret.{}pkg.dependencies or []).filter -> it.type == \js or /\.js/.exec((it.path or it or ''))
           deps.css ++= (ret.{}pkg.dependencies or []).filter -> it.type == \css or /\.css/.exec((it.path or it or ''))
+          # we expect js to be sth like function body, so we should wrap it with a function.
+          js = "(function(){#{js}}())"
           blocks.push {js, css, html: node.innerHTML, bd, id}
           return _ list, blocks, deps
     _ opt.[]blocks
@@ -195,9 +197,15 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
           mgr.csscope.bundle(deps.css),
           mgr.rescope.bundle(deps.js)
         ]
-          .then ([depcss, depjs]) ->
+          .then ([depcss, depjs-cache]) ->
             js = blocks.map (b) -> "\"#{b.id}\": #{(b.js or '""').replace(/;$/,'')}"
             js = "document.currentScript.import({#{js.join(',\n')}});"
+            # we fill csscope cache with empty content but proper id and scope
+            # so it won't do anything except recognizing this.
+            # the real CSS will be loaded directly from the `style` tag.
+            depcss-cache = deps.css
+              .map (o) -> "csscope.cache(#{JSON.stringify(o <<< {inited: true, scope: csscope.scope(o)})})"
+              .join(';')
             css = blocks
               .map (b) ->
                 scope = csscope.scope b
@@ -208,7 +216,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
             <template>
               #html
               <style type="text/css">#css#depcss</style>
-              <script type="text/javascript">#js#depjs</script>
+              <script type="text/javascript">#js#depjs;#depcss-cache</script>
             </template>
             """
 
