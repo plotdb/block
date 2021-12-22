@@ -1,6 +1,6 @@
 # Change Logs
 
-## v4.0.0 (upcoming)
+## v4.0.0
 
  - a `module` object is provided to block js, which can be used to export block defition.
  - dedup blocks in bundler
