@@ -1,4 +1,1 @@
-<-(->it!) _
-{
-  init: -> console.log 'headless init'
-}
+module.exports = init: -> console.log 'headless init'
