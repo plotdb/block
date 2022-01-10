@@ -990,6 +990,7 @@
             payload = {
               root: node,
               parent: parent,
+              manager: this$.block.manager,
               ctx: gtx,
               context: gtx,
               pubsub: this$.pubsub,

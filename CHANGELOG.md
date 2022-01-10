@@ -1,8 +1,9 @@
 # Change Logs
 
-## v4.0.1 (upcoming)
+## v4.0.1
 
  - upgrade `@plotdb/csscope` and `@plotdb/rescope` dependencies
+ - add `manager` in payload for block script to use for recursive block loading
 
 
 ## v4.0.0

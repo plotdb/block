@@ -549,7 +549,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
         ((ctx) ~>
           gtx <<< ctx
           payload = {
-            root: node, parent: parent,
+            root: node, parent: parent, manager: @block.manager
             ctx: gtx, context: gtx,
             pubsub: @pubsub
             i18n:
