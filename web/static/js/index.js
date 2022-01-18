@@ -1,7 +1,7 @@
 (function(it){
   return it.apply({});
 })(function(){
-  var code, view, loadSample, lc, manager, this$ = this;
+  var code, view, loadSample, lc, unpkg, manager, this$ = this;
   code = "<div style=\"color:red\">11</div>\n<img src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\" onload=\"console.log('base64 image loaded with html code in string.');\"/>\n<script type=\"text/javascript\">\nconsole.log('script tag in code in string run');\n</script>\n<style type=\"text/css\">\nhtml,body { background: yellow }\n</style>";
   this.view = view = new ldview({
     root: document.body,
@@ -32,20 +32,43 @@
     });
   };
   lc = {};
-  manager = new block.manager({
-    registry: {
-      block: function(arg$){
-        var name, version;
-        name = arg$.name, version = arg$.version;
-        return "/block/" + name + "/" + version + "/index.html";
-      },
-      lib: function(arg$){
-        var name, version, path;
-        name = arg$.name, version = arg$.version, path = arg$.path;
-        return "/assets/block/" + name + "/" + version + "/" + path;
+  unpkg = {
+    url: function(arg$){
+      var name, version, path;
+      name = arg$.name, version = arg$.version, path = arg$.path;
+      return "https://unpkg.com/" + name + (version && "@" + version || '') + (path && "/" + path || '');
+    },
+    fetch: function(arg$){
+      var name, version, path, type;
+      name = arg$.name, version = arg$.version, path = arg$.path, type = arg$.type;
+      if (type === 'block') {
+        return "/block/" + name + "/" + version + "/" + (path || 'index.html');
       }
+      return fetch(this.url({
+        name: name,
+        version: version,
+        path: path,
+        type: type
+      })).then(function(r){
+        var v;
+        v = (/^https:\/\/unpkg.com\/([^@]+)@([^/]+)\//.exec(r.url) || [])[2];
+        return r.text().then(function(it){
+          return {
+            version: v || version,
+            content: it
+          };
+        });
+      });
     }
+  };
+  manager = new block.manager({
+    registry: unpkg
   });
+  /*
+    registry:
+      block: ({name, version}) -> "/block/#name/#version/index.html"
+      lib: ({name, version, path}) -> "/assets/block/#name/#version/#path"
+  */
   return manager.init().then(function(){
     return manager.set(new block['class']({
       name: "test",

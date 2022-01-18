@@ -25,10 +25,24 @@ load-sample = ({name, root}) ->
     .catch -> console.log "failed to load block #name", it
 
 lc = {}
+unpkg =
+  url: ({name, version, path}) ->
+    "https://unpkg.com/#{name}#{version and "@#version" or ''}#{path and "/#path" or ''}"
+  fetch: ({name, version, path, type}) ->
+    if type == \block => return "/block/#{name}/#{version}/#{path or 'index.html'}"
+    fetch @url {name, version, path, type}
+      .then (r) ->
+        v = (/^https:\/\/unpkg.com\/([^@]+)@([^/]+)\//.exec(r.url) or []).2
+        r.text!then -> {version: v or version, content: it}
+
+
 manager = new block.manager do
+  registry: unpkg
+/*
   registry:
     block: ({name, version}) -> "/block/#name/#version/index.html"
     lib: ({name, version, path}) -> "/assets/block/#name/#version/#path"
+*/
 manager.init!
   .then -> manager.set new block.class {name: "test", version: "0.0.1", code, manager}
   .then -> load-sample name: \react-helloworld, root: view.get('inner')
