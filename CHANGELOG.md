@@ -2,6 +2,7 @@
 
 ## v4.1.0 (upcoming)
 
+ - default empty in version when building id
  - support semantic versioning with ranges.
  - support custom registry that return content + version directly.
 
