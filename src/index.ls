@@ -141,10 +141,6 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     else if !_ref => return e404!
     else _fetch _ref, {method: \GET} .then -> {content: it}
 
-    #url = @get-url(o{name,version,path})
-    #if !url => return e404!
-    #_fetch url, {method: \GET}
-
   _get: (opt) ->
     [n,v,p] = [opt.name, opt.version or \main, opt.path or 'index.html']
     obj = {name: n, version: v, path: p}
