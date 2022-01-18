@@ -1,7 +1,7 @@
 (function(it){
   return it.apply({});
 })(function(){
-  var ref$, win, doc, tmp, node, mgr, testload;
+  var ref$, win, doc, tmp, node, mgr, bundle, testload, view;
   ref$ = [window, window.document], win = ref$[0], doc = ref$[1];
   tmp = ld$.find('template', 0);
   node = tmp.content;
@@ -12,8 +12,9 @@
       return "/block/" + name + "/" + version + "/" + (path || 'index.html');
     }
   });
-  if (true) {
-    mgr.bundle({
+  bundle = function(){
+    console.log("bundling ...");
+    return mgr.bundle({
       blocks: [
         {
           name: 'cta',
@@ -26,8 +27,13 @@
           version: '0.0.1'
         }
       ]
-    }).then(function(){});
-  }
+    }).then(function(it){
+      return ldfile.download({
+        data: it,
+        name: "bundled-blocks.html"
+      });
+    });
+  };
   testload = function(bd){
     return mgr.get(bd).then(function(bc){
       return bc.create().then(function(bi){
@@ -68,7 +74,7 @@
     });
   });
   if (true) {
-    return mgr.debundle({
+    mgr.debundle({
       url: "/assets/files/cache/bundled-blocks.html"
     }).then(function(){
       testload({
@@ -83,4 +89,14 @@
       });
     });
   }
+  return view = new ldview({
+    root: document.body,
+    action: {
+      click: {
+        download: function(){
+          return bundle();
+        }
+      }
+    }
+  });
 });

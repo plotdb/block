@@ -22,7 +22,9 @@ block body
 
 
   .w-1024.rwd.mx-auto.my-4
+    .mb-4: .btn.btn-outline-secondary(ld="download") Bundle
     #container.rounded.shadow-sm.border.p-4
 block script
-  +script("/assets/lib/ldfile/main/index.js")
+  +script("/assets/lib/ldfile/main/index.min.js")
+  +script("/assets/lib/@plotdb/semver/main/index.min.js")
   +script("/js/cache/index.js")
