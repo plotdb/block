@@ -438,6 +438,9 @@
           if (ret instanceof Function) {
             ret = ret();
           }
+          if (!ret) {
+            ret = {};
+          }
           if ((ret.pkg || (ret.pkg = {})).extend) {
             list.push((ret.pkg || (ret.pkg = {})).extend);
           }

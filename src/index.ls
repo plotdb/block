@@ -210,6 +210,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
           node.childNodes.0.setAttribute \block, id
           ret = eval("(function(module){#{js or ''};return module.exports;})({})")
           if ret instanceof Function => ret = ret!
+          if !ret => ret = {}
           if ret.{}pkg.extend => list.push ret.{}pkg.extend
           deps.js ++= (ret.{}pkg.dependencies or []).filter -> it.type == \js or /\.js/.exec((it.path or it or ''))
           deps.css ++= (ret.{}pkg.dependencies or []).filter -> it.type == \css or /\.css/.exec((it.path or it or ''))
