@@ -222,9 +222,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
           mgr.rescope.bundle(deps.js)
         ]
           .then ([depcss, depjs-cache]) ->
-            js = blocks.map (b) ->
-              "\"#{b.id}\":#{b.js or '""'}"
-              #"\"#{b.id}\":(function(module){#{(b.js or '""').replace(/;$/,'')};return module.exports;}({}))"
+            js = blocks.map (b) -> "\"#{b.id}\":#{b.js or '""'}"
             js = "document.currentScript.import({#{js.join(',\n')}});"
             # we fill csscope cache with empty content but proper id and scope
             # so it won't do anything except recognizing this.
