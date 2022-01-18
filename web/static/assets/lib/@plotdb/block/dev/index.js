@@ -13,9 +13,9 @@
   fetch = typeof window != 'undefined' && window !== null
     ? window.fetch
     : (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null) ? require("node-fetch") : null;
-  e404 = function(){
+  e404 = function(o){
     var ref$;
-    return Promise.reject((ref$ = new Error(), ref$.name = 'lderror', ref$.id = 404, ref$));
+    return Promise.reject((ref$ = new Error(), ref$.name = 'lderror', ref$.id = 404, ref$.message = o, ref$));
   };
   _fetch = function(u, c){
     return fetch(u, c).then(function(ret){
@@ -285,7 +285,7 @@
       if (_ref.then) {
         return _ref;
       } else if (!_ref) {
-        return e404();
+        return e404(o);
       } else {
         return _fetch(_ref, {
           method: 'GET'
@@ -336,7 +336,7 @@
       }).then(function(it){
         var ref$;
         if (!it) {
-          return e404();
+          return e404(obj);
         }
         if (it.version) {
           if (obj.version !== it.version) {
