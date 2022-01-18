@@ -5,7 +5,7 @@ csscope = if window? => window.csscope else if module? and require? => require "
 proxise = if window? => window.proxise else if module? and require? => require "proxise" else null
 fetch = if window? => window.fetch else if module? and require? => require "node-fetch" else null
 
-e404 = -> Promise.reject(new Error! <<< {name: \lderror, id: 404})
+e404 = (o) -> Promise.reject(new Error! <<< {name: \lderror, id: 404, message: o})
 
 _fetch = (u, c) ->
   (ret) <- fetch u, c .then _
@@ -138,7 +138,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     if @_fetch => return Promise.resolve(@_fetch o)
     _ref = if @_reg.fetch => @_reg.fetch o else @get-url o
     if _ref.then => _ref
-    else if !_ref => return e404!
+    else if !_ref => return e404 o
     else _fetch _ref, {method: \GET} .then -> {content: it}
 
   _get: (opt) ->
@@ -156,7 +156,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     @running[n][v][p] = true
     @fetch opt{name,version,path}
       .then ~>
-        if !it => return e404!
+        if !it => return e404 obj
         if it.version =>
           if obj.version != it.version => @_ver.map{}[n][obj.version] = it.version
           obj.version = it.version
