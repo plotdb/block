@@ -183,6 +183,9 @@
     this.hash = {};
     this.proxy = {};
     this.running = {};
+    this._ver = {
+      map: {}
+    };
     this._chain = opt.chain || null;
     this._fetch = opt.fetch || null;
     this.init = proxise.once(function(){
@@ -213,7 +216,7 @@
     },
     registry: function(r){
       var ref$;
-      if ((ref$ = typeof r) === 'string' || ref$ === 'function') {
+      if (((ref$ = typeof r) === 'string' || ref$ === 'function') || (r.fetch && r.url)) {
         r = {
           lib: r,
           block: r
@@ -256,41 +259,70 @@
       }));
     },
     getUrl: function(arg$){
-      var name, version, path;
+      var name, version, path, r;
       name = arg$.name, version = arg$.version, path = arg$.path;
-      return typeof this._reg === 'function'
-        ? this._reg({
+      r = this._reg.url || this._reg;
+      if (typeof r === 'function') {
+        return r({
           name: name,
           version: version,
           path: path,
           type: 'block'
-        })
-        : (this._reg || '') + "/assets/block/" + name + "/" + (version || 'main') + "/" + (path || 'index.html');
+        });
+      } else {
+        return (this._reg || '') + "/assets/block/" + name + "/" + (version || 'main') + "/" + (path || 'index.html');
+      }
     },
-    fetch: function(opt){
-      var url;
+    fetch: function(o){
+      var _ref;
+      o.type = 'block';
       if (this._fetch) {
-        return Promise.resolve(this._fetch(opt));
+        return Promise.resolve(this._fetch(o));
       }
-      url = this.getUrl({
-        name: opt.name,
-        version: opt.version,
-        path: opt.path
-      });
-      if (!url) {
+      _ref = this._reg.fetch
+        ? this._reg.fetch(o)
+        : this.getUrl(o);
+      if (_ref.then) {
+        return _ref;
+      } else if (!_ref) {
         return e404();
+      } else {
+        return _fetch(_ref, {
+          method: 'GET'
+        }).then(function(it){
+          return {
+            content: it
+          };
+        });
       }
-      return _fetch(url, {
-        method: 'GET'
-      });
     },
     _get: function(opt){
-      var ref$, n, v, p, ref1$, this$ = this;
+      var ref$, n, v, p, obj, that, key$, ver, ref1$, c, this$ = this;
       ref$ = [opt.name, opt.version || 'main', opt.path || 'index.html'], n = ref$[0], v = ref$[1], p = ref$[2];
+      obj = {
+        name: n,
+        version: v,
+        path: p
+      };
       if (!(n && v)) {
         return Promise.reject((ref$ = new Error(), ref$.name = "lderror", ref$.id = 1015, ref$));
       }
-      if (((ref$ = (ref1$ = this.hash)[n] || (ref1$[n] = {}))[v] || (ref$[v] = {}))[p] != null && !opt.force) {
+      (ref$ = this.hash)[n] || (ref$[n] = {});
+      if (/[^0-9.]/.exec(v) && !opt.force) {
+        if (this._ver.map[n] && this._ver.map[n][v]) {
+          if (that = ((ref$ = this.hash[n])[key$ = this._ver.map[n][v]] || (ref$[key$] = {}))[p]) {
+            return that;
+          }
+        }
+        for (ver in ref$ = (ref1$ = this.hash)[n] || (ref1$[n] = {})) {
+          c = ref$[ver];
+          if (!semver.fit(ver, v)) {
+            continue;
+          }
+          return Promise.resolve(c[p]);
+        }
+      }
+      if (((ref$ = this.hash[n])[v] || (ref$[v] = {}))[p] != null && !opt.force) {
         return Promise.resolve(this.hash[n][v][p]);
       }
       if (((ref$ = (ref1$ = this.running)[n] || (ref1$[n] = {}))[v] || (ref$[v] = {}))[p] === true) {
@@ -302,35 +334,27 @@
         version: opt.version,
         path: opt.path
       }).then(function(it){
-        if (it) {
-          return it;
-        } else {
+        var ref$;
+        if (!it) {
           return e404();
         }
+        if (it.version) {
+          if (obj.version !== it.version) {
+            ((ref$ = this$._ver.map)[n] || (ref$[n] = {}))[obj.version] = it.version;
+          }
+          obj.version = it.version;
+        }
+        return it.content || it;
       })['catch'](function(e){
         if (!this$._chain) {
           return Promise.reject(e);
         }
         return this$._chain.get(opt);
       }).then(function(ret){
-        var b, obj;
+        var b;
         ret == null && (ret = {});
-        b = new block['class']({
-          code: ret,
-          name: n,
-          version: v,
-          path: p,
-          manager: this$
-        });
-        this$.set(obj = {
-          name: n,
-          version: v,
-          path: p,
-          block: b
-        });
-        if (ret.version && ret.version !== v) {
-          this$.set((obj.version = ret.version, obj));
-        }
+        b = new block['class']((obj.code = ret, obj.manager = this$, obj));
+        this$.set((obj.block = b, obj));
         return b;
       }).then(function(it){
         this$.proxy[n][v][p].resolve(it);

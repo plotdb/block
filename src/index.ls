@@ -91,7 +91,11 @@ block.manager = (opt={}) ->
   @hash = {}
   @proxy = {}
   @running = {}
+  # mapping from a version range to an actual version
+  # use _ver.map to align design with `rescope` and `csscope`
+  @_ver = {map: {}}
   @_chain = opt.chain or null
+  # this is undocumented, and seems to be replaced by `registry`. should we remove it in the future?
   @_fetch = opt.fetch or null
   @init = proxise.once ~> @_init!
   @rescope = if opt.rescope instanceof rescope => opt.rescope else block.rescope!
@@ -106,7 +110,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     else @rescope.init!
   chain: -> @_chain = it
   registry: (r) ->
-    if typeof(r) in <[string function]> => r = {lib: r, block: r}
+    if typeof(r) in <[string function]> or (r.fetch and r.url) => r = {lib: r, block: r}
     if r.lib? =>
       if @rescope == block.rescope! => @rescope = new rescope {global: win}
       if @csscope == block.csscope! => @csscope = new csscope.manager!
@@ -123,31 +127,50 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
       @hash{}[name]{}[version][path or 'index.html'] = b
     )
   get-url: ({name, version, path}) ->
-    return if typeof(@_reg) == \function => @_reg {name, version, path, type: \block}
+    r = @_reg.url or @_reg
+    if typeof(r) == \function => r {name, version, path, type: \block}
     else "#{@_reg or ''}/assets/block/#{name}/#{version or 'main'}/#{path or 'index.html'}"
 
-  fetch: (opt) ->
-    if @_fetch => return Promise.resolve(@_fetch opt)
-    url = @get-url(opt{name,version,path})
-    if !url => return e404!
-    _fetch url, {method: \GET}
+  fetch: (o) ->
+    o <<< {type: \block}
+    # this is undocumented - and it's going to be replaced by `@plotdb/registry`
+    # we probably would like to remove this once we get what's this for.
+    if @_fetch => return Promise.resolve(@_fetch o)
+    _ref = if @_reg.fetch => @_reg.fetch o else @get-url o
+    if _ref.then => _ref
+    else if !_ref => return e404!
+    else _fetch _ref, {method: \GET} .then -> {content: it}
 
-  # TODO parse semantic versioning for better cache performance.
+    #url = @get-url(o{name,version,path})
+    #if !url => return e404!
+    #_fetch url, {method: \GET}
+
   _get: (opt) ->
     [n,v,p] = [opt.name, opt.version or \main, opt.path or 'index.html']
+    obj = {name: n, version: v, path: p}
     if !(n and v) => return Promise.reject(new Error! <<< {name: "lderror", id: 1015})
-    if @hash{}[n]{}[v][p]? and !opt.force => return Promise.resolve(@hash[n][v][p])
+    @hash{}[n]
+    if /[^0-9.]/.exec(v) and !opt.force =>
+      if @_ver.map[n] and @_ver.map[n][v] => if @hash[n]{}[@_ver.map[n][v]][p] => return that
+      for ver, c of @hash{}[n] =>
+        if !semver.fit ver, v => continue
+        return Promise.resolve(c[p])
+    if @hash[n]{}[v][p]? and !opt.force => return Promise.resolve(@hash[n][v][p])
     if @running{}[n]{}[v][p] == true => return
     @running[n][v][p] = true
     @fetch opt{name,version,path}
-      .then ~> if it => return it else return e404!
+      .then ~>
+        if !it => return e404!
+        if it.version =>
+          if obj.version != it.version => @_ver.map{}[n][obj.version] = it.version
+          obj.version = it.version
+        return it.content or it
       .catch (e) ~>
         if !@_chain => return Promise.reject(e)
         @_chain.get opt
       .then (ret = {}) ~>
-        b = new block.class({code: ret, name: n, version: v, path: p, manager: @})
-        @set obj = ({name: n, version: v, path: p} <<< {block: b})
-        if ret.version and ret.version != v => @set(obj <<< {version: ret.version})
+        b = new block.class(obj <<< {code: ret, manager: @})
+        @set(obj <<< {block: b})
         b
       .then ~>
         @proxy[n][v][p].resolve it

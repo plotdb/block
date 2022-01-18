@@ -1,5 +1,11 @@
 # Change Logs
 
+## v4.1.0 (upcoming)
+
+ - support semantic versioning with ranges.
+ - support custom registry that return content + version directly.
+
+
 ## v4.0.1
 
  - upgrade `@plotdb/csscope` and `@plotdb/rescope` dependencies
