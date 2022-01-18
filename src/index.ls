@@ -196,7 +196,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     _ = (list, blocks = [], deps = {js: [], css: []}) ->
       if !list.length => return Promise.resolve {blocks, deps}
       bd = list.splice 0, 1 .0
-      id = "#{bd.name}@#{bd.version}:#{bd.path or 'index.html'}"
+      id = "#{bd.name}@#{bd.version or ''}:#{bd.path or 'index.html'}"
       if hash[id] => return Promise.resolve!then -> _ list, blocks, deps
       _fetch mgr.get-url(bd), {method: \GET}
         .then ->

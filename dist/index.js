@@ -412,7 +412,7 @@
           });
         }
         bd = list.splice(0, 1)[0];
-        id = bd.name + "@" + bd.version + ":" + (bd.path || 'index.html');
+        id = bd.name + "@" + (bd.version || '') + ":" + (bd.path || 'index.html');
         if (hash[id]) {
           return Promise.resolve().then(function(){
             return _(list, blocks, deps);
