@@ -4,7 +4,8 @@
   "license": "MIT",
   "description": "block",
   "version": "4.0.1",
-  "main": "dist/index.js",
+  "browser": "dist/index.min.js",
+  "main": "dist/index.min.js",
   "homepage": "https://github.com/plotdb/block",
   "files": [
     "dist/**/*"

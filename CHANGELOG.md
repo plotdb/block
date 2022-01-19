@@ -5,6 +5,7 @@
  - default empty in version when building id
  - support semantic versioning with ranges.
  - support custom registry that return content + version directly.
+ - use minimized dist file as main / browser default file
 
 
 ## v4.0.1
