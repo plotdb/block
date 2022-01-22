@@ -10,7 +10,6 @@
  - upgrade modules
  - patch test code to make it work with upgraded modules
  - remove assets files from git
-
  - release with compact directory structure
 
 
