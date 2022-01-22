@@ -1,11 +1,18 @@
 # Change Logs
 
-## v4.1.0 (upcoming)
+## v4.1.0
 
  - default empty in version when building id
  - support semantic versioning with ranges.
  - support custom registry that return content + version directly.
  - use minimized dist file as main / browser default file
+ - remove livescript header in generated js
+ - upgrade modules
+ - patch test code to make it work with upgraded modules
+ - remove assets files from git
+
+ - release with compact directory structure
+
 
 
 ## v4.0.1
