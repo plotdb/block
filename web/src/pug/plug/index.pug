@@ -1,0 +1,30 @@
+extends /base.pug
+block prehead
+  base(href="/")
+block body
+  .w-1024.rwd.mx-auto.my-4
+    h3 Use Plug Directly in HTML DOM
+    :md
+      with `data(plug)` node in root, we can apply blocks with `plug` directly and fill those plug with given content.
+
+      Here we design a conditional display block that only displays when its `toggle() called with `true` as parameter. However, its content is determined by user aka us with `data(plug="base")`, e.g.,
+
+          #container: div(plug="base") this is my content
+          script
+            mgr.get({name: "base"})
+              .then -> it.create!
+              .then -> it.attach {root: container}
+
+       Additionally, we use `ldview` bound buttons to trigger `toggle(true)` of corresponding block so content will show upon button clicked.
+    hr
+    .d-none(ld="root")
+      .btn.btn-outline-secondary(ld="choice",data-target="first") show first
+      div(ld="group",data-name="first")
+        .my-4(plug="base")
+          div this is the first block
+          .btn.btn-outline-secondary(ld="choice",data-target="second") next
+          div(ld="group",data-name="second")
+            .my-4(plug="base") this is the secondary block
+
+block script
+  script(type="module"): include:lsc index.ls

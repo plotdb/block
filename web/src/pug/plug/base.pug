@@ -1,0 +1,12 @@
+.d-none
+  plug(name="base") ...
+  script(type="@plotdb/block"): :lsc
+    module.exports = {
+      pkg: {}
+      init: ({root}) -> @root = root
+      toggle: ->
+        if !(it?) => return
+        @root.classList.toggle \d-none, !it
+        setTimeout (~> @root.scrollIntoView!), 1000
+      interface: -> @
+    }
