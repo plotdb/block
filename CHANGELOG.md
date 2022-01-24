@@ -1,9 +1,10 @@
 # Change Logs
 
-## v4.1.2 (upcoming)
+## v4.1.2
 
  - bug fix: translation of non-string value may fail.
    - convert value for translation to string to error in prevent i18n module
+ - support dom interpolation from container content
 
 
 ## v4.1.1
