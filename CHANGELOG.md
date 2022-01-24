@@ -1,5 +1,11 @@
 # Change Logs
 
+## v4.1.2 (upcoming)
+
+ - bug fix: translation of non-string value may fail.
+   - convert value for translation to string to error in prevent i18n module
+
+
 ## v4.1.1
 
  - fix bug: i18n doesn't work due to colon in id. use an alternative `_id_t` without colon for i18n scope.

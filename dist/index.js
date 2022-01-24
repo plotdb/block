@@ -808,7 +808,7 @@
       id = this._id_t;
       return block.i18n.module.t([id + ":" + t].concat(this['extends'].map(function(it){
         return it.id + ":" + t;
-      }), [t]));
+      }), [t + ""]));
     },
     create: function(opt){
       var this$ = this;
