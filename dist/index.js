@@ -879,7 +879,7 @@
       if (!root) {
         node = null;
       } else {
-        node = this.dom();
+        node = this.dom(opt.root);
         exts = [this.block].concat(this.block['extends']);
         s = [this.block.scope];
         for (i$ = 0, to$ = exts.length - 1; i$ < to$; ++i$) {
@@ -969,12 +969,12 @@
         return this._transform(this.node);
       }
     },
-    dom: function(){
+    dom: function(child){
       var that;
       if (that = this.node) {
         return that;
       }
-      this.node = this.block.resolvePlugAndCloneNode();
+      this.node = this.block.resolvePlugAndCloneNode(child);
       return this._transform(this.node);
     },
     i18n: function(it){

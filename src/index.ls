@@ -451,6 +451,9 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     ret = new block.instance {block: @, name: @name, version: @version, data: opt.data}
     ret.init!then -> ret
 
+  # child: either
+  #  - dom tree of child.
+  #  - dom tree of container ( for interpolation )
   resolve-plug-and-clone-node: (child, by-pass = false) ->
     if !by-pass =>
       node = @dom!cloneNode true
@@ -482,7 +485,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     block.global.csscope.apply @block.csscopes.global
     if !root => node = null
     else
-      node = @dom!
+      node = @dom opt.root
       exts = [@block] ++ @block.extends
       s = [@block.scope]
       for i from 0 til exts.length - 1 =>
@@ -536,9 +539,9 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
   # for now we just accept a single parameter which is the name, and only accept `i18n` as its name.
   transform: (name) -> if name == \i18n => @_transform @node
 
-  dom: ->
+  dom: (child) ->
     if @node => return that
-    @node = @block.resolve-plug-and-clone-node!
+    @node = @block.resolve-plug-and-clone-node child
     @_transform @node
 
   i18n: -> @block.i18n it
