@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.1.1
+
+ - fix bug: i18n doesn't work due to colon in id. use an alternative `_id_t` without colon for i18n scope.
+
+
 ## v4.1.0
 
  - default empty in version when building id

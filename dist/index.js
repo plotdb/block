@@ -1,5 +1,6 @@
 (function(){
   var win, doc, rescope, csscope, proxise, fetch, e404, _fetch, rid, parseNameString, sanitize, pubsub, block, slice$ = [].slice;
+  console.log('okok');
   rescope = typeof window != 'undefined' && window !== null
     ? window.rescope
     : (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null) ? require("@plotdb/rescope") : null;
@@ -679,6 +680,7 @@
           this$.path = this$['interface'].pkg.path;
         }
         this$.id = (this$.name || rid()) + "@" + (this$.version || rid()) + ":" + (this$.path || 'index.html');
+        this$._id_t = this$.id.replace(/:/g, '=');
         if (!this$.scope) {
           this$.scope = csscope.scope(this$);
         }
@@ -723,7 +725,7 @@
         i18n = this$['interface'].pkg.i18n || {};
         for (lng in i18n) {
           res = i18n[lng];
-          results$.push(block.i18n.module.addResourceBundle(lng, this$.id, res, true, true));
+          results$.push(block.i18n.module.addResourceBundle(lng, this$._id_t, res, true, true));
         }
         return results$;
       }).then(function(){
@@ -803,7 +805,7 @@
     },
     i18n: function(t){
       var id;
-      id = this.id;
+      id = this._id_t;
       return block.i18n.module.t([id + ":" + t].concat(this['extends'].map(function(it){
         return it.id + ":" + t;
       }), [t]));
@@ -1026,7 +1028,7 @@
                   resources == null && (resources = {});
                   for (lng in resources) {
                     res = resources[lng];
-                    results$.push(block.i18n.addResourceBundle(lng, this$.block.id, res));
+                    results$.push(block.i18n.addResourceBundle(lng, this$.block._id_t, res));
                   }
                   return results$;
                 },

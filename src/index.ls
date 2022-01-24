@@ -1,4 +1,5 @@
 var win, doc
+console.log \okok
 
 rescope = if window? => window.rescope else if module? and require? => require "@plotdb/rescope" else null
 csscope = if window? => window.csscope else if module? and require? => require "@plotdb/csscope" else null
@@ -360,6 +361,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         if !@version => @version = @interface.pkg.version
         if !@path => @path = @interface.pkg.path
         @id = "#{@name or rid!}@#{@version or rid!}:#{@path or 'index.html'}"
+        # ID for translation : i18next treat `:` as separator for id, so we escape it
+        @_id_t = @id.replace /:/g, '='
         # TODO better scope format?
         # use csscope for a stable scope name ( base64 ). scope may be pre-given, set in constructor.
         if !@scope => @scope = csscope.scope(@)
@@ -394,7 +397,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       .then ~>
         i18n = @interface.pkg.i18n or {}
         for lng, res of i18n =>
-          block.i18n.module.add-resource-bundle lng, @id, res, true, true
+          block.i18n.module.add-resource-bundle lng, @_id_t, res, true, true
       .then ~>
         @dependencies = if Array.isArray(@interface.pkg.dependencies) => @interface.pkg.dependencies
         else [v for k,v of (@interface.pkg.dependencies or {})]
@@ -439,7 +442,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
   dom: -> @node
 
   i18n: (t) ->
-    id = @id
+    id = @_id_t
     block.i18n.module.t( ["#id:#t"] ++ (@extends.map -> "#{it.id}:#t") ++ [t] )
 
   create: (opt={}) ->
@@ -573,7 +576,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
             i18n:
               add-resource-bundles: (resources = {}) ~>
                 for lng, res of resources =>
-                  block.i18n.add-resource-bundle lng, @block.id, res
+                  block.i18n.add-resource-bundle lng, @block._id_t, res
               t: ~> @block.i18n(it)
             t: ~> @block.i18n(it)
             data: @data
