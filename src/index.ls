@@ -1,5 +1,4 @@
 var win, doc
-console.log \okok
 
 rescope = if window? => window.rescope else if module? and require? => require "@plotdb/rescope" else null
 csscope = if window? => window.csscope else if module? and require? => require "@plotdb/csscope" else null

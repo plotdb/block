@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.1.3 (upcoming)
+
+ - bug fix: remove accidentally added log
+
+
 ## v4.1.2
 
  - bug fix: translation of non-string value may fail.

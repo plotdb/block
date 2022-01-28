@@ -1,6 +1,5 @@
 (function(){
   var win, doc, rescope, csscope, proxise, fetch, e404, _fetch, rid, parseNameString, sanitize, pubsub, block, slice$ = [].slice;
-  console.log('okok');
   rescope = typeof window != 'undefined' && window !== null
     ? window.rescope
     : (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null) ? require("@plotdb/rescope") : null;
