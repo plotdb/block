@@ -686,12 +686,14 @@
         if (this$.style) {
           doc.body.appendChild(this$.styleNode = doc.createElement("style"));
           this$.styleNode.setAttribute('type', 'text/css');
-          this$.styleNode.textContent = ret = csscope({
+          ret = csscope({
             rule: "*[scope~=" + this$.scope + "]",
             name: this$.scope,
             css: this$.style,
             scopeTest: "[scope]"
           });
+          ret = ret.replace(/url\("?([^()"]+)"?\)/g, "url(" + this$._path('') + "$1)");
+          this$.styleNode.textContent = ret;
         }
         this$.factory = function(){
           var args, res$, i$, to$;
@@ -801,6 +803,14 @@
     },
     dom: function(){
       return this.node;
+    },
+    _path: function(p){
+      p == null && (p = '');
+      return this.manager.getUrl({
+        name: this.name,
+        version: this.version,
+        path: this.path
+      }).replace(/\/[^/]*$/, '/') + p;
     },
     i18n: function(t){
       var id;
@@ -930,24 +940,25 @@
     update: function(ops){
       return this.datadom.update(ops);
     },
-    _transform: function(node){
-      var _, this$ = this;
+    _transform: function(node, tag, func){
+      var regex, _;
+      regex = new RegExp("^" + tag + "-(.+)$");
       _ = function(n){
         var i$, to$, i, ref$, name, value, ret, v, results$ = [];
         if (n.nodeType === win.Element.TEXT_NODE) {
-          n.parentNode.setAttribute('t', n.textContent);
-          return n.parentNode.replaceChild(doc.createTextNode(this$.i18n(n.textContent)), n);
+          n.parentNode.setAttribute(tag, n.textContent);
+          return n.parentNode.replaceChild(doc.createTextNode(func(n.textContent)), n);
         } else {
           for (i$ = 0, to$ = n.attributes.length; i$ < to$; ++i$) {
             i = i$;
             ref$ = n.attributes[i], name = ref$.name, value = ref$.value;
-            if (!(ret = /^t-(.+)$/.exec(name))) {
+            if (!(ret = regex.exec(name))) {
               continue;
             }
-            n.setAttribute(ret[1], this$.i18n(value || ''));
+            n.setAttribute(ret[1], func(value || ''));
           }
-          if (v = n.getAttribute('t')) {
-            return n.textContent = this$.i18n(v);
+          if (v = n.getAttribute(tag)) {
+            return n.textContent = func(v);
           }
           for (i$ = 0, to$ = n.childNodes.length; i$ < to$; ++i$) {
             i = i$;
@@ -956,17 +967,24 @@
           return results$;
         }
       };
-      Array.from(node.querySelectorAll('[t]')).filter(function(n){
-        return n.hasAttribute('t');
+      Array.from(node.querySelectorAll("[" + tag + "]")).filter(function(n){
+        return n.hasAttribute(tag);
       }).map(function(n){
         return _(n);
       });
       return node;
     },
-    transform: function(name){
-      if (name === 'i18n') {
-        return this._transform(this.node);
+    transform: function(n){
+      var this$ = this;
+      if (!(n === 'i18n' || n === 'path')) {
+        return;
       }
+      this._transform(this.node, 't', function(it){
+        return this$.i18n(it);
+      });
+      return this._transform(this.node, 'path', function(it){
+        return this$._path(it);
+      });
     },
     dom: function(child){
       var that;
@@ -974,7 +992,11 @@
         return that;
       }
       this.node = this.block.resolvePlugAndCloneNode(child);
-      return this._transform(this.node);
+      this.transform('i18n');
+      return this.transform('path');
+    },
+    _path: function(it){
+      return this.block._path(it);
     },
     i18n: function(it){
       return this.block.i18n(it);
@@ -1037,6 +1059,9 @@
               },
               t: function(it){
                 return this$.block.i18n(it);
+              },
+              path: function(it){
+                return this$._path(it);
               },
               data: this$.data
             };

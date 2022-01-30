@@ -274,6 +274,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         lc.script.setAttribute \type, \text/javascript
         doc.body.appendChild lc.script
       if lc.style =>
+        # TODO we may need path translation here
         lc.style.setAttribute \type, \text/css
         doc.body.appendChild lc.style
       for k,node of nodes =>
@@ -373,9 +374,15 @@ block.class.prototype = Object.create(Object.prototype) <<< do
           doc.body.appendChild(@style-node = doc.createElement("style"))
           @style-node.setAttribute \type, 'text/css'
           # TODO @style takes 2nd parse here. we should support rule passing mechanism
-          @style-node.textContent = ret = csscope {
+          ret = csscope {
             rule: "*[scope~=#{@scope}]", name: @scope, css: @style, scope-test: "[scope]"
           }
+          # translate local url to registry url.
+          # TODO this always runs, which may no be necessary.
+          # should we add some mechanism to make this optional?
+          # also, this may have potential issues if registry changes after initialized
+          ret = ret.replace /url\("?([^()"]+)"?\)/g, "url(#{@_path('')}$1)"
+          @style-node.textContent = ret
 
         @factory = (...args) -> @
         @factory.prototype = Object.create(Object.prototype) <<< {
@@ -439,6 +446,11 @@ block.class.prototype = Object.create(Object.prototype) <<< do
   context: -> @_ctx # get library context
 
   dom: -> @node
+
+  _path: (p = '') ->
+    @manager
+      .get-url @{name, version, path}
+      .replace(/\/[^/]*$/, '/') + p
 
   i18n: (t) ->
     id = @_id_t
@@ -514,35 +526,40 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     return null
   update: (ops) -> @datadom.update ops
 
-  _transform: (node) ->
-    # i18n transformer
+  _transform: (node, tag, func) ->
+    regex = new RegExp("^#{tag}-(.+)$")
     _ = (n) ~>
       if n.nodeType == win.Element.TEXT_NODE =>
-        n.parentNode.setAttribute \t, n.textContent
-        n.parentNode.replaceChild doc.createTextNode(@i18n(n.textContent)), n
+        n.parentNode.setAttribute tag, n.textContent
+        n.parentNode.replaceChild doc.createTextNode(func(n.textContent)), n
       else
         for i from 0 til n.attributes.length =>
           {name,value} = n.attributes[i]
-          if !(ret = /^t-(.+)$/.exec(name)) => continue
-          n.setAttribute ret.1, @i18n(value or '')
-        if (v = n.getAttribute(\t)) => return n.textContent = @i18n v
+          if !(ret = regex.exec(name)) => continue
+          n.setAttribute ret.1, func(value or '')
+        if (v = n.getAttribute(tag)) => return n.textContent = func v
         for i from 0 til n.childNodes.length => _ n.childNodes[i]
-    Array.from(node.querySelectorAll '[t]')
-      .filter (n) -> n.hasAttribute(\t)
+    Array.from(node.querySelectorAll "[#tag]")
+      .filter (n) -> n.hasAttribute(tag)
       .map (n) ~> _ n
     return node
 
   # TODO this is a simplified interface for doing DOM transformation.
   # it's expected to be publicly accessible for end users to apply expected transformation
   # so we are going to have a plugin / transformation mechanism underneath in the future;
-  # for now we just accept a single parameter which is the name, and only accept `i18n` as its name.
-  transform: (name) -> if name == \i18n => @_transform @node
+  # for now we just accept a single parameter which is the name, and only accept `i18n` / `path` as its name.
+  transform: (n) ->
+    if !(n in <[i18n path]>) => return
+    @_transform @node, \t, (~> @i18n it)
+    @_transform @node, \path, (~> @_path it)
 
   dom: (child) ->
     if @node => return that
     @node = @block.resolve-plug-and-clone-node child
-    @_transform @node
+    @transform \i18n
+    @transform \path
 
+  _path: -> @block._path it
   i18n: -> @block.i18n it
 
   # run factory methods, recursively.
@@ -581,6 +598,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
                   block.i18n.add-resource-bundle lng, @block._id_t, res
               t: ~> @block.i18n(it)
             t: ~> @block.i18n(it)
+            path: ~> @_path(it)
             data: @data
           }
           if type == \init => @obj.push(o = new b.factory payload)

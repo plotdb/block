@@ -1,8 +1,11 @@
 # Change Logs
 
-## v4.1.3 (upcoming)
+## v4.2.0
 
  - bug fix: remove accidentally added log
+ - support path translation in HTML with `path` and `path-*` attribute.
+ - support path translation in JS with `path` function.
+ - support path translation in style.
 
 
 ## v4.1.2
