@@ -1,8 +1,9 @@
 # Change Logs
 
-## v4.2.1 (upcoming)
+## v4.3.0
 
  - provide a method for generating id based on input object.
+ - add `ns` ( namespace ) support in block definition. `ns` defaults to ``
 
 
 ## v4.2.0

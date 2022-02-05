@@ -52,15 +52,16 @@ Script can either be an object described as below, or a function returning that 
 
 ## Block Naming and Accessing
 
-To use a block, we need to know how to identify it. Like npm modules, blocks are defined with a `name`, a `version` and an optional `path`, where:
+To use a block, we need to know how to identify it. Like npm modules, blocks are defined with a `name`, a `version` and an optional `path` and `ns`, where:
 
  - `name`: use the naming convention as npm. e.g., `@loadingio/spinner`
  - `version`: sematic versioning, tag or hash value. e.g., `0.0.1`
  - `path`: path of the block definition file inside the module `name@version`. `index.html` if omitted.
+ - `ns`: namespace for this block, e.g., `npm` or `github`. How this works depends on how registry is implemented.
 
 To access a block with its name, we need a manager ( `block.manager` ):
 
-    manager = new block.manager registry: ({name,version,path}) -> "/block/#name/#version/#path/index.html"
+    manager = new block.manager registry: ({ns,name,version,path}) -> "/block/#name/#version/#path/index.html"
     mananger.init!
       .then -> manager.get({name: "my-block", version: "0.1.0"})
       .then (block) -> ...
@@ -90,7 +91,7 @@ Additionally, `block` itself provides following functions:
  - `block.id()` - return an ID corresponding to input object with following possible fields:
    - `id`: if `id` exists, it will be returned directly.
    - `url`: if `id` is not found abut `url` exists, `url` will be returned instead.
-   - `name`, `version`, `path`: if none of above is found, use these to generate an ID.
+   - `ns`, `name`, `version`, `path`: if none of above is found, use these to generate an ID.
      - `name` is required in this case.
      - `version` default to `main`, `path` default to `index.html` if not provided.
  - `block.i18n`

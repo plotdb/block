@@ -213,6 +213,7 @@
         return this.rescope.init();
       }
     },
+    id: block.id,
     chain: function(it){
       return this._chain = it;
     },
@@ -252,20 +253,27 @@
         ? opt
         : [opt];
       return Promise.all(opts.map(function(obj){
-        var name, version, path, b, ref$, ref1$;
-        name = obj.name, version = obj.version, path = obj.path;
+        var ns, name, version, path, b, ref$, ref1$, ref2$;
+        ns = obj.ns, name = obj.name, version = obj.version, path = obj.path;
+        if (!ns) {
+          ns = '';
+        }
         b = obj instanceof block['class']
           ? obj
           : obj.block;
-        return ((ref$ = (ref1$ = this$.hash)[name] || (ref1$[name] = {}))[version] || (ref$[version] = {}))[path || 'index.html'] = b;
+        return ((ref$ = (ref1$ = (ref2$ = this$.hash)[ns] || (ref2$[ns] = {}))[name] || (ref1$[name] = {}))[version] || (ref$[version] = {}))[path || 'index.html'] = b;
       }));
     },
     getUrl: function(arg$){
-      var name, version, path, r;
-      name = arg$.name, version = arg$.version, path = arg$.path;
+      var ns, name, version, path, r;
+      ns = arg$.ns, name = arg$.name, version = arg$.version, path = arg$.path;
+      if (!ns) {
+        ns = '';
+      }
       r = this._reg.url || this._reg;
       if (typeof r === 'function') {
         return r({
+          ns: ns,
           name: name,
           version: version,
           path: path,
@@ -299,9 +307,10 @@
       }
     },
     _get: function(opt){
-      var ref$, n, v, p, obj, that, key$, ver, ref1$, c, this$ = this;
-      ref$ = [opt.name, opt.version || 'main', opt.path || 'index.html'], n = ref$[0], v = ref$[1], p = ref$[2];
+      var ref$, ns, n, v, p, obj, ref1$, that, key$, ver, c, ref2$, this$ = this;
+      ref$ = [opt.ns || '', opt.name, opt.version || 'main', opt.path || 'index.html'], ns = ref$[0], n = ref$[1], v = ref$[2], p = ref$[3];
       obj = {
+        ns: ns,
         name: n,
         version: v,
         path: p
@@ -309,14 +318,14 @@
       if (!(n && v)) {
         return Promise.reject((ref$ = new Error(), ref$.name = "lderror", ref$.id = 1015, ref$));
       }
-      (ref$ = this.hash)[n] || (ref$[n] = {});
+      (ref$ = (ref1$ = this.hash)[ns] || (ref1$[ns] = {}))[n] || (ref$[n] = {});
       if (/[^0-9.]/.exec(v) && !opt.force) {
-        if (this._ver.map[n] && this._ver.map[n][v]) {
-          if (that = ((ref$ = this.hash[n])[key$ = this._ver.map[n][v]] || (ref$[key$] = {}))[p]) {
+        if (((ref$ = this._ver.map)[ns] || (ref$[ns] = {}))[n] && this._ver.map[ns][n][v]) {
+          if (that = ((ref$ = this.hash[ns][n])[key$ = this._ver.map[ns][n][v]] || (ref$[key$] = {}))[p]) {
             return that;
           }
         }
-        for (ver in ref$ = (ref1$ = this.hash)[n] || (ref1$[n] = {})) {
+        for (ver in ref$ = ((ref1$ = this.hash)[ns] || (ref1$[ns] = {}))[n]) {
           c = ref$[ver];
           if (!semver.fit(ver, v)) {
             continue;
@@ -324,14 +333,15 @@
           return Promise.resolve(c[p]);
         }
       }
-      if (((ref$ = this.hash[n])[v] || (ref$[v] = {}))[p] != null && !opt.force) {
-        return Promise.resolve(this.hash[n][v][p]);
+      if (((ref$ = this.hash[ns][n])[v] || (ref$[v] = {}))[p] != null && !opt.force) {
+        return Promise.resolve(this.hash[ns][n][v][p]);
       }
-      if (((ref$ = (ref1$ = this.running)[n] || (ref1$[n] = {}))[v] || (ref$[v] = {}))[p] === true) {
+      if (((ref$ = (ref1$ = (ref2$ = this.running)[ns] || (ref2$[ns] = {}))[n] || (ref1$[n] = {}))[v] || (ref$[v] = {}))[p] === true) {
         return;
       }
-      this.running[n][v][p] = true;
+      this.running[ns][n][v][p] = true;
       return this.fetch({
+        ns: opt.ns,
         name: opt.name,
         version: opt.version,
         path: opt.path
@@ -342,7 +352,7 @@
         }
         if (it.version) {
           if (obj.version !== it.version) {
-            ((ref$ = this$._ver.map)[n] || (ref$[n] = {}))[obj.version] = it.version;
+            ((ref$ = this$._ver.map[ns])[n] || (ref$[n] = {}))[obj.version] = it.version;
           }
           obj.version = it.version;
         }
@@ -359,12 +369,12 @@
         this$.set((obj.block = b, obj));
         return b;
       }).then(function(it){
-        this$.proxy[n][v][p].resolve(it);
+        this$.proxy[ns][n][v][p].resolve(it);
         return it;
       })['finally'](function(){
-        return this$.running[n][v][p] = false;
+        return this$.running[ns][n][v][p] = false;
       })['catch'](function(e){
-        this$.proxy[n][v][p].reject(e);
+        this$.proxy[ns][n][v][p].reject(e);
         return Promise.reject(e);
       });
     },
@@ -375,18 +385,18 @@
         ? opt
         : [opt];
       return Promise.all(opts.map(function(opt){
-        var ref$, n, v, p, ref1$;
+        var ref$, ns, n, v, p, ref1$, ref2$;
         opt == null && (opt = {});
         if (typeof opt === 'string') {
           opt = parseNameString(opt);
         }
-        ref$ = [opt.name, opt.version || 'main', opt.path || 'index.html'], n = ref$[0], v = ref$[1], p = ref$[2];
-        if (!((ref$ = (ref1$ = this$.proxy)[n] || (ref1$[n] = {}))[v] || (ref$[v] = {}))[p]) {
-          this$.proxy[n][v][p] = proxise(function(opt){
+        ref$ = [opt.ns || '', opt.name, opt.version || 'main', opt.path || 'index.html'], ns = ref$[0], n = ref$[1], v = ref$[2], p = ref$[3];
+        if (!((ref$ = (ref1$ = (ref2$ = this$.proxy)[ns] || (ref2$[ns] = {}))[n] || (ref1$[n] = {}))[v] || (ref$[v] = {}))[p]) {
+          this$.proxy[ns][n][v][p] = proxise(function(opt){
             return this$._get(opt);
           });
         }
-        return this$.proxy[n][v][p](opt);
+        return this$.proxy[ns][n][v][p](opt);
       })).then(function(it){
         if (Array.isArray(opt)) {
           return it;
@@ -520,7 +530,7 @@
           : opt.root);
       }
       return p.then(function(root){
-        var ref$, nodes, classes, s, k, node, ret, name, version, path, bc, results$ = [];
+        var ref$, nodes, classes, s, k, node, ret, ns, name, version, path, bc, results$ = [];
         if (root.content) {
           root = root.content;
         }
@@ -554,10 +564,11 @@
         }
         for (k in nodes) {
           node = nodes[k];
-          ret = /^(@?[^@]+)@([^:]+)(:.+)?/.exec(k);
-          ref$ = [ret[1], ret[2], (ret[3] || '').replace(/^:/, '') || ''], name = ref$[0], version = ref$[1], path = ref$[2];
+          ret = /^(?:([^:]+):)?(@?[^@]+)@([^:]+)(:.+)?/.exec(k);
+          ref$ = [ret[1] || '', ret[2], ret[3], (ret[4] || '').replace(/^:/, '') || ''], ns = ref$[0], name = ref$[1], version = ref$[2], path = ref$[3];
           bc = new block['class']({
             manager: mgr,
+            ns: ns,
             name: name,
             version: version,
             path: path,
@@ -583,10 +594,14 @@
       global: [],
       local: []
     };
+    this.ns = opt.ns;
     this.name = opt.name;
     this.version = opt.version;
     this.path = opt.path;
     this.manager = opt.manager;
+    if (!opt.ns) {
+      opt.ns = '';
+    }
     if (!this.manager) {
       console.warn("manager is mandatory when constructing block.class");
     }
@@ -814,6 +829,7 @@
     _path: function(p){
       p == null && (p = '');
       return this.manager.getUrl({
+        ns: this.ns,
         name: this.name,
         version: this.version,
         path: this.path
@@ -833,6 +849,7 @@
         var ret;
         ret = new block.instance({
           block: this$,
+          ns: this$.ns,
           name: this$.name,
           version: this$.version,
           data: opt.data
@@ -868,6 +885,7 @@
   block.instance = function(opt){
     var this$ = this;
     opt == null && (opt = {});
+    this.ns = opt.ns;
     this.name = opt.name;
     this.version = opt.version;
     this.block = opt.block;

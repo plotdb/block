@@ -109,6 +109,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
   _init: ->
     if @rescope == block.rescope! => block.init!
     else @rescope.init!
+  id: block.id
   chain: -> @_chain = it
   registry: (r) ->
     if typeof(r) in <[string function]> or (r.fetch and r.url) => r = {lib: r, block: r}
@@ -123,13 +124,15 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
   set: (opt = {}) ->
     opts = if Array.isArray(opt) => opt else [opt]
     Promise.all(opts.map (obj) ~>
-      {name,version,path} = obj
+      {ns, name, version, path} = obj
+      if !ns => ns = ''
       b = if obj instanceof block.class => obj else obj.block
-      @hash{}[name]{}[version][path or 'index.html'] = b
+      @hash{}[ns]{}[name]{}[version][path or 'index.html'] = b
     )
-  get-url: ({name, version, path}) ->
+  get-url: ({ns, name, version, path}) ->
+    if !ns => ns = ''
     r = @_reg.url or @_reg
-    if typeof(r) == \function => r {name, version, path, type: \block}
+    if typeof(r) == \function => r {ns, name, version, path, type: \block}
     else "#{@_reg or ''}/assets/block/#{name}/#{version or 'main'}/#{path or 'index.html'}"
 
   fetch: (o) ->
@@ -143,23 +146,23 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     else _fetch _ref, {method: \GET} .then -> {content: it}
 
   _get: (opt) ->
-    [n,v,p] = [opt.name, opt.version or \main, opt.path or 'index.html']
-    obj = {name: n, version: v, path: p}
+    [ns, n, v, p] = [opt.ns or '', opt.name, opt.version or \main, opt.path or 'index.html']
+    obj = {ns: ns, name: n, version: v, path: p}
     if !(n and v) => return Promise.reject(new Error! <<< {name: "lderror", id: 1015})
-    @hash{}[n]
+    @hash{}[ns]{}[n]
     if /[^0-9.]/.exec(v) and !opt.force =>
-      if @_ver.map[n] and @_ver.map[n][v] => if @hash[n]{}[@_ver.map[n][v]][p] => return that
-      for ver, c of @hash{}[n] =>
+      if @_ver.map{}[ns][n] and @_ver.map[ns][n][v] => if @hash[ns][n]{}[@_ver.map[ns][n][v]][p] => return that
+      for ver, c of @hash{}[ns][n] =>
         if !semver.fit ver, v => continue
         return Promise.resolve(c[p])
-    if @hash[n]{}[v][p]? and !opt.force => return Promise.resolve(@hash[n][v][p])
-    if @running{}[n]{}[v][p] == true => return
-    @running[n][v][p] = true
-    @fetch opt{name,version,path}
+    if @hash[ns][n]{}[v][p]? and !opt.force => return Promise.resolve(@hash[ns][n][v][p])
+    if @running{}[ns]{}[n]{}[v][p] == true => return
+    @running[ns][n][v][p] = true
+    @fetch opt{ns, name, version, path}
       .then ~>
         if !it => return e404 obj
         if it.version =>
-          if obj.version != it.version => @_ver.map{}[n][obj.version] = it.version
+          if obj.version != it.version => @_ver.map[ns]{}[n][obj.version] = it.version
           obj.version = it.version
         return it.content or it
       .catch (e) ~>
@@ -170,11 +173,11 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         @set(obj <<< {block: b})
         b
       .then ~>
-        @proxy[n][v][p].resolve it
+        @proxy[ns][n][v][p].resolve it
         return it
-      .finally ~> @running[n][v][p] = false
+      .finally ~> @running[ns][n][v][p] = false
       .catch (e) ~>
-        @proxy[n][v][p].reject e
+        @proxy[ns][n][v][p].reject e
         return Promise.reject e
 
   get: (opt = {}) ->
@@ -182,9 +185,9 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     Promise.all(
       opts.map (opt = {}) ~>
         if typeof(opt) == \string => opt = parse-name-string(opt)
-        [n,v,p] = [opt.name, opt.version or \main, opt.path or 'index.html']
-        if !@proxy{}[n]{}[v][p] => @proxy[n][v][p] = proxise (opt) ~> @_get(opt)
-        @proxy[n][v][p] opt
+        [ns, n, v, p] = [opt.ns or '', opt.name, opt.version or \main, opt.path or 'index.html']
+        if !@proxy{}[ns]{}[n]{}[v][p] => @proxy[ns][n][v][p] = proxise (opt) ~> @_get(opt)
+        @proxy[ns][n][v][p] opt
     ).then -> if Array.isArray(opt) => return it else return it.0
 
   bundle: (opt = {}) ->
@@ -279,10 +282,10 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         lc.style.setAttribute \type, \text/css
         doc.body.appendChild lc.style
       for k,node of nodes =>
-        ret = /^(@?[^@]+)@([^:]+)(:.+)?/.exec(k)
-        [name, version, path] = [ret.1, ret.2, ((ret.3 or '').replace(/^:/,'') or '')]
+        ret = /^(?:([^:]+):)?(@?[^@]+)@([^:]+)(:.+)?/.exec(k)
+        [ns, name, version, path] = [ret.1 or '', ret.2, ret.3, ((ret.4 or '').replace(/^:/,'') or '')]
         bc = new block.class {
-          manager: mgr, name: name, version: version, path: path,
+          manager: mgr, ns: ns, name: name, version: version, path: path,
           code: script: lc.codes[k], dom: node, style: ""
         }
         mgr.set bc
@@ -294,7 +297,8 @@ block.class = (opt={}) ->
   @_ctx = {} # libraries context. may inherited from extended base class.
   @csscopes = {global: [], local: []} # css libraries. may be either global or local.
   # manager is used for recursively get extended block.
-  @ <<< opt{name, version, path, manager}
+  @ <<< opt{ns, name, version, path, manager}
+  if !opt.ns => opt.ns = ''
   if !@manager => console.warn "manager is mandatory when constructing block.class"
   code = opt.code
 
@@ -450,7 +454,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 
   _path: (p = '') ->
     @manager
-      .get-url @{name, version, path}
+      .get-url @{ns, name, version, path}
       .replace(/\/[^/]*$/, '/') + p
 
   i18n: (t) ->
@@ -460,7 +464,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
   create: (opt={}) ->
     # defer init in create since we may not use this block even if we load it.
     <~ @init!then _
-    ret = new block.instance {block: @, name: @name, version: @version, data: opt.data}
+    ret = new block.instance {block: @, ns: @ns, name: @name, version: @version, data: opt.data}
     ret.init!then -> ret
 
   # child: either
@@ -484,7 +488,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     else node
 
 block.instance = (opt = {}) ->
-  @ <<< opt{name, version, block, data}
+  @ <<< opt{ns, name, version, block, data}
   @init = proxise.once ~> @_init!
   @
 
