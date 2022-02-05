@@ -85,6 +85,26 @@ As described above, `@plotdb/block` contains following basic elements:
  - `block.class` - representing the definition of a block, and is used to generate `block.instance`.
  - `block.instance` - object for manipulating state / DOM of a given block.
 
+Additionally, `block` itself provides following functions:
+
+ - `block.id()` - return an ID corresponding to input object with following possible fields:
+   - `id`: if `id` exists, it will be returned directly.
+   - `url`: if `id` is not found abut `url` exists, `url` will be returned instead.
+   - `name`, `version`, `path`: if none of above is found, use these to generate an ID.
+     - `name` is required in this case.
+     - `version` default to `main`, `path` default to `index.html` if not provided.
+ - `block.i18n`
+   - `module`: default i18n module object.
+   - `use(obj)`: use `obj` to replace `module`.
+   - `changeLangauge(ns)`: set default language to `ns`.
+   - `addResourceBundle(...)`: add resource bundle, with following parameters ( in order ):
+     - `lng`: ns for this resource to add.
+     - `id`: id if any. default undefined.
+     - `resource`: resource to add
+     - `deep`: default true.
+     - `overwrite`: default true. whether overwrite existing resource or not.
+ - `block.env(win)` - set current environment to `win`.
+
 
 ### block.manager
 

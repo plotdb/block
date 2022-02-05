@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.2.1 (upcoming)
+
+ - provide a method for generating id based on input object.
+
+
 ## v4.2.0
 
  - bug fix: remove accidentally added log

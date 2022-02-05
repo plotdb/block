@@ -47,6 +47,7 @@ pubsub.prototype = Object.create(Object.prototype) <<< do
   on: (name, cb) -> @subs[][name].push cb
 
 block = {}
+block.id = (o) -> o.id or o.url or "#{o.name}@#{o.version or 'main'}:#{o.path or 'index.html'}"
 block.env = ->
   [win, doc] := [it, it.document]
   if rescope.env => rescope.env win
@@ -192,7 +193,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     _ = (list, blocks = [], deps = {js: [], css: []}) ->
       if !list.length => return Promise.resolve {blocks, deps}
       bd = list.splice 0, 1 .0
-      id = "#{bd.name}@#{bd.version or ''}:#{bd.path or 'index.html'}"
+      id = block.id bd
       if hash[id] => return Promise.resolve!then -> _ list, blocks, deps
       _fetch mgr.get-url(bd), {method: \GET}
         .then ->
@@ -360,7 +361,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         if !@name => @name = @interface.pkg.name
         if !@version => @version = @interface.pkg.version
         if !@path => @path = @interface.pkg.path
-        @id = "#{@name or rid!}@#{@version or rid!}:#{@path or 'index.html'}"
+        @id = block.id {name: (@name or rid!), version: @version or rid!, path: @path}
         # ID for translation : i18next treat `:` as separator for id, so we escape it
         @_id_t = @id.replace /:/g, '='
         # TODO better scope format?

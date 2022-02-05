@@ -88,6 +88,9 @@
     }
   });
   block = {};
+  block.id = function(o){
+    return o.id || o.url || o.name + "@" + (o.version || 'main') + ":" + (o.path || 'index.html');
+  };
   block.env = function(it){
     var ref$;
     ref$ = [it, it.document], win = ref$[0], doc = ref$[1];
@@ -411,7 +414,7 @@
           });
         }
         bd = list.splice(0, 1)[0];
-        id = bd.name + "@" + (bd.version || '') + ":" + (bd.path || 'index.html');
+        id = block.id(bd);
         if (hash[id]) {
           return Promise.resolve().then(function(){
             return _(list, blocks, deps);
@@ -678,7 +681,11 @@
         if (!this$.path) {
           this$.path = this$['interface'].pkg.path;
         }
-        this$.id = (this$.name || rid()) + "@" + (this$.version || rid()) + ":" + (this$.path || 'index.html');
+        this$.id = block.id({
+          name: this$.name || rid(),
+          version: this$.version || rid(),
+          path: this$.path
+        });
         this$._id_t = this$.id.replace(/:/g, '=');
         if (!this$.scope) {
           this$.scope = csscope.scope(this$);
