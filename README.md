@@ -88,12 +88,13 @@ As described above, `@plotdb/block` contains following basic elements:
 
 Additionally, `block` itself provides following functions:
 
- - `block.id()` - return an ID corresponding to input object with following possible fields:
+ - `block.id(obj)` - return an ID corresponding to input object with following possible fields:
    - `id`: if `id` exists, it will be returned directly.
    - `url`: if `id` is not found abut `url` exists, `url` will be returned instead.
    - `ns`, `name`, `version`, `path`: if none of above is found, use these to generate an ID.
      - `name` is required in this case.
      - `version` default to `main`, `path` default to `index.html` if not provided.
+ - `block.id2obj(id)` - reversely convert id into block with `ns`, `name`, `version` and `path` fields.
  - `block.i18n`
    - `module`: default i18n module object.
    - `use(obj)`: use `obj` to replace `module`.
@@ -148,6 +149,8 @@ either way we have to provide a way to load, register, cache these blocks - that
  - `chain(mgr)`: set a fallback manager for chaining lookup of requested block.
  - `rescope`: rescope object, either global one or customized one.
  - `csscope`: csscope object, either global one or customized one.
+ - `id`: shortcut for `block.id`
+ - `id2obj`: shortcut for `block.id2obj`
 
 
 ### block.class

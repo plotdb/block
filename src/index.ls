@@ -48,6 +48,11 @@ pubsub.prototype = Object.create(Object.prototype) <<< do
 
 block = {}
 block.id = (o) -> o.id or o.url or "#{o.name}@#{o.version or 'main'}:#{o.path or 'index.html'}"
+block.id2obj = (k) ->
+  k = k.split(':')
+  if k.length <= 2 => [nv,path,ns] = k else [ns,nv,path] = k
+  if !(ret = /^(@?[^@]+)(?:@([^:]+))?$/.exec(nv)) => return null
+  return {ns, name: ret.1, version: ret.2, path}
 block.env = ->
   [win, doc] := [it, it.document]
   if rescope.env => rescope.env win
@@ -110,6 +115,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     if @rescope == block.rescope! => block.init!
     else @rescope.init!
   id: block.id
+  id2obj: block.id2obj
   chain: -> @_chain = it
   registry: (r) ->
     if typeof(r) in <[string function]> or (r.fetch and r.url) => r = {lib: r, block: r}
@@ -282,8 +288,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         lc.style.setAttribute \type, \text/css
         doc.body.appendChild lc.style
       for k,node of nodes =>
-        ret = /^(?:([^:]+):)?(@?[^@]+)@([^:]+)(:.+)?/.exec(k)
-        [ns, name, version, path] = [ret.1 or '', ret.2, ret.3, ((ret.4 or '').replace(/^:/,'') or '')]
+        {ns, name, version, path} = block.id-to-obj(k)
         bc = new block.class {
           manager: mgr, ns: ns, name: name, version: version, path: path,
           code: script: lc.codes[k], dom: node, style: ""

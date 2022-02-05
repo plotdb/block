@@ -1,5 +1,13 @@
 # Change Logs
 
+## v4.4.0
+
+ - downgrade `node-fetch` back to `v2.6.7` to make it work in nodejs
+ - add `id2obj` function
+ - bug fix: `id2obj` parsing may be wrong due to `ns`
+ - add `id2obj` test
+
+
 ## v4.3.0
 
  - provide a method for generating id based on input object.

@@ -91,6 +91,24 @@
   block.id = function(o){
     return o.id || o.url || o.name + "@" + (o.version || 'main') + ":" + (o.path || 'index.html');
   };
+  block.id2obj = function(k){
+    var nv, path, ns, ret;
+    k = k.split(':');
+    if (k.length <= 2) {
+      nv = k[0], path = k[1], ns = k[2];
+    } else {
+      ns = k[0], nv = k[1], path = k[2];
+    }
+    if (!(ret = /^(@?[^@]+)(?:@([^:]+))?$/.exec(nv))) {
+      return null;
+    }
+    return {
+      ns: ns,
+      name: ret[1],
+      version: ret[2],
+      path: path
+    };
+  };
   block.env = function(it){
     var ref$;
     ref$ = [it, it.document], win = ref$[0], doc = ref$[1];
@@ -214,6 +232,7 @@
       }
     },
     id: block.id,
+    id2obj: block.id2obj,
     chain: function(it){
       return this._chain = it;
     },
@@ -530,7 +549,7 @@
           : opt.root);
       }
       return p.then(function(root){
-        var ref$, nodes, classes, s, k, node, ret, ns, name, version, path, bc, results$ = [];
+        var ref$, nodes, classes, s, k, node, ns, name, version, path, bc, results$ = [];
         if (root.content) {
           root = root.content;
         }
@@ -564,8 +583,7 @@
         }
         for (k in nodes) {
           node = nodes[k];
-          ret = /^(?:([^:]+):)?(@?[^@]+)@([^:]+)(:.+)?/.exec(k);
-          ref$ = [ret[1] || '', ret[2], ret[3], (ret[4] || '').replace(/^:/, '') || ''], ns = ref$[0], name = ref$[1], version = ref$[2], path = ref$[3];
+          ref$ = block.idToObj(k), ns = ref$.ns, name = ref$.name, version = ref$.version, path = ref$.path;
           bc = new block['class']({
             manager: mgr,
             ns: ns,
