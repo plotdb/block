@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.5.2
+
+ - bug fix: i18n transformation doesn't propagate correctly through base blocks.
+
+
 ## v4.5.1
 
  - fix bug: `from` failed due to incorrect code parsing.

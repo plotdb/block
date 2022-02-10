@@ -472,7 +472,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 
   i18n: (t) ->
     id = @_id_t
-    block.i18n.module.t( ["#id:#t"] ++ (@extends.map -> "#{it.id}:#t") ++ ["#t"] )
+    block.i18n.module.t( ["#id:#t"] ++ (@extends.map -> "#{it._id_t}:#t") ++ ["#t"] )
 
   create: (o={}) ->
     # defer init in create since we may not use this block even if we load it.
