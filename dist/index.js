@@ -397,6 +397,15 @@
         return Promise.reject(e);
       });
     },
+    from: function(o, p){
+      return this.get(o).then(function(b){
+        return b.create().then(function(i){
+          return i.attach(p).then(function(){
+            return i['interface']();
+          });
+        });
+      });
+    },
     get: function(opt){
       var opts, this$ = this;
       opt == null && (opt = {});
@@ -735,13 +744,9 @@
           ret = ret.replace(/url\("?([^()"]+)"?\)/g, "url(" + this$._path('') + "$1)");
           this$.styleNode.textContent = ret;
         }
-        this$.factory = function(){
-          var args, res$, i$, to$;
-          res$ = [];
-          for (i$ = 0, to$ = arguments.length; i$ < to$; ++i$) {
-            res$.push(arguments[i$]);
-          }
-          args = res$;
+        this$.factory = function(c, i){
+          this._class = c;
+          this._instnace = i;
           return this;
         };
         return this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$), this$['interface']);
@@ -860,20 +865,27 @@
         return it.id + ":" + t;
       }), [t + ""]));
     },
-    create: function(opt){
+    create: function(o){
       var this$ = this;
-      opt == null && (opt = {});
+      o == null && (o = {});
       return this.init().then(function(){
-        var ret;
-        ret = new block.instance({
+        var r;
+        r = new block.instance({
           block: this$,
           ns: this$.ns,
           name: this$.name,
           version: this$.version,
-          data: opt.data
+          data: o.data
         });
-        return ret.init().then(function(){
-          return ret;
+        return r.init().then(function(){
+          if (o.root) {
+            return r.attach({
+              root: o.root,
+              before: o.before
+            });
+          }
+        }).then(function(){
+          return r;
         });
       });
     },
@@ -1109,7 +1121,7 @@
               data: this$.data
             };
             if (type === 'init') {
-              this$.obj.push(o = new b.factory(payload));
+              this$.obj.push(o = new b.factory(this$.block, this$));
             }
             ps.push((o = this$.obj[idx]) ? this$.obj[idx][type](payload) : null);
             return _(list, idx + 1, gtx, o);

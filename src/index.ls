@@ -186,6 +186,10 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         @proxy[ns][n][v][p].reject e
         return Promise.reject e
 
+  from: (o, p) ->
+    @get o .then (b) ->
+      b.create!then (i) -> i.attach p .then -> i.interface!
+
   get: (opt = {}) ->
     opts = if Array.isArray(opt) => opt else [opt]
     Promise.all(
@@ -394,7 +398,10 @@ block.class.prototype = Object.create(Object.prototype) <<< do
           ret = ret.replace /url\("?([^()"]+)"?\)/g, "url(#{@_path('')}$1)"
           @style-node.textContent = ret
 
-        @factory = (...args) -> @
+        @factory = (c, i) ->
+          @_class = c
+          @_instnace = i
+          @
         @factory.prototype = Object.create(Object.prototype) <<< {
           init: (->), destroy: (->)
         } <<< @interface
@@ -466,11 +473,14 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     id = @_id_t
     block.i18n.module.t( ["#id:#t"] ++ (@extends.map -> "#{it.id}:#t") ++ ["#t"] )
 
-  create: (opt={}) ->
+  create: (o={}) ->
     # defer init in create since we may not use this block even if we load it.
     <~ @init!then _
-    ret = new block.instance {block: @, ns: @ns, name: @name, version: @version, data: opt.data}
-    ret.init!then -> ret
+    r = new block.instance {block: @, ns: @ns, name: @name, version: @version, data: o.data}
+    r.init!
+      .then -> if o.root => r.attach o{root, before}
+      .then -> r
+
 
   # child: either
   #  - dom tree of child.
@@ -611,7 +621,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
             path: ~> @_path(it)
             data: @data
           }
-          if type == \init => @obj.push(o = new b.factory payload)
+          if type == \init => @obj.push(o = new b.factory @block, @)
           ps.push if (o = @obj[idx]) => @obj[idx][type](payload) else null
           _ list, idx + 1, gtx, o
         ) if b._ctx.ctx => b._ctx.ctx! else b._ctx.{}local # use `{}local` for rescope < v4

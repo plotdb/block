@@ -145,6 +145,9 @@ either way we have to provide a way to load, register, cache these blocks - that
    - `force`: by default, `block.manager` caches result. set `force` to true to force `block.manager` re-fetch data.
    - `get` also accept an array of `{name,version,path,force}` tuples for batching `get`.
       - in this case, `get` returns an array of `block.class`.
+ - `from(block-def, attach-opt)`: shorthand for manager.get + class.create + instance.attach
+   - `block-def`: block definition. see `get()` and above description.
+   - `attach-opt`: attach options. see `block.instance`'s `attach()` function.
  - `chain(mgr)`: set a fallback manager for chaining lookup of requested block.
  - `rescope`: rescope object, either global one or customized one.
  - `csscope`: csscope object, either global one or customized one.
@@ -175,7 +178,10 @@ either way we have to provide a way to load, register, cache these blocks - that
          - string: evaled to the interface, or a function which return the interface.
          - for detail of the "interface", see "interface of the internal object" section below.
    - `root`: root of a DOM tree. use to create internal dom tree if provided. Overwrite code.
- - `create()`: create a `block.instance` based on this object.
+ - `create(opt)`: create a `block.instance` based on this object. options:
+   - `data`: instance data
+   - `root`: optional. if provided, attach created instance to `root`, and if provided, before `before`.
+   - `before`: optional. as `root`
  - `context()`: get library context corresponding to this block.
  - `i18n(text)`: return translated text based on the current context.
 
@@ -213,7 +219,7 @@ To create a `block.instance` based on a `block.class`:
 
 To generate block's internal object:
 
-    obj = new aBlockClass.factory(...);
+    obj = new aBlockClass.factory(class, instance);
 
 Please note that `obj` (block's internal object) is not the `block.instance` object, but an object based on how this block is defined in its script part.
 
@@ -226,9 +232,10 @@ Please note that `obj` (block's internal object) is not the `block.instance` obj
 
  - `constructor(opts)` with following options:
    - `block`: block definition ( `block.class` ) for this instance.
- - `attach({root, before})`: attach DOM of this instance to a specific node ( `root` ).
+ - `attach({root, data, before})`: attach DOM of this instance to a specific node ( `root` ).
    - return promise.
    - when run, a block `obj` is created via `block.class`'s factory method and stored in `@obj` member.
+     - note `obj` is the block's internal object described above, not the block instance object.
    - when root is omitted, attach block in headless mode ( for pure script )
    - attach DOM by `appendChild` when `before` is omitted, and by `insertBefore` otherwise.
  - `detach()`: detach DOM. return promise.
@@ -247,7 +254,12 @@ and following private members:
 
 ### Interface of the internal object
 
-`block.instance` is just a generic object for managing block life cycle. Every block has another object, serves as the internal object that provides real dynamics of the block. This object is created along with `block.instance`, and it's interface is implemented by developers with the following spec:
+`block.instance` is just a generic object for managing block life cycle. Every block has another object, serves as the internal object that provides real dynamics of the block. This object is created along with `block.instance`, by default with only two members for its creator:
+
+ - `_class`: block class creating the below `_instance`.
+ - `_instance`: block instance creating this internal object.
+
+It's interface is implemented by developers with the following spec:
 
  - `pkg`: block information, described below. optional.
  - `init({root, context, parent, pubsub, data, t, i18n})`: initializing a block. optional.
