@@ -401,12 +401,12 @@
       return this.get(o).then(function(b){
         return b.create().then(function(i){
           return i.attach(p).then(function(){
-            return i['interface']().then(function(it){
-              return {
-                instance: i,
-                'interface': it
-              };
-            });
+            return i['interface']();
+          }).then(function(it){
+            return {
+              instance: i,
+              'interface': it
+            };
           });
         });
       });

@@ -188,7 +188,9 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
 
   from: (o, p) ->
     @get o .then (b) -> b.create!then (i) ->
-      i.attach p .then -> i.interface! .then -> {instance: i, interface: it}
+      i.attach p
+        .then -> i.interface!
+        .then -> {instance: i, interface: it}
 
   get: (opt = {}) ->
     opts = if Array.isArray(opt) => opt else [opt]
