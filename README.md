@@ -1,7 +1,5 @@
 # @plotdb/block
 
-*Work in progress - please consider everything as unstable.*
-
 Frontend module library with following features:
 
  - scoped JS / CSS for vanilla libraries, no bundling required.
@@ -16,10 +14,11 @@ install `@plotdb/block` along with all necessary js libraries:
 
 and include them:
 
-    <script src="path-to-proxise/dist/index.min.js"></script>
-    <script src="path-to-csscope/dist/index.min.js"></script>
-    <script src="path-to-rescope/dist/index.min.js"></script>
-    <script src="path-to-block/dist/index.min.js"></script>
+    <script src="path-to-semver/index.min.js"></script>
+    <script src="path-to-proxise/index.min.js"></script>
+    <script src="path-to-csscope/index.min.js"></script>
+    <script src="path-to-rescope/index.min.js"></script>
+    <script src="path-to-block/index.min.js"></script>
 
 
 ## Concept
