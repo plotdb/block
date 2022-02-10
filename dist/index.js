@@ -1000,7 +1000,7 @@
       return this.datadom.update(ops);
     },
     _transform: function(node, tag, func){
-      var regex, _;
+      var regex, _, wk;
       regex = new RegExp("^" + tag + "-(.+)$");
       _ = function(n){
         var i$, to$, i, ref$, name, value, ret, v, results$ = [];
@@ -1026,8 +1026,12 @@
           return results$;
         }
       };
+      wk = new WeakMap();
+      Array.from(node.querySelectorAll(":scope [scope] [" + tag + "]")).map(function(n){
+        return wk.set(n, 1);
+      });
       Array.from(node.querySelectorAll("[" + tag + "]")).filter(function(n){
-        return n.hasAttribute(tag);
+        return !wk.get(n);
       }).map(function(n){
         return _(n);
       });

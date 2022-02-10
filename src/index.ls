@@ -560,8 +560,16 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
           n.setAttribute ret.1, func(value or '')
         if (v = n.getAttribute(tag)) => return n.textContent = func v
         for i from 0 til n.childNodes.length => _ n.childNodes[i]
+    # querySelectorAll also selects nodes under child blocks.
+    # with poor transforming order, parent block may overwrite child blocks' result with incorrect values.
+    ## Array.from(node.querySelectorAll "[#tag]")
+    # thus we make a 2 phase query:
+    #  1. log scoped nodes to (A)
+    #  2. query all nodes that are not in (A)
+    wk = new WeakMap!
+    Array.from(node.querySelectorAll ":scope [scope] [#tag]").map (n) -> wk.set n, 1
     Array.from(node.querySelectorAll "[#tag]")
-      .filter (n) -> n.hasAttribute(tag)
+      .filter (n) -> !(wk.get n)
       .map (n) ~> _ n
     return node
 
