@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.5.1
+
+ - fix bug: `from` failed due to incorrect code parsing.
+
+
 ## v4.5.0
 
  - add `manager.from` support, shorthand  for block instance generation
