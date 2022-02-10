@@ -1,5 +1,11 @@
 # Change Logs
 
+## v4.5.0
+
+ - add `manager.from` support, shorthand  for block instance generation
+ - extend `block.create` function
+
+
 ## v4.4.0
 
  - downgrade `node-fetch` back to `v2.6.7` to make it work in nodejs
