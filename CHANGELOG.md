@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.5.3
+
+ - bug fix: transformation cross block boundary leads unexpected i18n result.
+
+
 ## v4.5.2
 
  - bug fix: i18n transformation doesn't propagate correctly through base blocks.
