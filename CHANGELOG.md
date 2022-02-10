@@ -3,7 +3,7 @@
 ## v4.5.0
 
  - add `manager.from` support, shorthand  for block instance generation
- - extend `block.create` function
+ - extend `block.create` function with additional root option for directly attaching
 
 
 ## v4.4.0
