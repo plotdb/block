@@ -401,7 +401,12 @@
       return this.get(o).then(function(b){
         return b.create().then(function(i){
           return i.attach(p).then(function(){
-            return i['interface']();
+            return i['interface']().then(function(it){
+              return {
+                instance: i,
+                'interface': it
+              };
+            });
           });
         });
       });
@@ -744,12 +749,11 @@
           ret = ret.replace(/url\("?([^()"]+)"?\)/g, "url(" + this$._path('') + "$1)");
           this$.styleNode.textContent = ret;
         }
-        this$.factory = function(c, i){
-          this._class = c;
-          this._instnace = i;
+        this$.factory = function(i){
+          this._instance = i;
           return this;
         };
-        return this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$), this$['interface']);
+        return this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$._class = this$, ref$), this$['interface']);
       }).then(function(){
         this$['extends'] = [];
         if (!this$['interface'].pkg.extend) {
@@ -1121,7 +1125,7 @@
               data: this$.data
             };
             if (type === 'init') {
-              this$.obj.push(o = new b.factory(this$.block, this$));
+              this$.obj.push(o = new b.factory(this$));
             }
             ps.push((o = this$.obj[idx]) ? this$.obj[idx][type](payload) : null);
             return _(list, idx + 1, gtx, o);

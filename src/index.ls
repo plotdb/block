@@ -187,8 +187,8 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         return Promise.reject e
 
   from: (o, p) ->
-    @get o .then (b) ->
-      b.create!then (i) -> i.attach p .then -> i.interface!
+    @get o .then (b) -> b.create!then (i) ->
+      i.attach p .then -> i.interface! .then -> {instance: i, interface: it}
 
   get: (opt = {}) ->
     opts = if Array.isArray(opt) => opt else [opt]
@@ -398,12 +398,11 @@ block.class.prototype = Object.create(Object.prototype) <<< do
           ret = ret.replace /url\("?([^()"]+)"?\)/g, "url(#{@_path('')}$1)"
           @style-node.textContent = ret
 
-        @factory = (c, i) ->
-          @_class = c
-          @_instnace = i
+        @factory = (i) ->
+          @_instance = i
           @
         @factory.prototype = Object.create(Object.prototype) <<< {
-          init: (->), destroy: (->)
+          init: (->), destroy: (->), _class: @
         } <<< @interface
       .then ~>
         @extends = []
@@ -621,7 +620,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
             path: ~> @_path(it)
             data: @data
           }
-          if type == \init => @obj.push(o = new b.factory @block, @)
+          if type == \init => @obj.push(o = new b.factory @)
           ps.push if (o = @obj[idx]) => @obj[idx][type](payload) else null
           _ list, idx + 1, gtx, o
         ) if b._ctx.ctx => b._ctx.ctx! else b._ctx.{}local # use `{}local` for rescope < v4

@@ -145,7 +145,10 @@ either way we have to provide a way to load, register, cache these blocks - that
    - `force`: by default, `block.manager` caches result. set `force` to true to force `block.manager` re-fetch data.
    - `get` also accept an array of `{name,version,path,force}` tuples for batching `get`.
       - in this case, `get` returns an array of `block.class`.
- - `from(block-def, attach-opt)`: shorthand for manager.get + class.create + instance.attach
+ - `from(block-def, attach-opt)`: shorthand for manager.get + class.create + instance.attach + instace.interface
+   - return a Promise which resolves to an object `{interface, instance}`:
+     - `instance`: created instance
+     - `interface`: created interface
    - `block-def`: block definition. see `get()` and above description.
    - `attach-opt`: attach options. see `block.instance`'s `attach()` function.
  - `chain(mgr)`: set a fallback manager for chaining lookup of requested block.
@@ -233,12 +236,12 @@ Please note that `obj` (block's internal object) is not the `block.instance` obj
  - `constructor(opts)` with following options:
    - `block`: block definition ( `block.class` ) for this instance.
  - `attach({root, data, before})`: attach DOM of this instance to a specific node ( `root` ).
-   - return promise.
+   - return Promise, resolves a list of internal object based on inheriance hierarchy.
    - when run, a block `obj` is created via `block.class`'s factory method and stored in `@obj` member.
      - note `obj` is the block's internal object described above, not the block instance object.
    - when root is omitted, attach block in headless mode ( for pure script )
    - attach DOM by `appendChild` when `before` is omitted, and by `insertBefore` otherwise.
- - `detach()`: detach DOM. return promise.
+ - `detach()`: detach DOM. return Promise.
  - `update(ops)`: update `datadom` based on provided ops ( array of operational transformation ).
  - `i18n(text)`: return translated text based on the current context.
  - `dom()`: return DOM corresponding to this block. Create a new one if not yet created.
