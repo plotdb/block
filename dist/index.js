@@ -597,7 +597,7 @@
         }
         for (k in nodes) {
           node = nodes[k];
-          ref$ = block.idToObj(k), ns = ref$.ns, name = ref$.name, version = ref$.version, path = ref$.path;
+          ref$ = block.id2obj(k), ns = ref$.ns, name = ref$.name, version = ref$.version, path = ref$.path;
           bc = new block['class']({
             manager: mgr,
             ns: ns,

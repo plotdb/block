@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.5.4
+
+ - bug fix: `id-to-obj` should be `id2obj` in debundle function.
+
+
 ## v4.5.3
 
  - bug fix: transformation cross block boundary leads unexpected i18n result.

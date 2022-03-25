@@ -294,7 +294,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         lc.style.setAttribute \type, \text/css
         doc.body.appendChild lc.style
       for k,node of nodes =>
-        {ns, name, version, path} = block.id-to-obj(k)
+        {ns, name, version, path} = block.id2obj(k)
         bc = new block.class {
           manager: mgr, ns: ns, name: name, version: version, path: path,
           code: script: lc.codes[k], dom: node, style: ""
