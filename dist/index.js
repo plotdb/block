@@ -936,8 +936,16 @@
       return this.block.init();
     },
     attach: function(opt){
-      var root, node, exts, s, i$, to$, i, es;
+      var _o, root, node, exts, s, i$, to$, i, es;
       opt == null && (opt = {});
+      if (_o = this._defered) {
+        if (_o.before) {
+          _o.root.insertBefore(_o.node, _o.before);
+        } else {
+          _o.root.appendChild(_o.node);
+        }
+        return Promise.resolve();
+      }
       if (opt.data) {
         this.data = opt.data;
       }
@@ -968,10 +976,19 @@
         }).concat(this.block.csscopes.global.map(function(it){
           return it.scope;
         })));
-        if (opt.before) {
-          root.insertBefore(node, opt.before);
+        if (!opt.defer) {
+          if (opt.before) {
+            root.insertBefore(node, opt.before);
+          } else {
+            root.appendChild(node);
+          }
+        } else {
+          this._defered = {
+            node: node,
+            root: root,
+            before: opt.before
+          };
         }
-        root.appendChild(node);
       }
       return this.run({
         node: node,

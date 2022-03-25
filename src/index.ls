@@ -511,6 +511,10 @@ block.instance = (opt = {}) ->
 block.instance.prototype = Object.create(Object.prototype) <<< do
   _init: -> @block.init!
   attach: (opt = {}) ->
+    if (_o = @_defered) =>
+      if _o.before => _o.root.insertBefore _o.node, _o.before
+      else _o.root.appendChild _o.node
+      return Promise.resolve!
     if opt.data => @data = opt.data
     root = opt.root
     root = if !root => null else if typeof(root) == \string => doc.querySelector(root) else root
@@ -530,8 +534,11 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
         node.classList,
         @block.csscopes.local.map(->it.scope) ++ @block.csscopes.global.map(->it.scope)
       )
-      if opt.before => root.insertBefore node, opt.before
-      root.appendChild node
+      if !opt.defer =>
+        if opt.before => root.insertBefore node, opt.before
+        else root.appendChild node
+      else @_defered = {node, root, before: opt.before}
+
 
     @run({node, type: \init})
   detach: ->

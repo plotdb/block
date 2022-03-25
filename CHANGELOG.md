@@ -3,6 +3,7 @@
 ## v4.6.0 (upcoming)
 
  - pass `path` into instance.
+ - support `defer` in `attach`
 
 
 ## v4.5.4
