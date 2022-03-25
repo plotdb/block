@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.6.0 (upcoming)
+
+ - pass `path` into instance.
+
+
 ## v4.5.4
 
  - bug fix: `id-to-obj` should be `id2obj` in debundle function.

@@ -878,6 +878,7 @@
           block: this$,
           ns: this$.ns,
           name: this$.name,
+          path: this$.path,
           version: this$.version,
           data: o.data
         });
@@ -922,6 +923,7 @@
     this.ns = opt.ns;
     this.name = opt.name;
     this.version = opt.version;
+    this.path = opt.path;
     this.block = opt.block;
     this.data = opt.data;
     this.init = proxise.once(function(){

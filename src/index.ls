@@ -477,7 +477,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
   create: (o={}) ->
     # defer init in create since we may not use this block even if we load it.
     <~ @init!then _
-    r = new block.instance {block: @, ns: @ns, name: @name, version: @version, data: o.data}
+    r = new block.instance {block: @, ns: @ns, name: @name, path: @path, version: @version, data: o.data}
     r.init!
       .then -> if o.root => r.attach o{root, before}
       .then -> r
@@ -504,7 +504,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     else node
 
 block.instance = (opt = {}) ->
-  @ <<< opt{ns, name, version, block, data}
+  @ <<< opt{ns, name, version, path, block, data}
   @init = proxise.once ~> @_init!
   @
 
