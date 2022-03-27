@@ -1,9 +1,11 @@
 # Change Logs
 
-## v4.6.0 (upcoming)
+## v4.6.0
 
  - pass `path` into instance.
  - support `defer` in `attach`
+ - support `language` in `block.i18n`
+ - support `getLanguage` in i18n object passed to block js
 
 
 ## v4.5.4

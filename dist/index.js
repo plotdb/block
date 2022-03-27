@@ -162,6 +162,11 @@
       return block.i18n.module.changeLanguage(it);
     }
   };
+  Object.defineProperty(block.i18n, 'language', {
+    get: function(){
+      return block.i18n.module.lng || block.i18n.module.language;
+    }
+  });
   block.global = {
     csscope: {
       hash: {},
@@ -1126,6 +1131,9 @@
               context: gtx,
               pubsub: this$.pubsub,
               i18n: {
+                getLanguage: function(){
+                  return block.i18n.language;
+                },
                 addResourceBundles: function(resources){
                   var lng, res, results$ = [];
                   resources == null && (resources = {});

@@ -97,6 +97,7 @@ Additionally, `block` itself provides following functions:
  - `block.i18n`
    - `module`: default i18n module object.
    - `use(obj)`: use `obj` to replace `module`.
+   - `language`: current used language.
    - `changeLangauge(ns)`: set default language to `ns`.
    - `addResourceBundle(...)`: add resource bundle, with following parameters ( in order ):
      - `lng`: ns for this resource to add.
@@ -276,6 +277,7 @@ It's interface is implemented by developers with the following spec:
    - `data`: data passing to `create`. optional and up to user.
    - `t(text)`: translation function based on local, base class and global i18n information. shorthand of `i18n.t`.
    - `i18n`: i18n related helpers including:
+     - getLanguage()`: return current used language.
      - `t(text)`: as described above.
      - `addResourceBundles(res)`: dynamically adding i18n resources. sample `res`:
         
