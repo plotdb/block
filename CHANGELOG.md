@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.6.1 (upcoming)
+
+ - audit fix for vulnerabilities fixing
+
+
 ## v4.6.0
 
  - pass `path` into instance.
