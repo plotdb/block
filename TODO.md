@@ -1,3 +1,6 @@
+ - data / update data / datadom
+   - we should support updating data in block
+   - also, considering using datadom / datahub ( thus can be modified realtime / collaboratively )
  - optimization
    - use block to wrap css + js in HTML.
      - make it possible to inject into html with declarative shadow dom
