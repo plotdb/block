@@ -1,3 +1,4 @@
+ - update document
  - data / update data / datadom
    - we should support updating data in block
    - also, considering using datadom / datahub ( thus can be modified realtime / collaboratively )
