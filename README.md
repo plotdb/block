@@ -287,6 +287,8 @@ It's interface is implemented by developers with the following spec:
  - `interface`: for accessing custom object. optional.
     - either a function returning interface object, or the interface object itself.
     - child block always overwrite parents' interface in an inheritance chain, if available
+ - `mod`: module object reserved for developer.
+   - while this interface may change in the future, `mod` is reserved for developer.
  - `exports(global)`: for sharing block as a JS library. return objects to export. optional
    - (TBD) user can use a block as a library by adding it in the `dependencies` config, such as:
      - [{name: "some-block", version: "some-vesion", path: "path-to-file"}, ...]
