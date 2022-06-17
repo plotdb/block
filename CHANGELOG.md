@@ -1,8 +1,9 @@
 # Change Logs
 
-## v4.6.1 (upcoming)
+## v4.6.1
 
  - audit fix for vulnerabilities fixing
+ - bug fix: fix typo from `console.log warn` to `console.warn`
 
 
 ## v4.6.0

@@ -700,7 +700,7 @@
       node = doc.createElement('div');
     }
     if (node.nodeType !== win.Element.ELEMENT_NODE) {
-      console.log(warn("root of DOM definition of a block should be an Element"));
+      console.warn("root of DOM definition of a block should be an Element");
     }
     this.node = node;
     this.init = proxise.once(function(){

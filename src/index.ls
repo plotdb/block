@@ -351,7 +351,7 @@ block.class = (opt={}) ->
       if (node = div.childNodes[i]).nodeType == win.Element.ELEMENT_NODE => break
   if !node => node = doc.createElement(\div)
   if node.nodeType != win.Element.ELEMENT_NODE =>
-    console.log warn "root of DOM definition of a block should be an Element"
+    console.warn "root of DOM definition of a block should be an Element"
   @node = node
 
   # we dont init until create is called, because we may not use it even if it's loaded.
