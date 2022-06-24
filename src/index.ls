@@ -47,7 +47,8 @@ pubsub.prototype = Object.create(Object.prototype) <<< do
   on: (name, cb) -> @subs[][name].push cb
 
 block = {}
-block.id = (o) -> o.id or o.url or "#{o.name}@#{o.version or 'main'}:#{o.path or 'index.html'}"
+block.id = (o) ->
+  o.id or o.url or "#{if o.ns => "#{o.ns}:" else ''}#{o.name}@#{o.version or 'main'}:#{o.path or 'index.html'}"
 block.id2obj = (k) ->
   k = k.split(':')
   if k.length <= 2 => [nv,path,ns] = k else [ns,nv,path] = k

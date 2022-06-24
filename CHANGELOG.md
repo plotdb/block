@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.6.2
+
+ - also consider `ns` in block.id
+
+
 ## v4.6.1
 
  - audit fix for vulnerabilities fixing

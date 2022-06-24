@@ -89,7 +89,7 @@
   });
   block = {};
   block.id = function(o){
-    return o.id || o.url || o.name + "@" + (o.version || 'main') + ":" + (o.path || 'index.html');
+    return o.id || o.url || (o.ns ? o.ns + ":" : '') + "" + o.name + "@" + (o.version || 'main') + ":" + (o.path || 'index.html');
   };
   block.id2obj = function(k){
     var nv, path, ns, ret;
