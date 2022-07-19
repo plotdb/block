@@ -245,6 +245,7 @@ Please note that `obj` (block's internal object) is not the `block.instance` obj
  - `detach()`: detach DOM. return Promise.
  - `update(ops)`: update `datadom` based on provided ops ( array of operational transformation ).
  - `i18n(text)`: return translated text based on the current context.
+ - `path(p)`: return url for the given path `p`
  - `dom()`: return DOM corresponding to this block. Create a new one if not yet created.
  - `run({node,type})`: execute `type` API provided by `block` implementation with `node` as root. 
  - `transform(cfg)`: (re)transform DOM based on the given `cfg` option, which is:
