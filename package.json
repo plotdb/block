@@ -24,6 +24,7 @@
   "devDependencies": {
     "@loadingio/bootstrap.ext": "^0.0.7",
     "@loadingio/debounce.js": "^1.0.1",
+    "@loadingio/ldcolorpicker": "^3.0.3",
     "@loadingio/ldquery": "^3.0.3",
     "@loadingio/loading.css": "^3.1.0",
     "@plotdb/csscope": "^4.0.5",
@@ -41,7 +42,9 @@
     "jsdom": "^19.0.0",
     "jsoneditor": "^9.1.1",
     "ldbutton": "^2.0.1",
+    "ldcolor": "^1.1.0",
     "ldcover": "^3.1.0",
+    "lderror": "^2.2.0",
     "ldfile": "^2.0.0",
     "ldiconfont": "^0.2.0",
     "ldloader": "^3.0.1",
@@ -51,7 +54,6 @@
     "sharedb-wrapper": "^1.0.0",
     "stylus": "^0.55.0",
     "uglify-js": "^3.13.1",
-    "lderror": "^2.2.0",
     "uglifycss": "^0.0.29"
   },
   "peerDependencies": {
@@ -68,7 +70,9 @@
       "@loadingio/debounce.js",
       "@loadingio/loading.css",
       "@loadingio/bootstrap.ext",
+      "@loadingio/ldcolorpicker",
       "ldview",
+      "ldcolor",
       "ldloader",
       "lderror",
       "ldfile",
