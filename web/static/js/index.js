@@ -16,11 +16,12 @@
     }
   });
   loadSample = function(arg$){
-    var name, root;
-    name = arg$.name, root = arg$.root;
+    var ns, name, version, root;
+    ns = arg$.ns, name = arg$.name, version = arg$.version, root = arg$.root;
     return manager.get({
+      ns: ns ? ns : 'custom',
       name: name,
-      version: "0.0.1"
+      version: version || "0.0.1"
     }).then(function(it){
       return it.create();
     }).then(function(it){
@@ -39,8 +40,15 @@
       return "https://unpkg.com/" + name + (version && "@" + version || '') + (path && "/" + path || '');
     },
     fetch: function(arg$){
-      var name, version, path, type;
-      name = arg$.name, version = arg$.version, path = arg$.path, type = arg$.type;
+      var ns, name, version, path, type;
+      ns = arg$.ns, name = arg$.name, version = arg$.version, path = arg$.path, type = arg$.type;
+      if (ns === 'custom') {
+        if (type === 'block') {
+          return "/block/" + name + "/" + version + "/" + (path || 'index.html');
+        } else {
+          return "/block/" + name + "/" + version + "/" + (path || 'index.js');
+        }
+      }
       if (type === 'block') {
         return "/block/" + name + "/" + version + "/" + (path || 'index.html');
       }
@@ -76,6 +84,16 @@
       code: code,
       manager: manager
     }));
+  }).then(function(){
+    return loadSample({
+      name: 'infer-test',
+      version: '0.0.1'
+    });
+  }).then(function(){
+    return loadSample({
+      name: 'infer-test',
+      version: '0.0.2'
+    });
   }).then(function(){
     return loadSample({
       name: 'react-helloworld',

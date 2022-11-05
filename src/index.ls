@@ -205,64 +205,6 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         @proxy[ns][n][v][p] opt
     ).then -> if Array.isArray(opt) => return it else return it.0
 
-  bundle: (opt = {}) ->
-    mgr = opt.manager or @
-    hash = {}
-    _ = (list, blocks = [], deps = {js: [], css: []}) ->
-      if !list.length => return Promise.resolve {blocks, deps}
-      bd = list.splice 0, 1 .0
-      id = block.id bd
-      if hash[id] => return Promise.resolve!then -> _ list, blocks, deps
-      _fetch mgr.get-url(bd), {method: \GET}
-        .then ->
-          node = doc.createElement \div
-          node.innerHTML = it
-          if node.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
-          [js,css] = <[script style]>.map (n)->
-            Array.from(node.querySelectorAll n)
-              .map -> it.parentNode.removeChild(it); it.textContent
-              .join \\n
-          node.childNodes.0.setAttribute \block, id
-          ret = eval("(function(module){#{js or ''};return module.exports;})({})")
-          if ret instanceof Function => ret = ret!
-          if !ret => ret = {}
-          if ret.{}pkg.extend => list.push ret.{}pkg.extend
-          deps.js ++= (ret.{}pkg.dependencies or []).filter -> it.type == \js or /\.js/.exec((it.path or it or ''))
-          deps.css ++= (ret.{}pkg.dependencies or []).filter -> it.type == \css or /\.css/.exec((it.path or it or ''))
-          # we expect js to be sth like function body, so we should wrap it with a function.
-          js = "((function(module){#{js or ''};return module.exports;})({}))"
-          blocks.push b = {js, css, html: node.innerHTML, bd, id}
-          hash[id] = b
-          return _ list, blocks, deps
-    _ opt.[]blocks
-      .then ({blocks, deps}) ->
-        Promise.all [
-          mgr.csscope.bundle(deps.css),
-          mgr.rescope.bundle(deps.js)
-        ]
-          .then ([depcss, depjs-cache]) ->
-            js = blocks.map (b) -> "\"#{b.id}\":#{b.js or '""'}"
-            js = "document.currentScript.import({#{js.join(',\n')}});"
-            # we fill csscope cache with empty content but proper id and scope
-            # so it won't do anything except recognizing this.
-            # the real CSS will be loaded directly from the `style` tag.
-            depcss-cache = deps.css
-              .map (o) -> "csscope.cache(#{JSON.stringify(o <<< {inited: true, scope: csscope.scope(o)})})"
-              .join(';')
-            css = blocks
-              .map (b) ->
-                scope = csscope.scope b
-                csscope {rule: "*[scope~=#{scope}]", name: scope, css: (b.css or ''), scope-test: "[scope]"}
-              .join \\n
-            html = blocks.map(-> it.html or '').join(\\n)
-            return """
-            <template>
-              #html
-              <style type="text/css">#css#depcss</style>
-              <script type="text/javascript">#js#depjs-cache;#depcss-cache</script>
-            </template>
-            """
-
   debundle: (opt = {}) ->
     mgr = opt.manager or @
     lc = {}
@@ -411,13 +353,14 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         } <<< @interface
       .then ~>
         @extends = []
-        if !@interface.pkg.extend => return
+        if !(ext = @interface.pkg.extend) => return
         if !@manager => return new Error("no available manager to get extended block")
-        @manager.get(@interface.pkg.extend)
+        if !(ext.name or ext.url) => ext <<< @{name, version}
+        @manager.get ext
           .then ~>
             @extend = it
-            @extend-dom = !(@interface.pkg.extend.dom?) or @interface.pkg.extend.dom
-            @extend-style = !(@interface.pkg.extend.style?) or @interface.pkg.extend.style
+            @extend-dom = !(ext.dom?) or ext.dom
+            @extend-style = !(ext.style?) or ext.style
             @extend.init!
           .then ~>
             @extends = [@extend] ++ @extend.extends
@@ -428,11 +371,12 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       .then ~>
         @dependencies = if Array.isArray(@interface.pkg.dependencies) => @interface.pkg.dependencies
         else [v for k,v of (@interface.pkg.dependencies or {})]
-        @dependencies.map ->
-          if it.type => return
-          if /\.js$/.exec(it.url or it.path or it) => it.type = \js
-          else if /\.css$/.exec(it.url or it.path or it) => it.type = \css
-          else it.type = \js # default js type
+        @dependencies.map (d) ~>
+          if !(d.name or d.version) => d <<< @{ns, name, version}
+          if d.type => return
+          if /\.js$/.exec(d.url or d.path or d) => d.type = \js
+          else if /\.css$/.exec(d.url or d.path or d) => d.type = \css
+          else d.type = \js # default js type
         if @extend => @_ctx = @extend.context!
         else if rescope.dual-context => @_ctx = rescope.dual-context!
         # no dual-context in rescope <= 4.0.1. just a backlog, can be removed in future update.

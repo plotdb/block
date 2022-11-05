@@ -1,0 +1,29 @@
+<div>
+  <script type="@plotdb/block">
+    /*
+    module.exports = {
+      pkg: {
+        extend: {path: "base.html"},
+        dependencies: [ {path: "index.js"} ]
+      },
+      init: function(opt) { opt.ctx.inferlib(); }
+    };
+    */
+    module.exports = {
+      pkg: {
+        dependencies: [
+          {path: 
+          {path: "index.js"}
+        ]
+      },
+      init: function(opt) {
+        console.log('infer-test/index.html inited.');
+      }
+    };
+
+  </script>
+  <div plug="content" class="w-1024 rwd mx-auto border my-4 p-4 rounded shadow-sm">
+    <h3>infer-test</h3>
+    <div>name / version of base block for this block is inferred from this block.</div>
+  </div>
+</div>

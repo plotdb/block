@@ -1,0 +1,14 @@
+div
+  script(type="@plotdb/block"): :lsc
+    module.exports =
+      pkg:
+        extend: path: \base.html
+        dependencies: [
+          * path: \index.js
+        ]
+      init: ({root}) ->
+        console.log "@", @
+        console.log "[infer-test] index.html inited. (0.0.2)"
+  .bg-light(plug="content")
+    h4 infer-test/index.html (0.0.2)
+    div name / version of base block for this block is inferred from this block.

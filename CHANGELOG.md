@@ -1,8 +1,10 @@
 # Change Logs
 
-## v4.6.3 (upcoming)
+## v5.0.0 (upcoming)
 
  - upgrade modules
+ - separate bundle method into standalone file
+ - support inferred block name / version
 
 
 ## v4.6.2

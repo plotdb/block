@@ -18,8 +18,8 @@ html,body { background: yellow }
     loader: ({node}) ~> node.classList.toggle \running, !@inited
 
 
-load-sample = ({name, root}) ->
-  manager.get {name, version: "0.0.1"}
+load-sample = ({ns, name, version, root}) ->
+  manager.get {ns: if ns => ns else 'custom', name, version: version or "0.0.1"}
     .then -> it.create!
     .then -> it.attach {root: root or view.get('container')}
     .catch -> console.log "failed to load block #name", it
@@ -28,7 +28,11 @@ lc = {}
 unpkg =
   url: ({name, version, path}) ->
     "https://unpkg.com/#{name}#{version and "@#version" or ''}#{path and "/#path" or ''}"
-  fetch: ({name, version, path, type}) ->
+  fetch: ({ns, name, version, path, type}) ->
+    if ns == \custom =>
+      if type == \block => return "/block/#name/#version/#{path or 'index.html'}"
+      else return "/block/#name/#version/#{path or 'index.js'}"
+
     if type == \block => return "/block/#{name}/#{version}/#{path or 'index.html'}"
     fetch @url {name, version, path, type}
       .then (r) ->
@@ -45,6 +49,8 @@ manager = new block.manager do
 */
 manager.init!
   .then -> manager.set new block.class {name: "test", version: "0.0.1", code, manager}
+  .then -> load-sample name: \infer-test, version: \0.0.1
+  .then -> load-sample name: \infer-test, version: \0.0.2
   .then -> load-sample name: \react-helloworld, root: view.get('inner')
   .then -> load-sample name: \vue-helloworld, root: view.get('inner')
   .then -> load-sample name: \long-answer
