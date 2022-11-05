@@ -1,8 +1,9 @@
 # @plotdb/block
 
-Frontend module library with following features:
+Frontend module manipulation library with following features:
 
- - scoped JS / CSS for vanilla libraries, no bundling required.
+ - HTML-based module definition
+ - scoped JS / CSS for vanilla libraries with no bundling required.
  - reuseable, extendable components
 
 
@@ -10,7 +11,7 @@ Frontend module library with following features:
 
 install `@plotdb/block` along with all necessary js libraries:
 
-    npm install @plotdb/block @plotdb/rescope @plotdb/csscope proxise
+    npm install @plotdb/block @plotdb/rescope @plotdb/csscope @plotdb/semver proxise
 
 and include them:
 
@@ -21,27 +22,47 @@ and include them:
     <script src="path-to-block/index.min.js"></script>
 
 
+Load a sample block:
+
+    mgr = new block.manager(...);
+    mgr.from({name: 'block name', version: 'x.y.z', path: "index.html"})
+      .then ({instance, interface}) -> ...
+
+A sample block may look like this:
+
+    <div>
+      <script type="@plotdb/block">
+        module.exports = {};
+      </script>
+      <h1>
+        hello world!
+      </h1>
+    </div>
+
+
 ## Concept
 
-Similar to `web component`, `@plotdb/block` modularizes frontend codes int components called `block`. A block is defined with a plain HTML file, containing following 3 parts ( all parts are optional ):
+Similar to `web component`, `@plotdb/block` modularizes frontend codes into components called `block`. A block is defined with a plain HTML file, containing following 3 parts ( all parts are optional ):
 
  - HTML
  - CSS
  - JavaScript
 
-This is an example of a block HTML file:
+This is an example of a block file:
 
     <div>
       <h1> Hello World! </h1>
-      <style type="@plotdb/block"> ... </style>
-      <script type="@plotdb/block"> ... </script>
+      <style> /* plain CSS ... */ </style>
+      <script type="@plotdb/block"> /* plain javascript ... */ </script>
     </div>
 
-There is no preferred languages for creae this file. Users can write script in `TypeScript`, use `SASS` for stylesheet. Following is an example with Pug, LiveScript and Stylus with additional Pug filters ( `:stylus` and `:lsc` ):
+Since it's just a valid HTML file, User can use different languages ( Sass, TypeScript, Pug, etc ) and transpile when necessary, once the result file is a plain HTML file.
+
+Following is an example with Pug, LiveScript and Stylus with additional Pug filters ( `:stylus` and `:lsc` ) which can be transpiled directly with `srcbuild-pug` command provided in `@plotdb/srcbuild`:
 
     div
       h1 Hello World!
-      style(type="@plotdb/block"): :stylus
+      style: :stylus
         h1 { color: #543; }
       script(type="@plotdb/block"): :lsc
         module.export = { init: -> console.log \loaded. };
@@ -49,32 +70,65 @@ There is no preferred languages for creae this file. Users can write script in `
 Script can either be an object described as below, or a function returning that object. Styles will be automatically scoped and limited in this block.
 
 
-## Block Naming and Accessing
+### Block Identifier and File Accessing
 
-To use a block, we need to know how to identify it. Like npm modules, blocks are defined with a `name`, a `version` and an optional `path` and `ns`, where:
+To use a block, we need to know how to identify it. Like npm modules, blocks are defined with `name`, `version` and an optional `ns`, where:
 
- - `name`: use the naming convention as npm. e.g., `@loadingio/spinner`
- - `version`: sematic versioning, tag or hash value. e.g., `0.0.1`
- - `path`: path of the block definition file inside the module `name@version`. `index.html` if omitted.
- - `ns`: namespace for this block, e.g., `npm` or `github`. How this works depends on how registry is implemented.
+ - `ns`: Namespace, such as `npm` or `github`. How this works depends on how registry is implemented.
+ - `name`: Block name. Use the naming convention as npm. e.g., `@loadingio/spinner`
+ - `version`: Block version in semver format, or labels such as `main`, `latest`.
 
-To access a block with its name, we need a manager ( `block.manager` ):
+Additionally, files in a block are identified with `path` and `type fields:
 
-    manager = new block.manager registry: ({ns,name,version,path}) -> "/block/#name/#version/#path/index.html"
+ - `path`: path of the block definition file inside the module `name@version`.
+   - if omitted, inferred by `type` field, or decided by block manager.
+ - `type`: type of the requested file. if omitted, inferred from `path`, or decided by block manager.
+
+This block identifier can either be an object or a string, such as this object:
+
+    {ns: "local", name: "@plotdb/konfig", version: "1.2.3", path: "index.html"}
+
+with a identical string representation:
+
+    local:@plotdb/konfig@1.2.3:index.html
+
+`@plotdb/block` provides two methods to convert between string and object identifier:
+
+  - `block.id(obj)`: return the corresponding string representation of an identifier object `obj`.
+    - see below for more options.
+  - `block.id2obj(id)`: return the corresponding object represetnation of an string identifier `id`.
+
+
+To access a block file identified by a block identifier, we can use `block.manager`:
+
+    manager = new block.manager({
+      /* indicating where we can find the file */
+      registry: ({ns,name,version,path}) -> "/block/#name/#version/#path/index.html"
+    });
     mananger.init!
       .then -> manager.get({name: "my-block", version: "0.1.0"})
-      .then (block) -> ...
+      .then (blockClass) -> ...
 
-A block is represented by a JS object `block.class`, serving as the class for creating a live block instance. A `block.class` is returned by `block.manager`, which can be used to create a block instance ( `block.instance` ):
 
-    manager.get(...)
-      .then (block-class) -> block-class.create!
-      .then (block-instance) -> ...
+### Manager, Class and Instance of Block
 
-A block instance is then injected into web page:
+The resolved object from `manager.get` is a instance of `block.class`, which represents the definition of the given block file. To use it, we have to create an instance of `block.instance` from it, such as:
 
-    block-instance.attach({root: document.body})
+    manager.get( ... )
+      .then (cls) -> cls.create();
+      .then (instace) -> ...
+
+A block instance can then be injected into web page:
+
+    instance.attach({root: document.body})
       .then -> ...
+
+Below is a simplified flow of relationship between the above concepts:
+
+ - block file (in HTML)
+ - `block.manager`: load, convert and cache block files.
+ - `block.class`: Object representation of a block file.
+ - `block.instance`: a JS Instance created from `block.class`
 
 
 ## Core modules
@@ -110,47 +164,56 @@ Additionally, `block` itself provides following functions:
 
 ### block.manager
 
-Blocks may be stored in places like:
+Since a block is just a plain HTML, it can be stored anywhere once a string can be stored. Common places to store a block may be:
 
- - `local`: blocks are loaded into webpages directly via `<script>` tag in HTML.
- - `remote`:  blocks are stored as files in remote URL, accessing via AJAX.
+ - local in web page: block HTMLs are served directly along the web page.
+ - remote in web server: block HTMLs are stored as files and can be accessed via Ajax through specific URL.
 
-either way we have to provide a way to load, register, cache these blocks - that is, to manage them.
+either way we have to provide a way to load, register, cache these blocks - that is, to manage them, which can be done with the help of `block.manager`.
+
+#### constructor options
+
+Create a `block.manager` instance with 
+
+    mgr = new block.manager(opt);
+
+where the constructor options are as below:
+
+ - `registry`: either function or string, tell `block.manager` where to find remote blocks.
+   - `function({name,version,path})`: return URL for given `name`, `version` and `path` of a block.
+   - `string`: the registry base url. block.manager will look up blocks under this url with this rule:
+     - `/block/<name>/<version>/<path>`
+   - this will be used for both block and libraries. To distinquish them, use:
+
+     registry: {lib: (-> ...), block: (-> ...)}   
+
+   - `registry.lib` will be used for querying block if `registry.block` is omitted.
+ - `rescope`: optional. should be a `@plotdb/rescope` object if provided.
+   - will replace internal rescope object if provided.
+ - `csscope`: optional. should be a `@plotdb/csscope` object if provied.
+   - will replace internal csscope object if provided.
+ - `chain`: optional. fallback manager for chaining block lookup if requested block is not found in current manager.
 
 
-`block.manager` helps us manage blocks by providing following APIs:
+#### APIs
 
- - `constructor(opts)`: create a new block.manager object before using it with opts:
-   - `registry`: either function or string, tell `block.manager` where to find remote blocks.
-     - `function({name,version,path})`: return URL for given `name`, `version` and `path` of a block.
-     - `string`: the registry base url. block.manager will look up blocks under this url with this rule:
-       - `/block/<name>/<version>/<path>`
-     - this will be used for both block and libraries. To distinquish them, use:
+A `block.manager` instance provides following methods:
 
-       registry: {lib: (-> ...), block: (-> ...)}   
-
-     - `registry.lib` will be used for querying block if `registry.block` is omitted.
-
-   - `rescope`: optional. should be a `@plotdb/rescope` object if provided.
-     - will replace internal rescope object if provided.
-   - `csscope`: optional. should be a `@plotdb/csscope` object if provied.
-     - will replace internal csscope object if provided.
-   - `chain`: optional. fallback manager for chaining block lookup if requested block is not found in current manager.
  - `registry(v)`: update `registry` dynamically.
    - `v`: can be a function, string or an object, similar to the option in constructor.
  - `set({name,version,path,block}): register a block with `name`, `version` and `path`.
    - `block`: a `block-class` object, explained below.
    - `set` also accepts Array of {name,version,block} object for batching `set`.
- - `getUrl({name,version,path})`: get corresponding url for a block with `name`, `version` and `path`.
- - `get({name,version,path,force})`: return a `block-class` object corresponding to `name`, `version` and `path`.
+ - `getUrl({ns,name,version,path})`: get url for a block corresponding to the given block identifier.
+ - `get({ns,name,version,path,force})`: return a `block-class` object corresponding to the given block identifier.
    - `force`: by default, `block.manager` caches result. set `force` to true to force `block.manager` re-fetch data.
-   - `get` also accept an array of `{name,version,path,force}` tuples for batching `get`.
+   - `get` also accept an array of `{ns,name,version,path,force}` tuples for batching `get`.
       - in this case, `get` returns an array of `block.class`.
- - `from(block-def, attach-opt)`: shorthand for manager.get + class.create + instance.attach + instace.interface
+ - `from(block-id-obj, attach-opt)`: shorthand for manager.get + class.create + instance.attach + instace.interface
    - return a Promise which resolves to an object `{interface, instance}`:
      - `instance`: created instance
      - `interface`: created interface
-   - `block-def`: block definition. see `get()` and above description.
+   - `block-id-obj`: block identifier object. see `get()` and above description.
    - `attach-opt`: attach options. see `block.instance`'s `attach()` function.
  - `chain(mgr)`: set a fallback manager for chaining lookup of requested block.
  - `rescope`: rescope object, either global one or customized one.
@@ -163,33 +226,40 @@ either way we have to provide a way to load, register, cache these blocks - that
 
 `block.class` is a factory for generating block instances. It parses the code of a block based on the block specification and convert them into clonable code, preparing for generating `block.instance` objects on demand.
 
-`block.class` provides following APIs:
+We usually don't have to create a `block.class` instance manually since `block.manager` does this for us, however to manually create one:
 
- - `constructor(opt)` with following options:
-   - `manager`: default block manager for this class. mandatory
-   - `name`: block name. mandatory.
-   - `version`: block version. mandatory.
-   - `path`: block path. optional. `index.html` if omitted.
-   - `code`: use to create DOM / style / internal object. it can be one of following:
-     - a function. should return either html code or object; returned value will be parsed by corresponding rules.
-     - a string, providing HTML code. structure of HTML should follow the definition of a block.
-     - an object, containing `dom`, `style` and `script` members.
-       - `dom`: HTML code string, or a function returning HTML code string.
-       - `style`: should be string for CSS.
-       - `script`: function, object or string of code, for interface of the internal object by:
-         - function: return the interface.
-         - object: as the interface.
-         - string: evaled to the interface, or a function which return the interface.
-         - for detail of the "interface", see "interface of the internal object" section below.
-   - `root`: root of a DOM tree. use to create internal dom tree if provided. Overwrite code.
+    cls = new block.class( ... );
+
+
+#### constructor options
+
+ - `manager`: default block manager for this class. mandatory
+ - `name`: block name. mandatory.
+ - `version`: block version. mandatory.
+ - `path`: block path. optional. `index.html` if omitted.
+ - `code`: use to create DOM / style / internal object. it can be one of following:
+   - a function. should return either html code or object; returned value will be parsed by corresponding rules.
+   - a string, providing HTML code. structure of HTML should follow the definition of a block.
+   - an object, containing `dom`, `style` and `script` members.
+     - `dom`: HTML code string, or a function returning HTML code string.
+     - `style`: should be string for CSS.
+     - `script`: function, object or string of code, for interface of the internal object by:
+       - function: return the interface.
+       - object: as the interface.
+       - string: evaled to the interface, or a function which return the interface.
+       - for detail of the "interface", see "interface of the internal object" section below.
+ - `root`: optional. root of a DOM tree representing the block HTML code. Overwrite `code`.
+
+#### APIs
+
  - `create(opt)`: create a `block.instance` based on this object. options:
    - `data`: instance data
-   - `root`: optional. if provided, attach created instance to `root`, and if provided, before `before`.
-   - `before`: optional. as `root`
+   - `root` and `before`: parameters passed to `attach`.
+     - instance will and only will be attached automatically if `root` is provided.
  - `context()`: get library context corresponding to this block.
  - `i18n(text)`: return translated text based on the current context.
 
-and following private members:
+Additional, here are the private members:
 
  - `name`: name of this block.
  - `version`: version of this block.
@@ -225,7 +295,7 @@ To generate block's internal object:
 
     obj = new aBlockClass.factory(class, instance);
 
-Please note that `obj` (block's internal object) is not the `block.instance` object, but an object based on how this block is defined in its script part.
+Please note that `obj` (block's internal object) is not the `block.instance` object. See below for more information bout the definition of the internal object.
 
 
 ### block.instance
