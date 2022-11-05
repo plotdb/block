@@ -261,8 +261,8 @@ and following private members:
 
 `block.instance` is just a generic object for managing block life cycle. Every block has another object, serves as the internal object that provides real dynamics of the block. This object is created along with `block.instance`, by default with only two members for its creator:
 
- - `_class`: block class creating the below `_instance`.
- - `_instance`: block instance creating this internal object.
+ - `\_class`: block class creating the below `\_instance`.
+ - `\_instance`: block instance creating this internal object.
 
 It's interface is implemented by developers with the following spec:
 
@@ -326,7 +326,8 @@ The `pkg` field of a block interface is defined as:
      - `true`: use parent's style if set true.
      - `false`: completely ignore extended style in any ancestor.
      - `"overwrite"`: overwrite parent style but extend style from grantparent, if any.
-   - use `plug` ( for html ), `obj` and `pubsub` ( js ) to work with extended block. ( TODO: documentation )
+   - use `plug` ( for html ), `obj` and `pubsub` ( js ) to work with extended block.
+     - for more information about `plug`, see `HTML Plugs` section below.
  - `dependencies`: dependencies of this block.
    - list or modules, in case of mutual dependencies:
      ["some-url", {url: "some-url", async: false, dev: true, global: true, type: "css or js"}]
@@ -376,6 +377,18 @@ A sample setup with `i18next` and `@plotdb/block`:
     i18next.init({supportedLng: ["en", "zh-TW"], fallbackLng: "en"})
       .then(function() { i18next.changeLanguage("zh-TW"); })
       .then(function() { block.i18n.use(i18next); })
+
+
+## HTML Plugs
+
+Base block may provide slots for child block to plug. use `<plug>` tag with `name` attribute:
+
+    <plug name="layout"/>
+
+
+To plug elements In child block to given slot, use `plug` attribute in child block:
+
+    <div plug="layout"> ... </div>
 
 
 ## Why block
