@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.7.1
+
+ - make `bundle.js` a clone of `index.js` with `bundle` function
+
+
 ## v4.7.0
 
  - upgrade modules
