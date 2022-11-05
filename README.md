@@ -224,7 +224,7 @@ A `block.manager` instance provides following methods:
 
 ### block.class
 
-`block.class` is a factory for generating block instances. It parses the code of a block based on the block specification and convert them into clonable code, preparing for generating `block.instance` objects on demand.
+`block.class` is for generating block instances. It parses the code of a block based on the block specification and convert them into clonable code, preparing for generating `block.instance` objects on demand.
 
 We usually don't have to create a `block.class` instance manually since `block.manager` does this for us, however to manually create one:
 
@@ -253,7 +253,7 @@ We usually don't have to create a `block.class` instance manually since `block.m
 #### APIs
 
  - `create(opt)`: create a `block.instance` based on this object. options:
-   - `data`: instance data
+   - `data`: instance data. defined by user and passed directly to block instance javascript.
    - `root` and `before`: parameters passed to `attach`.
      - instance will and only will be attached automatically if `root` is provided.
  - `context()`: get library context corresponding to this block.
@@ -275,7 +275,7 @@ Additional, here are the private members:
  - `styleNode`: node storing parsed / scoped style of this block.
  - `interface`: javascript interface for this block.
    - This will also be used as prototype of the instance object, created by `factory` method below.
- - `factory`: constructor for generating an object defined by `script` part.
+ - `factory`: constructor for generating the js context for block script. See below.
  - `id`: unique name for this block.
    - "name@version/path" or randomly generated one if `name` and `version` is not available.
  - `\_ctx`: js context object from `rescope`.
@@ -286,82 +286,110 @@ Additional, here are the private members:
  - `extendDom`: to extend dom or not.
  - `extends`: array of extended blocks. `extends[0]` is the direct parent class.
 
-To create a `block.instance` based on a `block.class`:
+To create an instance from a `block.class`:
 
-    instance = aBlockClass.create()
+    instance = aBlockClass.create();
 
+While `block.class` is used to create instance of `block.instance`, JavaScript of a block will be executed when a block class is loaded, in order to prepare for upcoming instance creation. No instance context at this time since we only have the `block.class` object.
 
-To generate block's internal object:
-
-    obj = new aBlockClass.factory(class, instance);
-
-Please note that `obj` (block's internal object) is not the `block.instance` object. See below for more information bout the definition of the internal object.
+To access `block.instance` context, block JavaScript should be implemented based on the factory interface described in the following section. This will be discussed in following section `JS context of block instance`.
 
 
 ### block.instance
 
 `block.instance` is an instance of block created from a `block.class`. It's responsible for maintaining block's state and DOM status.
 
-`block.instance` provides following APIs:
 
- - `constructor(opts)` with following options:
-   - `block`: block definition ( `block.class` ) for this instance.
- - `attach({root, data, before})`: attach DOM of this instance to a specific node ( `root` ).
-   - return Promise, resolves a list of internal object based on inheriance hierarchy.
-   - when run, a block `obj` is created via `block.class`'s factory method and stored in `@obj` member.
-     - note `obj` is the block's internal object described above, not the block instance object.
+#### constructor options
+
+ - `block`: `block.class` for this instance.
+ - `name`, `ns`, `version`, `path`: as defined in the object identifier.
+ - `data`: custom data for this instance. usage and spec of this data is defined by the block file.
+
+
+#### APIs
+
+ - `attach({root, before, data})`: attach DOM and initialize this instance.
+   - block instance is attahed to `root` before `before` if `before` is provided.
+   - if a factory interface is exported by block JS, it will be used to create an internal context and be inited.
+     - see `Internal JS context of a block` below.
+   - return a Promise which resolves with a list of internal object based on inheriance hierarchy after inited.
    - when root is omitted, attach block in headless mode ( for pure script )
    - attach DOM by `appendChild` when `before` is omitted, and by `insertBefore` otherwise.
  - `detach()`: detach DOM. return Promise.
- - `update(ops)`: update `datadom` based on provided ops ( array of operational transformation ).
  - `i18n(text)`: return translated text based on the current context.
  - `path(p)`: return url for the given path `p`
  - `dom()`: return DOM corresponding to this block. Create a new one if not yet created.
  - `run({node,type})`: execute `type` API provided by `block` implementation with `node` as root. 
  - `transform(cfg)`: (re)transform DOM based on the given `cfg` option, which is:
    - string: name of the transform (e.g., `i18n`) to apply.
+ - `update(ops)`: (TBD) update `datadom` based on provided ops ( array of operational transformation ).
+
+Additionally, following are the private members:
+
+ - `obj` - list of JS internal context objects created from the exported factory interface.
+   - see below for the detail of the internal context object.
+   - it's a list of all objects from the inheritant chain.
+   - each item in this list contains block's data and interface.
 
 
-and following private members:
+### Internal JS Context of a block
 
- - `obj` - block's data and interface. it's a list containing all objects in the inheritant chain.
+While `block.instance` represents the block instance itself, block JavaScript is run in a different context to prevent intervention. The interface of this context is as below:
+
+ - `\_class`: the object of `block.class` for this block, filled automatically when creating this context.
+ - `\_instance`: the object of `block.instance` for this block, filled automatically when creating this context.
+ - `pkg`: block information
+ - `init(opt)`: initialization function of this context.
+ - `destroy(opt)`: destroy function of this context.
+ - `interface()`: JS interface for block users to access.
 
 
-### Interface of the internal object
+Except `\_class` and `\_instance`, functions in above interface should be implemented by block JavaScript and exported via `module.exports`:
 
-`block.instance` is just a generic object for managing block life cycle. Every block has another object, serves as the internal object that provides real dynamics of the block. This object is created along with `block.instance`, by default with only two members for its creator:
+    module.exports = {
+      init: (opt) ->
+      interface: ->
+    };
 
- - `\_class`: block class creating the below `\_instance`.
- - `\_instance`: block instance creating this internal object.
+This interface is used in the factory constructor of `block.class` to create the internal JS Context:
 
-It's interface is implemented by developers with the following spec:
+    context = new aBlockClass.factory(instance);
+
+which is the object stored in `obj` member of `block.instance` described in the `block.instance` section.
+
+
+The detail of the fields of interface is as below:
 
  - `pkg`: block information, described below. optional.
- - `init({root, context, parent, pubsub, data, t, i18n})`: initializing a block. optional.
-   - `root`: root element
-   - `context`: dependencies in an object.
-   - `parent`: object for the direct base block.
-   - `pubsub`: for communication between block in extend chain. `pubsub` is an object with following methods:
-      - `on(event, cb(parmas))`: handle event with `cb` callback, params from `fire`.
-        - return value will be passed and resolved to the returned promise of `fire`.
-      - `fire(event, params): fire `event`. return promise.
-   - `data`: data passing to `create`. optional and up to user.
-   - `t(text)`: translation function based on local, base class and global i18n information. shorthand of `i18n.t`.
-   - `i18n`: i18n related helpers including:
-     - getLanguage()`: return current used language.
-     - `t(text)`: as described above.
-     - `addResourceBundles(res)`: dynamically adding i18n resources. sample `res`:
-        
-        { "zh-TW": {"string", "文字"}, "en-US": {"string": "string"} }
+ - `init(opt)`: initializing a block. optional.
+   - return a Promise for asynchronous initialization.
+   - `opt` is an object with following fields:
+     - `root`: root element
+     - `ctx`: dependencies in an object.
+     - `context`: deprecated, use `ctx` instead.
+     - `parent`: object for the direct base block.
+     - `pubsub`: for communication between block in extend chain. `pubsub` is an object with following methods:
+        - `on(event, cb(parmas))`: handle event with `cb` callback, params from `fire`.
+          - return value will be passed and resolved to the returned promise of `fire`.
+        - `fire(event, params): fire `event`. return promise.
+     - `data`: data passing to `create`. optional and up to user.
+     - `path(p)`: path transformer to convert `p` to a local string based on the identifier of this block.
+     - `t(text)`: translation function based on local, base class and global i18n information. shorthand of `i18n.t`.
+     - `i18n`: i18n related helpers including:
+       - getLanguage()`: return current used language.
+       - `t(text)`: as described above.
+       - `addResourceBundles(res)`: dynamically adding i18n resources. sample `res`:
+
+          { "zh-TW": {"string", "文字"}, "en-US": {"string": "string"} }
 
  - `destroy({root, context})`: destroying a block. optional.
  - `interface`: for accessing custom object. optional.
     - either a function returning interface object, or the interface object itself.
     - child block always overwrite parents' interface in an inheritance chain, if available
- - `mod`: module object reserved for developer.
-   - while this interface may change in the future, `mod` is reserved for developer.
- - `exports(global)`: for sharing block as a JS library. return objects to export. optional
-   - (TBD) user can use a block as a library by adding it in the `dependencies` config, such as:
+ - `mod`: reserved for block javascript. future implement update of `@plotdb/block` should not use it.
+ - `exports(global)`: (TBD) for sharing block as a JS library. return objects to export. optional
+   - user can use a block as a library by adding it in the `dependencies` config, such as:
      - [{name: "some-block", version: "some-vesion", path: "path-to-file"}, ...]
 
 All members are optional thus the minimal definition will be an empty object or even `undefined`:
@@ -377,17 +405,12 @@ Use `module.exports` to explicitly export the desired object:
 
 The `pkg` field of a block interface is defined as:
 
+ - `ns`, `name`, `version`, `path`: from this block's identifier. optional
  - `author`: author name. optional
- - `name`: block name. Follow NPM package naming convention. optional.
- - `version`: Semver string. optional.
-    - `name` and `version` is not always necessary if the current block definition is not a standalone package but inside some package.
- - `path`: path of the block definition file in the module. optional.
- - `license`: License. required
+ - `license`: License. optional.
  - `description`: description of this block. optional
- - `extend`: optional. block identifier ( `name@version` or `{name, version, path}` ) of block to extend.
-   - `name`: parent block's name
-   - `version`: parent block's version.
-   - `path`: path of the block definition file.
+ - `extend`: optional. block identifier of block to extend.
+   - `ns`, `name`, `version`, `path`: from parent block's identifier. optional
    - `dom`: default true. can be any of following:
      - `true`: use parent's DOM if set true.
      - `false`: completely ignore extended DOM in any ancestor.
@@ -396,7 +419,7 @@ The `pkg` field of a block interface is defined as:
      - `true`: use parent's style if set true.
      - `false`: completely ignore extended style in any ancestor.
      - `"overwrite"`: overwrite parent style but extend style from grantparent, if any.
-   - use `plug` ( for html ), `obj` and `pubsub` ( js ) to work with extended block.
+   - use `plug` ( for html ), `parent` and `pubsub` ( js ) to work with extended block.
      - for more information about `plug`, see `HTML Plugs` section below.
  - `dependencies`: dependencies of this block.
    - list or modules, in case of mutual dependencies:
@@ -430,6 +453,7 @@ The `pkg` field of a block interface is defined as:
  - destroy
  - after destroy
  - update
+
 
 ## i18n configuration
 
