@@ -1,6 +1,6 @@
 # Change Logs
 
-## v5.0.0 (upcoming)
+## v4.7.0
 
  - upgrade modules
  - separate bundle method into standalone file
