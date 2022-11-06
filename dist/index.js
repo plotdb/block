@@ -1,22 +1,5 @@
 (function(){
-  var win, doc, decircle, rescope, csscope, proxise, fetch, e404, _fetch, rid, parseNameString, sanitize, pubsub, block, slice$ = [].slice;
-  decircle = {
-    l: [],
-    push: function(f){
-      var i$, i, results$ = [];
-      this.l.push(f);
-      for (i$ = this.l.length - 1; i$ >= 0; --i$) {
-        i = i$;
-        if (this.l[i] === f) {
-          throw new Error("circular extend");
-        }
-      }
-      return results$;
-    },
-    pop: function(){
-      return this.l.pop();
-    }
-  };
+  var win, doc, rescope, csscope, proxise, fetch, e404, _fetch, rid, parseNameString, sanitize, pubsub, block, slice$ = [].slice;
   rescope = typeof window != 'undefined' && window !== null
     ? window.rescope
     : (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null) ? require("@plotdb/rescope") : null;
@@ -694,10 +677,8 @@
           this$.extend = it;
           this$.extendDom = !(ext.dom != null) || ext.dom;
           this$.extendStyle = !(ext.style != null) || ext.style;
-          decircle.push(this$.extend.init);
           return this$.extend.init();
         }).then(function(){
-          decircle.pop();
           return this$['extends'] = [this$.extend].concat(this$.extend['extends']);
         });
       }).then(function(){
