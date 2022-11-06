@@ -1,5 +1,13 @@
 var win, doc
 
+decircle =
+  l: []
+  push: (f) ->
+    @l.push f
+    for i from @l.length - 1 to 0 by -1 =>
+      if @l[i] == f => throw new Error("circular extend")
+  pop: -> @l.pop!
+
 rescope = if window? => window.rescope else if module? and require? => require "@plotdb/rescope" else null
 csscope = if window? => window.csscope else if module? and require? => require "@plotdb/csscope" else null
 proxise = if window? => window.proxise else if module? and require? => require "proxise" else null
@@ -361,8 +369,10 @@ block.class.prototype = Object.create(Object.prototype) <<< do
             @extend = it
             @extend-dom = !(ext.dom?) or ext.dom
             @extend-style = !(ext.style?) or ext.style
+            decircle.push @extend.init
             @extend.init!
           .then ~>
+            decircle.pop!
             @extends = [@extend] ++ @extend.extends
       .then ~>
         i18n = @interface.pkg.i18n or {}
