@@ -96,6 +96,11 @@
     });
   }).then(function(){
     return loadSample({
+      name: 'circular-1',
+      version: '0.0.1'
+    });
+  }).then(function(){
+    return loadSample({
       name: 'react-helloworld',
       root: view.get('inner')
     });

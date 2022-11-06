@@ -359,6 +359,12 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @manager.get ext
           .then ~>
             @extend = it
+            # circular extend detection
+            try
+              @extend._usedby @
+            catch e
+              @extend = null
+              throw e
             @extend-dom = !(ext.dom?) or ext.dom
             @extend-style = !(ext.style?) or ext.style
             @extend.init!
@@ -404,6 +410,15 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       .catch (e) ~>
         console.error "[@plotdb/block] init block {name: #{@name}, version: #{@version}, path: #{@path or ''}}", e
         @ <<< interface: {}, style-node: {}, factory: (-> @), dependencies: []
+
+  # for circular extend detection
+  _usedby: (b) ->
+    if @ == b => throw new Error("circular extend")
+    @[]_users.push b
+    _ = (l = []) ~>
+      if @ in l => throw new Error("circular extend")
+      for o in l => _ o._users
+    _ b._users
 
   context: -> @_ctx # get library context
 

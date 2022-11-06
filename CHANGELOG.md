@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.7.3
+
+ - rewrite buggy circular extend detection code
+
+
 ## v4.7.2
 
  - throw exception when circular extend detected

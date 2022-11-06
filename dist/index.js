@@ -674,7 +674,15 @@
           ext.version = this$.version;
         }
         return this$.manager.get(ext).then(function(it){
+          var e;
           this$.extend = it;
+          try {
+            this$.extend._usedby(this$);
+          } catch (e$) {
+            e = e$;
+            this$.extend = null;
+            throw e;
+          }
           this$.extendDom = !(ext.dom != null) || ext.dom;
           this$.extendStyle = !(ext.style != null) || ext.style;
           return this$.extend.init();
@@ -765,6 +773,26 @@
     },
     dom: function(){
       return this.node;
+    },
+    _usedby: function(b){
+      var _, this$ = this;
+      if (this === b) {
+        throw new Error("circular extend");
+      }
+      (this._users || (this._users = [])).push(b);
+      _ = function(l){
+        var i$, len$, o, results$ = [];
+        l == null && (l = []);
+        if (in$(this$, l)) {
+          throw new Error("circular extend");
+        }
+        for (i$ = 0, len$ = l.length; i$ < len$; ++i$) {
+          o = l[i$];
+          results$.push(_(o._users));
+        }
+        return results$;
+      };
+      return _(b._users);
     },
     _path: function(p){
       p == null && (p = '');
@@ -1086,5 +1114,10 @@
     var own = {}.hasOwnProperty;
     for (var key in src) if (own.call(src, key)) obj[key] = src[key];
     return obj;
+  }
+  function in$(x, xs){
+    var i = -1, l = xs.length >>> 0;
+    while (++i < l) if (x === xs[i]) return true;
+    return false;
   }
 }).call(this);

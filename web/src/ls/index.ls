@@ -51,6 +51,7 @@ manager.init!
   .then -> manager.set new block.class {name: "test", version: "0.0.1", code, manager}
   .then -> load-sample name: \infer-test, version: \0.0.1
   .then -> load-sample name: \infer-test, version: \0.0.2
+  .then -> load-sample name: \circular-1, version: \0.0.1
   .then -> load-sample name: \react-helloworld, root: view.get('inner')
   .then -> load-sample name: \vue-helloworld, root: view.get('inner')
   .then -> load-sample name: \long-answer
