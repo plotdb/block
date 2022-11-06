@@ -413,9 +413,6 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         else if @extend-dom == \overwrite => @csscopes.local ++= (@extend.csscopes.local).slice(1)
       .catch (e) ~>
         console.error "[@plotdb/block] init block {name: #{@name}, version: #{@version}, path: #{@path or ''}}", e
-        # TODO seems useless, unless we set it to @node?
-        node = doc.createElement("div")
-        node.innerText = "failed"
         @ <<< interface: {}, style-node: {}, factory: (-> @), dependencies: []
 
   context: -> @_ctx # get library context

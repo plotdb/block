@@ -773,10 +773,7 @@
           return (ref$ = this$.csscopes).local = ref$.local.concat(this$.extend.csscopes.local.slice(1));
         }
       })['catch'](function(e){
-        var node;
         console.error("[@plotdb/block] init block {name: " + this$.name + ", version: " + this$.version + ", path: " + (this$.path || '') + "}", e);
-        node = doc.createElement("div");
-        node.innerText = "failed";
         return this$['interface'] = {}, this$.styleNode = {}, this$.factory = function(){
           return this;
         }, this$.dependencies = [], this$;
