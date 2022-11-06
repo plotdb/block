@@ -1,5 +1,11 @@
 # Change Logs
 
+## v4.7.2
+
+ - throw exception when circular extend detected
+ - remove useless code
+
+
 ## v4.7.1
 
  - make `bundle.js` a clone of `index.js` with `bundle` function
