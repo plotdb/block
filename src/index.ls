@@ -378,7 +378,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @dependencies = if Array.isArray(@interface.pkg.dependencies) => @interface.pkg.dependencies
         else [v for k,v of (@interface.pkg.dependencies or {})]
         @dependencies.map (d) ~>
-          if !(d.name or d.version) => d <<< @{ns, name, version}
+          if !(d.name or d.url) => d <<< @{ns, name, version}
           if d.type => return
           if /\.js$/.exec(d.url or d.path or d) => d.type = \js
           else if /\.css$/.exec(d.url or d.path or d) => d.type = \css

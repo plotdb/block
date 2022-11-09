@@ -710,7 +710,7 @@
             return results$;
           }.call(this$));
         this$.dependencies.map(function(d){
-          if (!(d.name || d.version)) {
+          if (!(d.name || d.url)) {
             d.ns = this$.ns;
             d.name = this$.name;
             d.version = this$.version;
@@ -768,12 +768,6 @@
         }, this$.dependencies = [], this$;
       });
     },
-    context: function(){
-      return this._ctx;
-    },
-    dom: function(){
-      return this.node;
-    },
     _usedby: function(b){
       var _, this$ = this;
       if (this === b) {
@@ -793,6 +787,12 @@
         return results$;
       };
       return _(b._users);
+    },
+    context: function(){
+      return this._ctx;
+    },
+    dom: function(){
+      return this.node;
     },
     _path: function(p){
       p == null && (p = '');

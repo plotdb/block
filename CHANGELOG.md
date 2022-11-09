@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.7.4
+
+ - fix bug: inferred block feature should not work on identifier with only `url` field.
+
+
 ## v4.7.3
 
  - rewrite buggy circular extend detection code
