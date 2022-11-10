@@ -6,7 +6,7 @@
  - support interface retrieval recursively
  - provide `parent` directly in internal js context object
  - provide `_instance` object only if the corresponding class matches.
-
+ - remove `update` function since it's in TBD state
 
 ## v4.7.4
 

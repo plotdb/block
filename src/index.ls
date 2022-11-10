@@ -509,7 +509,9 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     @run({node, type: \destroy})
 
   interface: -> @obj[* - 1].interface!
-  update: (ops) -> @datadom.update ops
+
+  # TBD
+  # update: (ops) -> @datadom.update ops
 
   _transform: (node, tag, func) ->
     regex = new RegExp("^#{tag}-(.+)$")

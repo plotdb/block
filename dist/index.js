@@ -958,9 +958,6 @@
       var ref$;
       return (ref$ = this.obj)[ref$.length - 1]['interface']();
     },
-    update: function(ops){
-      return this.datadom.update(ops);
-    },
     _transform: function(node, tag, func){
       var regex, _, wk;
       regex = new RegExp("^" + tag + "-(.+)$");
