@@ -441,7 +441,6 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       .then -> if o.root => r.attach o{root, before}
       .then -> r
 
-
   # child: either
   #  - dom tree of child.
   #  - dom tree of container ( for interpolation )
