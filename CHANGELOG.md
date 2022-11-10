@@ -3,6 +3,9 @@
 ## v4.7.5 (upcoming)
 
  - fix bug: incorrect loop index when getting interface from instance
+ - support interface retrieval recursively
+ - provide `parent` directly in internal js context object
+ - provide `_instance` object only if the corresponding class matches.
 
 
 ## v4.7.4

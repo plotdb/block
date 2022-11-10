@@ -329,7 +329,7 @@ Additionally, following are the private members:
 
  - `obj` - list of JS internal context objects created from the exported factory interface.
    - see below for the detail of the internal context object.
-   - it's a list of all objects from the inheritant chain.
+   - it's a list of all objects from the inheritant chain. base block comes first.
    - each item in this list contains block's data and interface.
 
 
@@ -339,10 +339,13 @@ While `block.instance` represents the block instance itself, block JavaScript is
 
  - `\_class`: the object of `block.class` for this block, filled automatically when creating this context.
  - `\_instance`: the object of `block.instance` for this block, filled automatically when creating this context.
+   - Note: currently this is not available in base blocks. use it only for dev / debug purpose.
  - `pkg`: block information
  - `init(opt)`: initialization function of this context.
  - `destroy(opt)`: destroy function of this context.
  - `interface()`: JS interface for block users to access.
+ - `parent`: JS Context of parent block, if any.
+   - use `parent.interface()` to reach parent interface if needed.
 
 
 Except `\_class` and `\_instance`, functions in above interface should be implemented by block JavaScript and exported via `module.exports`:

@@ -659,7 +659,16 @@
           this._instance = i;
           return this;
         };
-        return this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$._class = this$, ref$), this$['interface']);
+        return this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$._class = this$, ref$['interface'] = function(){
+          if (!this.parent) {
+            return;
+          }
+          if (this.parent['interface'] instanceof Function) {
+            return this.parent['interface']();
+          } else {
+            return this.parent['interface'];
+          }
+        }, ref$), this$['interface']);
       }).then(function(){
         var ext;
         this$['extends'] = [];
@@ -946,15 +955,8 @@
       });
     },
     'interface': function(){
-      var i$, i, ret;
-      for (i$ = this.obj.length - 1; i$ >= 0; --i$) {
-        i = i$;
-        if (!(ret = (this.obj[i] || {})['interface'])) {
-          continue;
-        }
-        return ret instanceof Function ? ret.apply(this.obj[i]) : ret;
-      }
-      return null;
+      var ref$;
+      return (ref$ = this.obj)[ref$.length - 1]['interface']();
     },
     update: function(ops){
       return this.datadom.update(ops);
@@ -1092,9 +1094,10 @@
               data: this$.data
             };
             if (type === 'init') {
-              this$.obj.push(o = new b.factory(this$));
+              this$.obj.push(new b.factory(this$.block === b ? this$ : null));
             }
             ps.push((o = this$.obj[idx]) ? this$.obj[idx][type](payload) : null);
+            o.parent = this$.obj[idx - 1];
             return _(list, idx + 1, gtx, o);
           }(b._ctx.ctx
             ? b._ctx.ctx()

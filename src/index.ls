@@ -346,10 +346,16 @@ block.class.prototype = Object.create(Object.prototype) <<< do
           @style-node.textContent = ret
 
         @factory = (i) ->
+          # this is null for base block. and it's not currently used internally anyway.
+          # should we keep this or perhaps we can remove it?
           @_instance = i
           @
         @factory.prototype = Object.create(Object.prototype) <<< {
           init: (->), destroy: (->), _class: @
+          # default interface which get interface from parent.
+          interface: ->
+            if !@parent => return
+            if @parent.interface instanceof Function => @parent.interface! else @parent.interface
         } <<< @interface
       .then ~>
         @extends = []
@@ -502,12 +508,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     node.parentNode.removeChild node
     @run({node, type: \destroy})
 
-  # TBD
-  interface: ->
-    for i from @obj.length - 1 to 0 by -1 =>
-      if !(ret = (@obj[i] or {}).interface) => continue
-      return if ret instanceof Function => ret.apply(@obj[i]) else ret
-    return null
+  interface: -> @obj[* - 1].interface!
   update: (ops) -> @datadom.update ops
 
   _transform: (node, tag, func) ->
@@ -594,8 +595,19 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
             path: ~> @_path(it)
             data: @data
           }
-          if type == \init => @obj.push(o = new b.factory @)
+          if type == \init =>
+            @obj.push(
+              new b.factory(
+                # we don't create instance for base blocks.
+                # actually we may only need one instance.
+                # however, instance stores information about class,
+                # which may be confusing if we store it in parent js context object.
+                # thus we only pass it into factory if it's the corresponding factory
+                if @block == b => @ else null
+              )
+            )
           ps.push if (o = @obj[idx]) => @obj[idx][type](payload) else null
+          o.parent = @obj[idx - 1]
           _ list, idx + 1, gtx, o
         ) if b._ctx.ctx => b._ctx.ctx! else b._ctx.{}local # use `{}local` for rescope < v4
       _ cs, 0, {}
