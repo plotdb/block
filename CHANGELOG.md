@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.7.5 (upcoming)
+
+ - fix bug: incorrect loop index when getting interface from instance
+
+
 ## v4.7.4
 
  - fix bug: inferred block feature should not work on identifier with only `url` field.

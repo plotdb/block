@@ -947,7 +947,7 @@
     },
     'interface': function(){
       var i$, i, ret;
-      for (i$ = this.obj.length; i$ >= 0; --i$) {
+      for (i$ = this.obj.length - 1; i$ >= 0; --i$) {
         i = i$;
         if (!(ret = (this.obj[i] || {})['interface'])) {
           continue;

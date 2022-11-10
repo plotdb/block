@@ -507,7 +507,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
 
   # TBD
   interface: ->
-    for i from @obj.length to 0 by -1 =>
+    for i from @obj.length - 1 to 0 by -1 =>
       if !(ret = (@obj[i] or {}).interface) => continue
       return if ret instanceof Function => ret.apply(@obj[i]) else ret
     return null
