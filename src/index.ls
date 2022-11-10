@@ -497,8 +497,6 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
         if opt.before => root.insertBefore node, opt.before
         else root.appendChild node
       else @_defered = {node, root, before: opt.before}
-
-
     @run({node, type: \init})
   detach: ->
     node = @dom!
