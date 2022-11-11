@@ -286,7 +286,9 @@ block.class = (opt={}) ->
     v = Array.from((node or div).querySelectorAll(n))
       .map ~> it.parentNode.removeChild(it); it.textContent
       .join \\n
-    # TODO should concat with previous result?
+    # TODO we have joined contents from all tags here,
+    # however we may still have data provided directly through constructor?
+    # should concat with them?
     # @[n] = (@[n] or '') + (if v? and v => v else '')
     @[n] = if v? and v => v else (@[n] or "")
   if !node and div =>
