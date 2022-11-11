@@ -340,7 +340,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
           }
           # translate local url to registry url.
           # TODO this always runs, which may no be necessary.
-          # should we add some mechanism to make this optional?
+          # should we add some mechanism to make this optional? (e.g., with `path` attribute)
           # also, this may have potential issues if registry changes after initialized
           ret = ret.replace /url\("?([^()"]+)"?\)/g, "url(#{@_path('')}$1)"
           @style-node.textContent = ret
