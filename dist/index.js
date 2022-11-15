@@ -652,7 +652,7 @@
             css: this$.style,
             scopeTest: "[scope]"
           });
-          ret = ret.replace(/url\("?([^()"]+)"?\)/g, "url(" + this$._path('') + "$1)");
+          ret = ret.replace(/url\("?(?!data:)([^()"]+)"?\)/g, "url(" + this$._path('') + "$1)");
           this$.styleNode.textContent = ret;
         }
         this$.factory = function(i){

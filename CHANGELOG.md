@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.7.6 (upcoming)
+
+ - fix bug: css path transformation should not work on data url
+
+
 ## v4.7.5
 
  - fix bug: incorrect loop index when getting interface from instance
