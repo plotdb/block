@@ -316,7 +316,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         if !@name => @name = @interface.pkg.name
         if !@version => @version = @interface.pkg.version
         if !@path => @path = @interface.pkg.path
-        @id = block.id {name: (@name or rid!), version: @version or rid!, path: @path}
+        @id = block.id {ns: @ns, name: (@name or rid!), version: @version or rid!, path: @path}
         # ID for translation : i18next treat `:` as separator for id, so we escape it
         @_id_t = @id.replace /:/g, '='
         # TODO better scope format?
@@ -356,7 +356,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @extends = []
         if !(ext = @interface.pkg.extend) => return
         if !@manager => return new Error("no available manager to get extended block")
-        if !(ext.name or ext.url) => ext <<< @{name, version}
+        if !(ext.name or ext.url) => ext <<< @{ns, name, version}
         @manager.get ext
           .then ~>
             @extend = it

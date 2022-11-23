@@ -622,6 +622,7 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         this$.path = this$['interface'].pkg.path;
       }
       this$.id = block.id({
+        ns: this$.ns,
         name: this$.name || rid(),
         version: this$.version || rid(),
         path: this$.path
@@ -666,6 +667,7 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         return new Error("no available manager to get extended block");
       }
       if (!(ext.name || ext.url)) {
+        ext.ns = this$.ns;
         ext.name = this$.name;
         ext.version = this$.version;
       }
