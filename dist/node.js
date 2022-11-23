@@ -776,7 +776,7 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         return (ref$ = this$.csscopes).local = ref$.local.concat(this$.extend.csscopes.local.slice(1));
       }
     })['catch'](function(e){
-      console.error("[@plotdb/block] init block {name: " + this$.name + ", version: " + this$.version + ", path: " + (this$.path || '') + "}", e);
+      console.error("[@plotdb/block] init " + block.id(this$), e);
       return this$['interface'] = {}, this$.styleNode = {}, this$.factory = function(){
         return this;
       }, this$.dependencies = [], this$;

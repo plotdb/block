@@ -409,7 +409,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         if @extend-style == true => @csscopes.local ++= (@extend.csscopes.local or [])
         else if @extend-dom == \overwrite => @csscopes.local ++= (@extend.csscopes.local).slice(1)
       .catch (e) ~>
-        console.error "[@plotdb/block] init block {name: #{@name}, version: #{@version}, path: #{@path or ''}}", e
+        console.error "[@plotdb/block] init #{block.id @}", e
         @ <<< interface: {}, style-node: {}, factory: (-> @), dependencies: []
 
   # for circular extend detection
