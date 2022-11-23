@@ -1,13 +1,11 @@
 var win, doc
 
-rescope = if window? => window.rescope else if module? and require? => require "@plotdb/rescope" else null
-csscope = if window? => window.csscope else if module? and require? => require "@plotdb/csscope" else null
-proxise = if window? => window.proxise else if module? and require? => require "proxise" else null
-fetch = if window? => window.fetch else if module? and require? => require "node-fetch" else null
-
 e404 = (o) -> Promise.reject(new Error! <<< {name: \lderror, id: 404, message: o})
 
 _fetch = (u, c) ->
+  if fs? and !/^https:/.exec(u) =>
+    return new Promise (res, rej) ->
+      fs.read-file u, (e, b) -> if e => rej e else res b.toString!
   (ret) <- fetch u, c .then _
   if ret and ret.ok => return ret.text!
   if !ret => return Promise.reject(new Error("404") <<< {name: \lderror, id: 404})
@@ -619,7 +617,3 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     ## original, no inheritance structure
     #block.rescope.context @block.dependencies.filter(->it.type != \css), (context) ~>
     #  @obj = new @block.factory {root: node, context}
-
-block.env if self? => self else globalThis
-if module? => module.exports = block
-else if window? => window.block = block

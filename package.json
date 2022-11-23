@@ -5,7 +5,7 @@
   "description": "block",
   "version": "4.7.5",
   "browser": "dist/index.min.js",
-  "main": "dist/index.min.js",
+  "main": "dist/node.js",
   "homepage": "https://github.com/plotdb/block",
   "files": [
     "dist/**/*"

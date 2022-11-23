@@ -3,18 +3,41 @@
 echo "prepare..."
 rm -rf dist
 mkdir -p dist
+rm -rf .built
+mkdir -p .built
 
-echo "building index.ls -> index.js ..."
-./node_modules/.bin/lsc -cp --no-header src/index.ls > dist/index.js
-echo "building bundle.ls -> bundle.js ..."
-./node_modules/.bin/lsc -cp --no-header src/bundle.ls > dist/bundle.js
-echo "minify index.js -> index.min.js ..."
+echo "build src -> .built .."
+./node_modules/.bin/lsc -cb --no-header -o .built src
+
+cat .built/head.js > dist/node.js
+cat .built/index.js >> dist/node.js
+cat .built/bundle.js >> dist/node.js
+cat .built/foot.js >> dist/node.js
+
+cat .built/index.js >> dist/index.js
+cat .built/foot.js >> dist/index.js
+
+cat .built/index.js >> dist/bundle.js
+cat .built/bundle.js >> dist/bundle.js
+cat .built/foot.js >> dist/bundle.js
+
+echo "minify dist/index.js -> index.min.js ..."
 ./node_modules/.bin/uglifyjs dist/index.js -m -c > dist/index.min.js
-echo "minify bundle.js -> bundle.min.js ..."
+echo "minify dist/bundle.js -> bundle.min.js ..."
 ./node_modules/.bin/uglifyjs dist/bundle.js -m -c > dist/bundle.min.js
+
+#echo "building index.ls -> index.js ..."
+#./node_modules/.bin/lsc -cp --no-header src/index.ls > dist/index.js
+#echo "building bundle.ls -> bundle.js ..."
+#./node_modules/.bin/lsc -cp --no-header src/bundle.ls > dist/bundle.js
+#echo "minify index.js -> index.min.js ..."
+#./node_modules/.bin/uglifyjs dist/index.js -m -c > dist/index.min.js
+#echo "minify bundle.js -> bundle.min.js ..."
+#./node_modules/.bin/uglifyjs dist/bundle.js -m -c > dist/bundle.min.js
 
 echo "copy dist to web ..."
 rm -rf web/static/assets/lib/@plotdb/block/dev/
 mkdir -p web/static/assets/lib/@plotdb/block/dev/
 cp -R dist/* web/static/assets/lib/@plotdb/block/dev/
 
+rm -rf .built
