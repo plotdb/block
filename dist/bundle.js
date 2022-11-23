@@ -1,4 +1,4 @@
-var win, doc, e404, _fetch, rid, parseNameString, sanitize, pubsub, block, slice$ = [].slice;
+var win, doc, e404, _fetch, rid, sanitize, pubsub, block, slice$ = [].slice;
 e404 = function(o){
   var ref$;
   return Promise.reject((ref$ = new Error(), ref$.name = 'lderror', ref$.id = 404, ref$.message = o, ref$));
@@ -50,17 +50,6 @@ rid = function(){
   return id;
 };
 rid.hash = {};
-parseNameString = function(n){
-  var ref$, v;
-  n = n.split('@');
-  ref$ = !n[0]
-    ? ["@" + n[1], n[2]]
-    : [n[0], n[1]], n = ref$[0], v = ref$[1];
-  return {
-    name: n,
-    version: v
-  };
-};
 sanitize = function(code){
   return code || '';
 };
@@ -424,7 +413,7 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
       var ref$, ns, n, v, p, ref1$, ref2$;
       opt == null && (opt = {});
       if (typeof opt === 'string') {
-        opt = parseNameString(opt);
+        opt = block.id2obj(opt);
       }
       ref$ = [opt.ns || '', opt.name, opt.version || 'main', opt.path || 'index.html'], ns = ref$[0], n = ref$[1], v = ref$[2], p = ref$[3];
       if (!((ref$ = (ref1$ = (ref2$ = this$.proxy)[ns] || (ref2$[ns] = {}))[n] || (ref1$[n] = {}))[v] || (ref$[v] = {}))[p]) {

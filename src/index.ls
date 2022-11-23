@@ -25,11 +25,6 @@ rid = ->
   return id
 rid.hash = {}
 
-parse-name-string = (n) ->
-  n = n.split('@')
-  [n,v] = if !n.0 => ["@#{n.1}", n.2] else [n.0,n.1]
-  return {name: n, version: v}
-
 # We don't sanitize input for now, since we have to trust blocks.
 # Following code is for reference.
 #sanitize-real = (code) ->
@@ -197,7 +192,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     opts = if Array.isArray(opt) => opt else [opt]
     Promise.all(
       opts.map (opt = {}) ~>
-        if typeof(opt) == \string => opt = parse-name-string(opt)
+        if typeof(opt) == \string => opt = block.id2obj opt
         [ns, n, v, p] = [opt.ns or '', opt.name, opt.version or \main, opt.path or 'index.html']
         if !@proxy{}[ns]{}[n]{}[v][p] => @proxy[ns][n][v][p] = proxise (opt) ~> @_get(opt)
         @proxy[ns][n][v][p] opt
