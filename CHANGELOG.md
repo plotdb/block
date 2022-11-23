@@ -5,6 +5,7 @@
  - fix bug: css path transformation should not work on data url
  - replace unnecessary `parse-name-string` with `id2obj`
  - fix bug: ns omitted in block id inheritance
+ - use error generator function to generate errors
 
 
 ## v4.7.5
