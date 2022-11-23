@@ -3,6 +3,8 @@
 ## v4.7.6 (upcoming)
 
  - fix bug: css path transformation should not work on data url
+ - replace unnecessary `parse-name-string` with `id2obj`
+ - fix bug: ns omitted in block id inheritance
 
 
 ## v4.7.5
