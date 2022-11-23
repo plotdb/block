@@ -1,12 +1,13 @@
 # Change Logs
 
-## v4.7.6 (upcoming)
+## v4.7.6
 
  - fix bug: css path transformation should not work on data url
  - replace unnecessary `parse-name-string` with `id2obj`
  - fix bug: ns omitted in block id inheritance
  - use error generator function to generate errors
  - restructure code for node / browser and bundler
+ - upgrade dependencies
 
 
 ## v4.7.5
