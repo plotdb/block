@@ -14,10 +14,12 @@ semver = typeof window != 'undefined' && window !== null
 fetch = typeof window != 'undefined' && window !== null
   ? window.fetch
   : (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null) ? require("node-fetch") : null;
-fs = require('fs');var win, doc, e404, _fetch, rid, sanitize, pubsub, block, slice$ = [].slice;
-e404 = function(o){
+fs = require('fs');var win, doc, err, _fetch, rid, sanitize, pubsub, block, slice$ = [].slice;
+err = function(o, id){
   var ref$;
-  return Promise.reject((ref$ = new Error(), ref$.name = 'lderror', ref$.id = 404, ref$.message = o, ref$));
+  o == null && (o = "");
+  id == null && (id = 404);
+  return Promise.reject((ref$ = new Error(o), ref$.name = 'lderror', ref$.id = id, ref$.message = o, ref$));
 };
 _fetch = function(u, c){
   if ((typeof fs != 'undefined' && fs !== null) && !/^https:/.exec(u)) {
@@ -32,23 +34,22 @@ _fetch = function(u, c){
     });
   }
   return fetch(u, c).then(function(ret){
-    var ref$;
     if (ret && ret.ok) {
       return ret.text();
     }
     if (!ret) {
-      return Promise.reject((ref$ = new Error("404"), ref$.name = 'lderror', ref$.id = 404, ref$));
+      return err();
     }
     return ret.clone().text().then(function(t){
-      var i, e, ref$, j, err;
+      var i, e, j, _e;
       i = ret.status || 404;
-      e = (ref$ = new Error(i + " " + t), ref$.name = 'lderror', ref$.id = i, ref$.message = t, ref$);
+      e = err(i + " " + t, i);
       try {
         if ((j = JSON.parse(t)) && j.name === 'lderror') {
           import$(e, j).json = j;
         }
       } catch (e$) {
-        err = e$;
+        _e = e$;
       }
       return Promise.reject(e);
     });
@@ -322,7 +323,7 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
     if (_ref.then) {
       return _ref;
     } else if (!_ref) {
-      return e404(o);
+      return err(o);
     } else {
       return _fetch(_ref, {
         method: 'GET'
@@ -343,7 +344,7 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
       path: p
     };
     if (!(n && v)) {
-      return Promise.reject((ref$ = new Error(), ref$.name = "lderror", ref$.id = 1015, ref$));
+      return err("", 1015);
     }
     (ref$ = (ref1$ = this.hash)[ns] || (ref1$[ns] = {}))[n] || (ref$[n] = {});
     if (/[^0-9.]/.exec(v) && !opt.force) {

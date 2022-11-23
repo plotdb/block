@@ -1,6 +1,6 @@
 var win, doc
 
-e404 = (o) -> Promise.reject(new Error! <<< {name: \lderror, id: 404, message: o})
+err = (o="", id=404) -> Promise.reject(new Error(o) <<< {name: \lderror, id, message: o})
 
 _fetch = (u, c) ->
   if fs? and !/^https:/.exec(u) =>
@@ -8,13 +8,13 @@ _fetch = (u, c) ->
       fs.read-file u, (e, b) -> if e => rej e else res b.toString!
   (ret) <- fetch u, c .then _
   if ret and ret.ok => return ret.text!
-  if !ret => return Promise.reject(new Error("404") <<< {name: \lderror, id: 404})
+  if !ret => return err!
   ret.clone!text!then (t) ->
     i = ret.status or 404
-    e = new Error("#i #t") <<< {name: \lderror, id: i, message: t}
+    e = err("#i #t", i)
     try
       if (j = JSON.parse(t)) and j.name == \lderror => e <<< j <<< {json: j}
-    catch err
+    catch _e
     return Promise.reject e
 
 rid = ->
@@ -144,13 +144,13 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     if @_fetch => return Promise.resolve(@_fetch o)
     _ref = if @_reg.fetch => @_reg.fetch o else @get-url o
     if _ref.then => _ref
-    else if !_ref => return e404 o
+    else if !_ref => return err o
     else _fetch _ref, {method: \GET} .then -> {content: it}
 
   _get: (opt) ->
     [ns, n, v, p] = [opt.ns or '', opt.name, opt.version or \main, opt.path or 'index.html']
     obj = {ns: ns, name: n, version: v, path: p}
-    if !(n and v) => return Promise.reject(new Error! <<< {name: "lderror", id: 1015})
+    if !(n and v) => return err("",1015)
     @hash{}[ns]{}[n]
     if /[^0-9.]/.exec(v) and !opt.force =>
       if @_ver.map{}[ns][n] and @_ver.map[ns][n][v] => if @hash[ns][n]{}[@_ver.map[ns][n][v]][p] => return that
