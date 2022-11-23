@@ -14,12 +14,16 @@ cat .built/index.js >> dist/node.js
 cat .built/bundle.js >> dist/node.js
 cat .built/foot.js >> dist/node.js
 
-cat .built/index.js > dist/index.js
+echo "(function(){" > dist/index.js
+cat .built/index.js >> dist/index.js
 cat .built/foot.js >> dist/index.js
+echo "}())" >> dist/index.js
 
-cat .built/index.js > dist/bundle.js
+echo "(function(){" > dist/bundle.js
+cat .built/index.js >> dist/bundle.js
 cat .built/bundle.js >> dist/bundle.js
 cat .built/foot.js >> dist/bundle.js
+echo "}())" >> dist/bundle.js
 
 echo "minify dist/index.js -> index.min.js ..."
 ./node_modules/.bin/uglifyjs dist/index.js -m -c > dist/index.min.js

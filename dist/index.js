@@ -1,3 +1,4 @@
+(function(){
 var win, doc, err, _fetch, rid, sanitize, pubsub, block, slice$ = [].slice;
 err = function(o, id){
   var ref$;
@@ -1108,4 +1109,4 @@ if (typeof module != 'undefined' && module !== null) {
   module.exports = block;
 } else if (typeof window != 'undefined' && window !== null) {
   window.block = block;
-}
+}}())

@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.7.7
+
+ - properly scope script
+
+
 ## v4.7.6
 
  - fix bug: css path transformation should not work on data url
