@@ -137,6 +137,9 @@
     return loadSample({
       name: 'child'
     });
+  }).then(function(){
+    console.log('debundle null');
+    return manager.debundle(null);
   })['catch'](function(it){
     return console.log(">", it);
   }).then(function(){

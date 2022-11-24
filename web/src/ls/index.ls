@@ -61,6 +61,10 @@ manager.init!
   .then -> load-sample name: \landing-col2
   .then -> load-sample name: \landing
   .then -> load-sample name: \child
+  .then ->
+    # test for debundling nothing ( usually due to element not found )
+    console.log 'debundle null'
+    manager.debundle null
   .catch -> console.log ">", it
   .then ~>
     console.log \done.

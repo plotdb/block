@@ -211,6 +211,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         div.querySelector('template')
     else p = Promise.resolve( if typeof(opt.root) == \string => doc.querySelector(opt.root) else opt.root )
     p.then (root) ->
+      if !root => return
       if root.content => root = root.content
       [nodes, classes] = [{}, {}]
       Array.from(root.childNodes).map (n) ~>

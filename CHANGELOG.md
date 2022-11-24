@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.7.8
+
+ - fix bug: debundle of nothing should not fail
+
+
 ## v4.7.7
 
  - properly scope script

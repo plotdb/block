@@ -459,6 +459,9 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
     }
     return p.then(function(root){
       var ref$, nodes, classes, s, k, node, ns, name, version, path, bc, results$ = [];
+      if (!root) {
+        return;
+      }
       if (root.content) {
         root = root.content;
       }
