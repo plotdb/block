@@ -11,7 +11,11 @@ block.manager.prototype.bundle = (opt = {}) ->
         node = doc.createElement \div
         node.innerHTML = (it or '').trim!
         if node.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
-        [js,css] = <[script style]>.map (n)->
+        # we keep style tag in html so path transformation in css works
+        # TODO any better solution for this? see also `prebundle css` comment below.
+        css = ""
+        #[js,css] = <[script style]>.map (n)->
+        [js] = <[script]>.map (n)->
           Array.from(node.querySelectorAll n)
             .map -> it.parentNode.removeChild(it); it.textContent
             .join \\n
@@ -52,11 +56,14 @@ block.manager.prototype.bundle = (opt = {}) ->
           depcss-cache = deps.css
             .map (o) -> "csscope.cache(#{JSON.stringify(o <<< {inited: true, scope: csscope.scope(o)})})"
             .join(';')
-          css = blocks
-            .map (b) ->
-              scope = csscope.scope b
-              csscope {rule: "*[scope~=#{scope}]", name: scope, css: (b.css or ''), scope-test: "[scope]"}
-            .join ''
+          # TODO prebundle block css into style may lead to path transformation issue.
+          # thus, we don't do it know.
+          css = ""
+          #css = blocks
+          #  .map (b) ->
+          #    scope = csscope.scope b
+          #    csscope {rule: "*[scope~=#{scope}]", name: scope, css: (b.css or ''), scope-test: "[scope]"}
+          #  .join ''
           html = blocks.map(-> it.html or '').join('')
           return [
             \<template>

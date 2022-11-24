@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.7.9
+
+ - fix bug: paths in block css are not transformed correctly when debundling
+
+
 ## v4.7.8
 
  - fix bug: debundle of nothing should not fail

@@ -1150,18 +1150,19 @@ function in$(x, xs){
     return _fetch(mgr.getUrl(bd), {
       method: 'GET'
     }).then(function(it){
-      var node, ref$, js, css, ret, b;
+      var node, css, js, ret, ref$, b;
       node = doc.createElement('div');
       node.innerHTML = (it || '').trim();
       if (node.childNodes.length > 1) {
         console.warn("DOM definition of a block should contain only one root.");
       }
-      ref$ = ['script', 'style'].map(function(n){
+      css = "";
+      js = ['script'].map(function(n){
         return Array.from(node.querySelectorAll(n)).map(function(it){
           it.parentNode.removeChild(it);
           return it.textContent;
         }).join('\n');
-      }), js = ref$[0], css = ref$[1];
+      })[0];
       node.childNodes[0].setAttribute('block', id);
       ret = eval("(function(module){" + (js || '') + ";return module.exports;})({})");
       if (ret instanceof Function) {
@@ -1229,16 +1230,7 @@ function in$(x, xs){
       depcssCache = deps.css.map(function(o){
         return "csscope.cache(" + JSON.stringify((o.inited = true, o.scope = csscope.scope(o), o)) + ")";
       }).join(';');
-      css = blocks.map(function(b){
-        var scope;
-        scope = csscope.scope(b);
-        return csscope({
-          rule: "*[scope~=" + scope + "]",
-          name: scope,
-          css: b.css || '',
-          scopeTest: "[scope]"
-        });
-      }).join('');
+      css = "";
       html = blocks.map(function(it){
         return it.html || '';
       }).join('');
