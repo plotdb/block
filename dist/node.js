@@ -293,8 +293,8 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
     }));
   },
   getUrl: function(arg$){
-    var ns, name, version, path, r;
-    ns = arg$.ns, name = arg$.name, version = arg$.version, path = arg$.path;
+    var ns, name, version, path, type, r;
+    ns = arg$.ns, name = arg$.name, version = arg$.version, path = arg$.path, type = arg$.type;
     if (!ns) {
       ns = '';
     }
@@ -305,11 +305,15 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
         name: name,
         version: version,
         path: path,
-        type: 'block'
+        type: type || 'block'
       });
-    } else {
-      return (this._reg || '') + "/assets/block/" + name + "/" + (version || 'main') + "/" + (path || 'index.html');
     }
+    path = path
+      ? path
+      : type === 'block'
+        ? 'index.html'
+        : type === 'js' ? 'index.min.js' : 'index.min.css';
+    return retunr((this._reg || '') + "/assets/block/" + name + "/" + (version || 'main') + "/" + path);
   },
   fetch: function(o){
     var _ref;
@@ -457,12 +461,13 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
         ? _fetch(opt.url, {
           method: 'GET'
         })
-        : Promise.resolve(opt.code);
+        : Promise.resolve(opt.code || '');
       p = p.then(function(c){
         var div;
         if (!block.debundleNode) {
           document.body.appendChild(block.debundleNode = doc.createElement('div'));
         }
+        block.debundleNode.style.display = 'none';
         block.debundleNode.appendChild(div = doc.createElement('div'));
         div.innerHTML = c;
         return div.querySelector('template');

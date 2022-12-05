@@ -131,11 +131,15 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
       b = if obj instanceof block.class => obj else obj.block
       @hash{}[ns]{}[name]{}[version][path or 'index.html'] = b
     )
-  get-url: ({ns, name, version, path}) ->
+  get-url: ({ns, name, version, path, type}) ->
     if !ns => ns = ''
     r = @_reg.url or @_reg
-    if typeof(r) == \function => r {ns, name, version, path, type: \block}
-    else "#{@_reg or ''}/assets/block/#{name}/#{version or 'main'}/#{path or 'index.html'}"
+    if typeof(r) == \function => return r {ns, name, version, path, type: type or \block}
+    path = if path => path
+    else if type == \block => \index.html
+    else if type == \js => \index.min.js
+    else \index.min.css
+    retunr "#{@_reg or ''}/assets/block/#{name}/#{version or 'main'}/#path"
 
   fetch: (o) ->
     o <<< {type: \block}
@@ -203,9 +207,10 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     lc = {}
     if !opt.root =>
       p = if opt.url => _fetch opt.url, {method: \GET}
-      else Promise.resolve(opt.code)
+      else Promise.resolve(opt.code or '')
       p = p.then (c) ->
         if !block.debundle-node => document.body.appendChild block.debundle-node = doc.createElement \div
+        block.debundle-node.style.display = \none
         block.debundle-node.appendChild(div = doc.createElement \div)
         div.innerHTML = c
         div.querySelector('template')

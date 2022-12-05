@@ -1,5 +1,12 @@
 # Change Logs
 
+## v4.7.10
+
+ - fix bug: debundle nothing injects text `undefined` in document.
+ - by default don't display the debundle container
+ - upgrade package to fix vulnerability in dependency
+
+
 ## v4.7.9
 
  - fix bug: paths in block css are not transformed correctly when debundling
