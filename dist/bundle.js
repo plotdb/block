@@ -1122,7 +1122,8 @@ function in$(x, xs){
     blocks == null && (blocks = []);
     deps == null && (deps = {
       js: [],
-      css: []
+      css: [],
+      block: []
     });
     if (!list.length) {
       return Promise.resolve({
@@ -1141,6 +1142,7 @@ function in$(x, xs){
       method: 'GET'
     }).then(function(it){
       var node, css, js, ret, ref$, b;
+      deps.block.push(bd);
       node = doc.createElement('div');
       node.innerHTML = (it || '').trim();
       if (node.childNodes.length > 1) {
@@ -1207,11 +1209,13 @@ function in$(x, xs){
       return _(list, blocks, deps);
     });
   };
-  return _(opt.blocks || (opt.blocks = [])).then(function(arg$){
+  return _((opt.blocks || (opt.blocks = [])).map(function(b){
+    return b;
+  })).then(function(arg$){
     var blocks, deps;
     blocks = arg$.blocks, deps = arg$.deps;
     return Promise.all([mgr.csscope.bundle(deps.css), mgr.rescope.bundle(deps.js)]).then(function(arg$){
-      var depcss, depjsCache, js, depcssCache, css, html;
+      var depcss, depjsCache, js, depcssCache, css, html, code;
       depcss = arg$[0], depjsCache = arg$[1];
       js = blocks.map(function(b){
         return "\"" + b.id + "\":" + (b.js || '""');
@@ -1224,7 +1228,11 @@ function in$(x, xs){
       html = blocks.map(function(it){
         return it.html || '';
       }).join('');
-      return ['<template>', html, "<style type=\"text/css\">" + css + depcss + "</style>", "<script type=\"text/javascript\">" + js + depjsCache + ";" + depcssCache + "</script>", '</template>'].join('');
+      code = ['<template>', html, "<style type=\"text/css\">" + css + depcss + "</style>", "<script type=\"text/javascript\">" + js + depjsCache + ";" + depcssCache + "</script>", '</template>'].join('');
+      return {
+        code: code,
+        deps: deps
+      };
     });
   });
 };block.env(typeof self != 'undefined' && self !== null ? self : globalThis);

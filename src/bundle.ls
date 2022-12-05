@@ -1,13 +1,14 @@
 block.manager.prototype.bundle = (opt = {}) ->
   mgr = opt.manager or @
   hash = {}
-  _ = (list, blocks = [], deps = {js: [], css: []}) ->
+  _ = (list, blocks = [], deps = {js: [], css: [], block: []}) ->
     if !list.length => return Promise.resolve {blocks, deps}
     bd = list.splice 0, 1 .0
     id = block.id bd
     if hash[id] => return Promise.resolve!then -> _ list, blocks, deps
     _fetch mgr.get-url(bd), {method: \GET}
       .then ->
+        deps.block.push bd
         node = doc.createElement \div
         node.innerHTML = (it or '').trim!
         if node.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
@@ -41,7 +42,7 @@ block.manager.prototype.bundle = (opt = {}) ->
         blocks.push b = {js, css, html: node.innerHTML, bd, id}
         hash[id] = b
         return _ list, blocks, deps
-  _ opt.[]blocks
+  _ opt.[]blocks.map((b)->b)
     .then ({blocks, deps}) ->
       Promise.all [
         mgr.csscope.bundle(deps.css),
@@ -65,10 +66,11 @@ block.manager.prototype.bundle = (opt = {}) ->
           #    csscope {rule: "*[scope~=#{scope}]", name: scope, css: (b.css or ''), scope-test: "[scope]"}
           #  .join ''
           html = blocks.map(-> it.html or '').join('')
-          return [
+          code = [
             \<template>
             html
             """<style type="text/css">#css#depcss</style>"""
             """<script type="text/javascript">#js#depjs-cache;#depcss-cache</script>"""
             \</template>
           ].join('')
+          return {code, deps}

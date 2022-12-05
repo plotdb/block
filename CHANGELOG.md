@@ -1,5 +1,11 @@
 # Change Logs
 
+## v4.8.0 (upcoming)
+
+ - fix bug: `bundle` should not modify input list
+ - return bot deps and code in `bundle`
+
+
 ## v4.7.10
 
  - fix bug: debundle nothing injects text `undefined` in document.
