@@ -55,7 +55,13 @@ block.manager.prototype.bundle = (opt = {}) ->
           # so it won't do anything except recognizing this.
           # the real CSS will be loaded directly from the `style` tag.
           depcss-cache = deps.css
-            .map (o) -> "csscope.cache(#{JSON.stringify(o <<< {inited: true, scope: csscope.scope(o)})})"
+            .map (o) ->
+              # dup it to prevent pollute internal data
+              o = {} <<< o <<< {inited: true, scope: csscope.scope(o)}
+              # since code is in style tag, explicitly delete it here
+              # to prevent redundant bundling
+              delete o.code
+              "csscope.cache(#{JSON.stringify(o)})"
             .join(';')
           # TODO prebundle block css into style may lead to path transformation issue.
           # thus, we don't do it now.

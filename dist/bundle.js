@@ -1222,7 +1222,10 @@ function in$(x, xs){
       });
       js = "document.currentScript.import({" + js.join(',') + "});";
       depcssCache = deps.css.map(function(o){
-        return "csscope.cache(" + JSON.stringify((o.inited = true, o.scope = csscope.scope(o), o)) + ")";
+        var ref$;
+        o = (ref$ = import$({}, o), ref$.inited = true, ref$.scope = csscope.scope(o), ref$);
+        delete o.code;
+        return "csscope.cache(" + JSON.stringify(o) + ")";
       }).join(';');
       css = "";
       html = blocks.map(function(it){
@@ -1235,7 +1238,12 @@ function in$(x, xs){
       };
     });
   });
-};block.env(typeof self != 'undefined' && self !== null ? self : globalThis);
+};
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}block.env(typeof self != 'undefined' && self !== null ? self : globalThis);
 if (typeof module != 'undefined' && module !== null) {
   module.exports = block;
 } else if (typeof window != 'undefined' && window !== null) {
