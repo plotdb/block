@@ -1,6 +1,6 @@
 # Change Logs
 
-## v4.8.0 (upcoming)
+## v4.8.0
 
  - fix bug: `bundle` should not modify input list
  - breaking change of dev feature: return block dependencies and code in `bundle`
