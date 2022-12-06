@@ -58,7 +58,7 @@ block.manager.prototype.bundle = (opt = {}) ->
             .map (o) -> "csscope.cache(#{JSON.stringify(o <<< {inited: true, scope: csscope.scope(o)})})"
             .join(';')
           # TODO prebundle block css into style may lead to path transformation issue.
-          # thus, we don't do it know.
+          # thus, we don't do it now.
           css = ""
           #css = blocks
           #  .map (b) ->
