@@ -3,7 +3,7 @@
 ## v4.8.0 (upcoming)
 
  - fix bug: `bundle` should not modify input list
- - return bot deps and code in `bundle`
+ - breaking change of dev feature: return block dependencies and code in `bundle`
  - fix bug: remove `code` from dummy depcss-cache to eliminate redundant bundling 
 
 
