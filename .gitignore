@@ -5,4 +5,3 @@ node_modules
 web/.view
 local
 web/static/assets/lib
-dev
