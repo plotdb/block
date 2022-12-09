@@ -1,0 +1,10 @@
+div
+  script(type="@plotdb/block"): :lsc
+    module.exports =
+      pkg:
+        extend: {name: 'base'}
+        dependencies: [
+          {name: "main", type: "js"}
+        ]
+      interface: -> print: -> console.log 'sample.interface.print'
+      init: -> console.log 'sample.init'
