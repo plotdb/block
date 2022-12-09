@@ -78,7 +78,11 @@ pubsub.prototype = import$(Object.create(Object.prototype), {
 });
 block = {};
 block.id = function(o){
-  return o.id || o.url || (o.ns ? o.ns + ":" : '') + "" + o.name + "@" + (o.version || 'main') + ":" + (o.path || 'index.html');
+  var path;
+  path = o.path || (o.type === 'js'
+    ? 'index.min.js'
+    : o.type === 'css' ? 'index.min.css' : 'index.html');
+  return o.id || o.url || (o.ns ? o.ns + ":" : '') + "" + o.name + "@" + (o.version || 'main') + ":" + path;
 };
 block.id2obj = function(k){
   var nv, path, ns, ret;

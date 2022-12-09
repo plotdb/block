@@ -1,5 +1,10 @@
 # Change Logs
 
+## v4.8.1 (upcoming)
+
+ - fix bug: `id()` should generate path depending on the type in bid.
+
+
 ## v4.8.0
 
  - fix bug: `bundle` should not modify input list
