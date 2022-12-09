@@ -454,7 +454,7 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
       p = p.then(function(c){
         var div;
         if (!block.debundleNode) {
-          document.body.appendChild(block.debundleNode = doc.createElement('div'));
+          doc.body.appendChild(block.debundleNode = doc.createElement('div'));
         }
         block.debundleNode.style.display = 'none';
         block.debundleNode.appendChild(div = doc.createElement('div'));

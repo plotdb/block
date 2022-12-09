@@ -35,11 +35,13 @@ block.manager.prototype.bundle = (opt = {}) ->
           if /\.js$/.exec(d.url or d.path or d) => d.type = \js
           else if /\.css$/.exec(d.url or d.path or d) => d.type = \css
           else d.type = \js # default js type
+        # bundler in rescope / csscope will remove duplicates for us.
         deps.js ++= (ret.pkg.dependencies or []).filter -> it.type == \js or /\.js/.exec((it.path or it or ''))
         deps.css ++= (ret.pkg.dependencies or []).filter -> it.type == \css or /\.css/.exec((it.path or it or ''))
         # we expect js to be sth like function body, so we should wrap it with a function.
         js = "((function(module){#{js or ''};return module.exports;})({}))"
         blocks.push b = {js, css, html: node.innerHTML, bd, id}
+        list ++= (ret.pkg.dependencies or []).filter -> it.type == \block or /\.html/.exec(it.path or it or '')
         hash[id] = b
         return _ list, blocks, deps
   _ opt.[]blocks.map((b)->b)

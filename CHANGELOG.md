@@ -3,6 +3,8 @@
 ## v4.8.1 (upcoming)
 
  - fix bug: `id()` should generate path depending on the type in bid.
+ - fix bug: `document` should be `doc` in debundler
+ - support bunding of `block` type files.
 
 
 ## v4.8.0

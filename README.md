@@ -426,7 +426,8 @@ The `pkg` field of a block interface is defined as:
      - for more information about `plug`, see `HTML Plugs` section below.
  - `dependencies`: dependencies of this block.
    - list or modules, in case of mutual dependencies:
-     ["some-url", {url: "some-url", async: false, dev: true, global: true, type: "css or js"}]
+     ["some-url", {url: "some-url", async: false, dev: true, global: true, type: "css, js or block"}]
+   - for now, `block` type dependencies are used for hint of bundling.
    - options in object notation:
      - `async: true to load this module asynchronously. true by default.
      - `global: for CSS. true if the CSS should also work in global scope. ( under body ). default false.

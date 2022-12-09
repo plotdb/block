@@ -210,7 +210,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
       p = if opt.url => _fetch opt.url, {method: \GET}
       else Promise.resolve(opt.code or '')
       p = p.then (c) ->
-        if !block.debundle-node => document.body.appendChild block.debundle-node = doc.createElement \div
+        if !block.debundle-node => doc.body.appendChild block.debundle-node = doc.createElement \div
         block.debundle-node.style.display = \none
         block.debundle-node.appendChild(div = doc.createElement \div)
         div.innerHTML = c

@@ -469,7 +469,7 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
       p = p.then(function(c){
         var div;
         if (!block.debundleNode) {
-          document.body.appendChild(block.debundleNode = doc.createElement('div'));
+          doc.body.appendChild(block.debundleNode = doc.createElement('div'));
         }
         block.debundleNode.style.display = 'none';
         block.debundleNode.appendChild(div = doc.createElement('div'));
@@ -1224,6 +1224,9 @@ function in$(x, xs){
         bd: bd,
         id: id
       });
+      list = list.concat((ret.pkg.dependencies || []).filter(function(it){
+        return it.type === 'block' || /\.html/.exec(it.path || it || '');
+      }));
       hash[id] = b;
       return _(list, blocks, deps);
     });
