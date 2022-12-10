@@ -11,7 +11,9 @@ block.env win
 win.rescope = rescope
 win.csscope = csscope
 
-mgr = new block.manager registry: ({ns, name, version, path, type}) ->
+mgr = new block.manager registry: url: ({ns, url, name, version, path, type}) ->
+  if url =>
+    return if /^https?:/.exec(url) => url else "block#url"
   path = if type == \block => "#name.html" else if type == \css => "#name.css" else "#name.js"
   ret = "block/#path"
   ret
