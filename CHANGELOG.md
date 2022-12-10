@@ -1,5 +1,11 @@
 # Change Logs
 
+## v5.0.2
+
+ - fix bug: `_ref` pollutes the input bid.
+ - upgrade peer dependencies rescope and csscope
+
+
 ## v5.0.1
 
  - upgrade peer dependencies rescope and csscope

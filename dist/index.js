@@ -304,9 +304,9 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
     }
   },
   _ref: function(o){
-    var r;
+    var r, ref$;
     if (typeof (r = this._reg.url || this._reg) === 'function') {
-      o.url = r(o);
+      o = (ref$ = import$({}, o), ref$.url = r(o), ref$);
     }
     return this._reg.fetch
       ? this._reg.fetch(o)

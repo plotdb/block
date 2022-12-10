@@ -148,7 +148,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     else @_get-url o
 
   _ref: (o) ->
-    if typeof(r = @_reg.url or @_reg) == \function => o <<< {url: r o}
+    if typeof(r = @_reg.url or @_reg) == \function => o = {} <<< o <<< {url: r o}
     return if @_reg.fetch => @_reg.fetch(o) else o.url
 
   fetch: (o) ->

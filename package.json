@@ -3,7 +3,7 @@
   "name": "@plotdb/block",
   "license": "MIT",
   "description": "block",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "browser": "dist/index.min.js",
   "main": "dist/node.js",
   "homepage": "https://github.com/plotdb/block",
@@ -27,10 +27,10 @@
     "@loadingio/ldcolorpicker": "^3.0.3",
     "@loadingio/ldquery": "^3.0.4",
     "@loadingio/loading.css": "^3.1.0",
-    "@plotdb/csscope": "^4.1.1",
+    "@plotdb/csscope": "^5.0.1",
     "@plotdb/datadom": "^0.2.0",
     "@plotdb/json0": "^0.0.5",
-    "@plotdb/rescope": "^5.0.0",
+    "@plotdb/rescope": "^5.0.1",
     "@zbryikt/template": "^2.3.41",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.5.2",
@@ -57,8 +57,8 @@
     "uglifycss": "^0.0.29"
   },
   "peerDependencies": {
-    "@plotdb/csscope": "^5.0.0",
-    "@plotdb/rescope": "^5.0.0",
+    "@plotdb/csscope": "^5.0.1",
+    "@plotdb/rescope": "^5.0.1",
     "proxise": "^1.0.1"
   },
   "frontendDependencies": {
