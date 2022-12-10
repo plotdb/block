@@ -75,7 +75,7 @@ block.manager.prototype.bundle = (opt = {}) ->
           #  .join ''
           html = blocks.map(-> it.html or '').join('')
           code = [
-            \<template>
+            '<template rel="block">'
             html
             """<style type="text/css">#css#depcss</style>"""
             """<script type="text/javascript">#js#depjs-cache;#depcss-cache</script>"""

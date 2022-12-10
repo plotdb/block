@@ -1250,7 +1250,7 @@ function in$(x, xs){
       html = blocks.map(function(it){
         return it.html || '';
       }).join('');
-      code = ['<template>', html, "<style type=\"text/css\">" + css + depcss + "</style>", "<script type=\"text/javascript\">" + js + depjsCache + ";" + depcssCache + "</script>", '</template>'].join('');
+      code = ['<template rel="block">', html, "<style type=\"text/css\">" + css + depcss + "</style>", "<script type=\"text/javascript\">" + js + depjsCache + ";" + depcssCache + "</script>", '</template>'].join('');
       return {
         code: code,
         deps: deps
