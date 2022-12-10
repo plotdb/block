@@ -406,16 +406,12 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @manager.rescope.load @dependencies.filter(-> !it.type or it.type == \js), @_ctx
       .then ~>
         @manager.csscope.load(
-          @dependencies
-            .filter -> it.type == \css and it.global == true
-            .map -> it
+          @dependencies.filter -> it.type == \css and it.global == true
         )
       .then ~>
         @csscopes.global = (it or [])
         @manager.csscope.load(
-          @dependencies
-            .filter -> it.type == \css and it.global != true
-            .map -> it
+          @dependencies.filter -> it.type == \css and it.global != true
         )
       .then ~>
         @csscopes.local = (it or [])

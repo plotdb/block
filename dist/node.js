@@ -770,15 +770,11 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
     }).then(function(){
       return this$.manager.csscope.load(this$.dependencies.filter(function(it){
         return it.type === 'css' && it.global === true;
-      }).map(function(it){
-        return it;
       }));
     }).then(function(it){
       this$.csscopes.global = it || [];
       return this$.manager.csscope.load(this$.dependencies.filter(function(it){
         return it.type === 'css' && it.global !== true;
-      }).map(function(it){
-        return it;
       }));
     }).then(function(it){
       var ref$;
