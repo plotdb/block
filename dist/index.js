@@ -26,9 +26,10 @@ _fetch = function(u, c){
       return err();
     }
     return ret.clone().text().then(function(t){
-      var i, e, j, _e;
+      var i, m, e, ref$, j, _e;
       i = ret.status || 404;
-      e = err(i + " " + t, i);
+      m = i + " " + t;
+      e = (ref$ = new Error(m), ref$.name = 'lderror', ref$.id = i, ref$.message = m, ref$);
       try {
         if ((j = JSON.parse(t)) && j.name === 'lderror') {
           import$(e, j).json = j;

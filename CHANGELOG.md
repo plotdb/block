@@ -8,6 +8,7 @@
  - `registry` should not return Promise now, and should consider `url` parameter now.
  - `registry.fetch` accepts and should consider `url` from `registry.url` now.
  - remove undocumented `fetch` option.
+ - fix bug: 2 Promise.rejects are wrapped when fetch fails, and thus one of them is always uncaught
 
 
 ## v4.8.0

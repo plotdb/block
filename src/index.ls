@@ -11,7 +11,10 @@ _fetch = (u, c) ->
   if !ret => return err!
   ret.clone!text!then (t) ->
     i = ret.status or 404
-    e = err("#i #t", i)
+    # we have to access error, but `err` above returns a promise. thus we create it manually.
+    # the old, incorrect code which generate a hidden, uncaught rejection: `e = err("#i #t", i)`
+    m = "#i #t"
+    e = new Error(m) <<< {name: \lderror, id: i, message: m}
     try
       if (j = JSON.parse(t)) and j.name == \lderror => e <<< j <<< {json: j}
     catch _e
