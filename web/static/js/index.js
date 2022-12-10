@@ -35,13 +35,11 @@
   lc = {};
   unpkg = {
     url: function(arg$){
-      var name, version, path;
-      name = arg$.name, version = arg$.version, path = arg$.path;
-      return "https://unpkg.com/" + name + (version && "@" + version || '') + (path && "/" + path || '');
-    },
-    fetch: function(arg$){
-      var ns, name, version, path, type;
-      ns = arg$.ns, name = arg$.name, version = arg$.version, path = arg$.path, type = arg$.type;
+      var ns, url, name, version, path, type;
+      ns = arg$.ns, url = arg$.url, name = arg$.name, version = arg$.version, path = arg$.path, type = arg$.type;
+      if (url) {
+        return url;
+      }
       if (ns === 'custom') {
         if (type === 'block') {
           return "/block/" + name + "/" + version + "/" + (path || 'index.html');
@@ -52,12 +50,12 @@
       if (type === 'block') {
         return "/block/" + name + "/" + version + "/" + (path || 'index.html');
       }
-      return fetch(this.url({
-        name: name,
-        version: version,
-        path: path,
-        type: type
-      })).then(function(r){
+      return "https://unpkg.com/" + name + (version && "@" + version || '') + (path && "/" + path || '');
+    },
+    fetch: function(arg$){
+      var url, version;
+      url = arg$.url, version = arg$.version;
+      return fetch(url).then(function(r){
         var v;
         v = (/^https:\/\/unpkg.com\/([^@]+)@([^/]+)\//.exec(r.url) || [])[2];
         return r.text().then(function(it){

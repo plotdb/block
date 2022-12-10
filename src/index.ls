@@ -115,7 +115,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
   id2obj: block.id2obj
   chain: -> @_chain = it
   registry: (r) ->
-    if typeof(r) in <[string function]> or (r.fetch and r.url) => r = {lib: r, block: r}
+    if typeof(r) in <[string function]> or r.url or r.fetch => r = {lib: r, block: r}
     if r.lib? =>
       if @rescope == block.rescope! => @rescope = new rescope {global: win}
       if @csscope == block.csscope! => @csscope = new csscope.manager!
@@ -123,7 +123,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
       @csscope.registry r.lib
     if r.block? =>
       @_reg = r.block or ''
-      if typeof(@_reg) == \string => if @_reg and @_reg[* - 1] != \/ => @_reg += \/
+      if typeof(@_reg) == \string and @_reg and @_reg[* - 1] != \/ => @_reg += \/
   set: (opt = {}) ->
     opts = if Array.isArray(opt) => opt else [opt]
     Promise.all(opts.map (obj) ~>
@@ -132,25 +132,33 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
       b = if obj instanceof block.class => obj else obj.block
       @hash{}[ns]{}[name]{}[version][path or 'index.html'] = b
     )
-  get-url: ({ns, name, version, path, type}) ->
-    if !ns => ns = ''
-    r = @_reg.url or @_reg
-    if typeof(r) == \function => return r {ns, name, version, path, type: type or \block}
+
+  _get-url: ({url,name,version,path,type}) ->
+    if url => return url
     path = if path => path
     else if type == \block => \index.html
     else if type == \js => \index.min.js
     else \index.min.css
-    retunr "#{@_reg or ''}/assets/block/#{name}/#{version or 'main'}/#path"
+    return "#{@_reg or ''}/assets/block/#{name}/#{version or 'main'}/#path"
+
+  get-url: (o) ->
+    if !o.type => o.type = \block
+    if typeof(r = @_reg.url or @_reg) == \function => r o
+    else @_get-url o
+
+  _ref: (o) ->
+    if typeof(r = @_reg.url or @_reg) == \function => o <<< {url: r o}
+    return if @_reg.fetch => @_reg.fetch(o) else o.url
 
   fetch: (o) ->
     o <<< {type: \block}
     # this is undocumented - and it's going to be replaced by `@plotdb/registry`
     # we probably would like to remove this once we get what's this for.
     if @_fetch => return Promise.resolve(@_fetch o)
-    _ref = if @_reg.fetch => @_reg.fetch o else @get-url o
-    if _ref.then => _ref
-    else if !_ref => return err o
-    else _fetch _ref, {method: \GET} .then -> {content: it}
+    r = @_ref o
+    return if r.then => r
+    else if !r => err o
+    else _fetch r, {method: \GET} .then -> {content: it}
 
   _get: (opt) ->
     [ns, n, v, p] = [opt.ns or '', opt.name, opt.version or \main, opt.path or 'index.html']

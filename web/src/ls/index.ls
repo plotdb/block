@@ -26,15 +26,15 @@ load-sample = ({ns, name, version, root}) ->
 
 lc = {}
 unpkg =
-  url: ({name, version, path}) ->
-    "https://unpkg.com/#{name}#{version and "@#version" or ''}#{path and "/#path" or ''}"
-  fetch: ({ns, name, version, path, type}) ->
+  url: ({ns, url, name, version, path, type}) ->
+    if url => return url
     if ns == \custom =>
       if type == \block => return "/block/#name/#version/#{path or 'index.html'}"
       else return "/block/#name/#version/#{path or 'index.js'}"
-
     if type == \block => return "/block/#{name}/#{version}/#{path or 'index.html'}"
-    fetch @url {name, version, path, type}
+    return "https://unpkg.com/#{name}#{version and "@#version" or ''}#{path and "/#path" or ''}"
+  fetch: ({url,version}) ->
+    fetch url
       .then (r) ->
         v = (/^https:\/\/unpkg.com\/([^@]+)@([^/]+)\//.exec(r.url) or []).2
         r.text!then -> {version: v or version, content: it}

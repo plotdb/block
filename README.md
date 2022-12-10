@@ -173,21 +173,30 @@ either way we have to provide a way to load, register, cache these blocks - that
 
 #### constructor options
 
-Create a `block.manager` instance with 
+Create a `block.manager` instance with
 
     mgr = new block.manager(opt);
 
 where the constructor options are as below:
 
  - `registry`: either function or string, tell `block.manager` where to find remote blocks.
-   - `function({name,version,path})`: return URL for given `name`, `version` and `path` of a block.
+   - `function({ns,url,name,version,path,type})`: return URL for given bid of a block.
+     - should respect url or use/transofmr it if provided.
    - `string`: the registry base url. block.manager will look up blocks under this url with this rule:
-     - `/block/<name>/<version>/<path>`
-   - this will be used for both block and libraries. To distinquish them, use:
+     - `/assets/block/<name>/<version>/<path>`
+   - `object`:
+     - either an object with `url` and `fetch` (optional) field, or `lib` and `block` field.
+       - `url` and `fetch`:
+         - `url({ns,url,name, ...})` will be used to transform given bid to an URL.
+         - `fetch({ns,url,...}))` will be used to fetch `url` or bid ir provided.
+           - if `url()` is provided, bid will be transformed first.
+       - `lib` and `block`:
+         - registry set here will be used for both block and libraries. To distinquish them, use:
 
-     registry: {lib: (-> ...), block: (-> ...)}   
+           registry: {lib: (-> ...), block: (-> ...)}
 
-   - `registry.lib` will be used for querying block if `registry.block` is omitted.
+         - `registry.lib` will be used for querying block if `registry.block` is omitted.
+
  - `rescope`: optional. should be a `@plotdb/rescope` object if provided.
    - will replace internal rescope object if provided.
  - `csscope`: optional. should be a `@plotdb/csscope` object if provied.
@@ -320,7 +329,7 @@ To access `block.instance` context, block JavaScript should be implemented based
  - `i18n(text)`: return translated text based on the current context.
  - `path(p)`: return url for the given path `p`
  - `dom()`: return DOM corresponding to this block. Create a new one if not yet created.
- - `run({node,type})`: execute `type` API provided by `block` implementation with `node` as root. 
+ - `run({node,type})`: execute `type` API provided by `block` implementation with `node` as root.
  - `transform(cfg)`: (re)transform DOM based on the given `cfg` option, which is:
    - string: name of the transform (e.g., `i18n`) to apply.
  - `update(ops)`: (TBD) update `datadom` based on provided ops ( array of operational transformation ).

@@ -251,7 +251,7 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
   },
   registry: function(r){
     var ref$;
-    if (((ref$ = typeof r) === 'string' || ref$ === 'function') || (r.fetch && r.url)) {
+    if (((ref$ = typeof r) === 'string' || ref$ === 'function') || r.url || r.fetch) {
       r = {
         lib: r,
         block: r
@@ -271,10 +271,8 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
     }
     if (r.block != null) {
       this._reg = r.block || '';
-      if (typeof this._reg === 'string') {
-        if (this._reg && (ref$ = this._reg)[ref$.length - 1] !== '/') {
-          return this._reg += '/';
-        }
+      if (typeof this._reg === 'string' && this._reg && (ref$ = this._reg)[ref$.length - 1] !== '/') {
+        return this._reg += '/';
       }
     }
   },
@@ -296,51 +294,57 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
       return ((ref$ = (ref1$ = (ref2$ = this$.hash)[ns] || (ref2$[ns] = {}))[name] || (ref1$[name] = {}))[version] || (ref$[version] = {}))[path || 'index.html'] = b;
     }));
   },
-  getUrl: function(arg$){
-    var ns, name, version, path, type, r;
-    ns = arg$.ns, name = arg$.name, version = arg$.version, path = arg$.path, type = arg$.type;
-    if (!ns) {
-      ns = '';
-    }
-    r = this._reg.url || this._reg;
-    if (typeof r === 'function') {
-      return r({
-        ns: ns,
-        name: name,
-        version: version,
-        path: path,
-        type: type || 'block'
-      });
+  _getUrl: function(arg$){
+    var url, name, version, path, type;
+    url = arg$.url, name = arg$.name, version = arg$.version, path = arg$.path, type = arg$.type;
+    if (url) {
+      return url;
     }
     path = path
       ? path
       : type === 'block'
         ? 'index.html'
         : type === 'js' ? 'index.min.js' : 'index.min.css';
-    return retunr((this._reg || '') + "/assets/block/" + name + "/" + (version || 'main') + "/" + path);
+    return (this._reg || '') + "/assets/block/" + name + "/" + (version || 'main') + "/" + path;
+  },
+  getUrl: function(o){
+    var r;
+    if (!o.type) {
+      o.type = 'block';
+    }
+    if (typeof (r = this._reg.url || this._reg) === 'function') {
+      return r(o);
+    } else {
+      return this._getUrl(o);
+    }
+  },
+  _ref: function(o){
+    var r;
+    if (typeof (r = this._reg.url || this._reg) === 'function') {
+      o.url = r(o);
+    }
+    return this._reg.fetch
+      ? this._reg.fetch(o)
+      : o.url;
   },
   fetch: function(o){
-    var _ref;
+    var r;
     o.type = 'block';
     if (this._fetch) {
       return Promise.resolve(this._fetch(o));
     }
-    _ref = this._reg.fetch
-      ? this._reg.fetch(o)
-      : this.getUrl(o);
-    if (_ref.then) {
-      return _ref;
-    } else if (!_ref) {
-      return err(o);
-    } else {
-      return _fetch(_ref, {
-        method: 'GET'
-      }).then(function(it){
-        return {
-          content: it
-        };
-      });
-    }
+    r = this._ref(o);
+    return r.then
+      ? r
+      : !r
+        ? err(o)
+        : _fetch(r, {
+          method: 'GET'
+        }).then(function(it){
+          return {
+            content: it
+          };
+        });
   },
   _get: function(opt){
     var ref$, ns, n, v, p, obj, ref1$, that, key$, ver, c, ref2$, this$ = this;

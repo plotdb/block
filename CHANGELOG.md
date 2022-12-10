@@ -1,10 +1,12 @@
 # Change Logs
 
-## v4.8.1 (upcoming)
+## v5.0.0 (upcoming)
 
  - fix bug: `id()` should generate path depending on the type in bid.
  - fix bug: `document` should be `doc` in debundler
  - support bunding of `block` type files.
+ - `registry` should not return Promise now, and should consider `url` parameter now.
+ - `registry.fetch` accepts and should consider `url` from `registry.url` now.
 
 
 ## v4.8.0
