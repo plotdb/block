@@ -205,7 +205,6 @@ block.manager = function(opt){
     map: {}
   };
   this._chain = opt.chain || null;
-  this._fetch = opt.fetch || null;
   this.init = proxise.once(function(){
     return this$._init();
   });
@@ -315,9 +314,6 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
   fetch: function(o){
     var r;
     o.type = 'block';
-    if (this._fetch) {
-      return Promise.resolve(this._fetch(o));
-    }
     r = this._ref(o);
     return r.then
       ? r

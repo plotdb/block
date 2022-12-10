@@ -98,8 +98,6 @@ block.manager = (opt={}) ->
   # use _ver.map to align design with `rescope` and `csscope`
   @_ver = {map: {}}
   @_chain = opt.chain or null
-  # this is undocumented, and seems to be replaced by `registry`. should we remove it in the future?
-  @_fetch = opt.fetch or null
   @init = proxise.once ~> @_init!
   @rescope = if opt.rescope instanceof rescope => opt.rescope else block.rescope!
   @csscope = if opt.csscope instanceof csscope => opt.csscope else block.csscope!
@@ -152,9 +150,6 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
 
   fetch: (o) ->
     o <<< {type: \block}
-    # this is undocumented - and it's going to be replaced by `@plotdb/registry`
-    # we probably would like to remove this once we get what's this for.
-    if @_fetch => return Promise.resolve(@_fetch o)
     r = @_ref o
     return if r.then => r
     else if !r => err o
