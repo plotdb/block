@@ -1,6 +1,6 @@
 # Change Logs
 
-## v5.0.0 (upcoming)
+## v5.0.0
 
  - fix bug: `id()` should generate path depending on the type in bid.
  - fix bug: `document` should be `doc` in debundler
