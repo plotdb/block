@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.0.1
+
+ - upgrade peer dependencies rescope and csscope
+
+
 ## v5.0.0
 
  - fix bug: `id()` should generate path depending on the type in bid.
