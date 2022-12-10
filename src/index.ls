@@ -408,14 +408,14 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         @manager.csscope.load(
           @dependencies
             .filter -> it.type == \css and it.global == true
-            .map -> it.url or it
+            .map -> it
         )
       .then ~>
         @csscopes.global = (it or [])
         @manager.csscope.load(
           @dependencies
             .filter -> it.type == \css and it.global != true
-            .map -> it.url or it
+            .map -> it
         )
       .then ~>
         @csscopes.local = (it or [])
