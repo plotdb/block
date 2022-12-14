@@ -22,7 +22,7 @@ err = function(o, id){
   return Promise.reject((ref$ = new Error(o), ref$.name = 'lderror', ref$.id = id, ref$.message = o, ref$));
 };
 _fetch = function(u, c){
-  if ((typeof fs != 'undefined' && fs !== null) && !/^https:/.exec(u)) {
+  if (block.__node && (typeof fs != 'undefined' && fs !== null) && !/^https:/.exec(u)) {
     return new Promise(function(res, rej){
       return fs.readFile(u, function(e, b){
         if (e) {
@@ -1262,7 +1262,8 @@ function import$(obj, src){
   var own = {}.hasOwnProperty;
   for (var key in src) if (own.call(src, key)) obj[key] = src[key];
   return obj;
-}block.env(typeof self != 'undefined' && self !== null ? self : globalThis);
+}block.__node = true;
+block.env(typeof self != 'undefined' && self !== null ? self : globalThis);
 if (typeof module != 'undefined' && module !== null) {
   module.exports = block;
 } else if (typeof window != 'undefined' && window !== null) {
