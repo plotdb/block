@@ -1106,10 +1106,12 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
             data: this$.data
           };
           if (type === 'init') {
-            this$.obj.push(new b.factory(this$.block === b ? this$ : null));
+            this$.obj.push(o = new b.factory(this$.block === b ? this$ : null));
+            o.parent = this$.obj[idx - 1];
           }
-          ps.push((o = this$.obj[idx]) ? this$.obj[idx][type](payload) : null);
-          o.parent = this$.obj[idx - 1];
+          if (o = this$.obj[idx]) {
+            ps.push(o[type](payload));
+          }
           return _(list, idx + 1, gtx, o);
         }(b._ctx.ctx
           ? b._ctx.ctx()

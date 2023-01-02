@@ -603,7 +603,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
           }
           if type == \init =>
             @obj.push(
-              new b.factory(
+              o = new b.factory(
                 # we don't create instance for base blocks.
                 # actually we may only need one instance.
                 # however, instance stores information about class,
@@ -612,8 +612,8 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
                 if @block == b => @ else null
               )
             )
-          ps.push if (o = @obj[idx]) => @obj[idx][type](payload) else null
-          o.parent = @obj[idx - 1]
+            o.parent = @obj[idx - 1]
+          if (o = @obj[idx]) => ps.push o[type](payload)
           _ list, idx + 1, gtx, o
         ) if b._ctx.ctx => b._ctx.ctx! else b._ctx.{}local # use `{}local` for rescope < v4
       _ cs, 0, {}

@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.0.4 (upcoming)
+
+ - init parent field of internal context object right at initialization.
+
+
 ## v5.0.3
 
  - fix bug: will try using `fs` once defined even in browser.
