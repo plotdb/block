@@ -3,6 +3,7 @@
 ## v5.0.4 (upcoming)
 
  - init parent field of internal context object right at initialization.
+ - fix bug: i18n api should also accept the interpolation object.
 
 
 ## v5.0.3

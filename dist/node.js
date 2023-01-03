@@ -131,7 +131,7 @@ block.env = function(it){
 block.i18n = {
   module: {
     lng: 'en',
-    t: function(v){
+    t: function(v, o){
       var vs, lng, i$, to$, i, ref$, ns, t, that, ref1$;
       vs = Array.isArray(v)
         ? v
@@ -827,12 +827,12 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
       path: this.path
     }).replace(/\/[^/]*$/, '/') + p;
   },
-  i18n: function(t){
+  i18n: function(t, o){
     var id;
     id = this._id_t;
     return block.i18n.module.t([id + ":" + t].concat(this['extends'].map(function(it){
       return it._id_t + ":" + t;
-    }), [t + ""]));
+    }), [t + ""]), o);
   },
   create: function(o){
     var this$ = this;
@@ -1035,8 +1035,8 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
   _path: function(it){
     return this.block._path(it);
   },
-  i18n: function(it){
-    return this.block.i18n(it);
+  i18n: function(v, o){
+    return this.block.i18n(v, o);
   },
   run: function(arg$){
     var node, type, cs, ps, c, this$ = this;
@@ -1093,12 +1093,12 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
                 }
                 return results$;
               },
-              t: function(it){
-                return this$.block.i18n(it);
+              t: function(v, o){
+                return this$.block.i18n(v, o);
               }
             },
-            t: function(it){
-              return this$.block.i18n(it);
+            t: function(v, o){
+              return this$.block.i18n(v, o);
             },
             path: function(it){
               return this$._path(it);

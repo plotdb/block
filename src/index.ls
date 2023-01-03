@@ -58,7 +58,7 @@ block.env = ->
 block.i18n =
   module:
     lng: \en
-    t: (v) ->
+    t: (v,o) ->
       vs = if Array.isArray(v) => v else [v]
       lng = @lng
       for i from 0 til vs.length =>
@@ -439,9 +439,9 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       .get-url @{ns, name, version, path}
       .replace(/\/[^/]*$/, '/') + p
 
-  i18n: (t) ->
+  i18n: (t, o) ->
     id = @_id_t
-    block.i18n.module.t( ["#id:#t"] ++ (@extends.map -> "#{it._id_t}:#t") ++ ["#t"] )
+    block.i18n.module.t( ["#id:#t"] ++ (@extends.map -> "#{it._id_t}:#t") ++ ["#t"], o )
 
   create: (o={}) ->
     # defer init in create since we may not use this block even if we load it.
@@ -559,7 +559,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     @transform \path
 
   _path: -> @block._path it
-  i18n: -> @block.i18n it
+  i18n: (v, o) -> @block.i18n v, o
 
   # run factory methods, recursively.
   # we will need a bus for communication.
@@ -596,8 +596,8 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
               add-resource-bundles: (resources = {}) ~>
                 for lng, res of resources =>
                   block.i18n.add-resource-bundle lng, @block._id_t, res
-              t: ~> @block.i18n(it)
-            t: ~> @block.i18n(it)
+              t: (v, o) ~> @block.i18n(v, o)
+            t: (v, o) ~> @block.i18n(v, o)
             path: ~> @_path(it)
             data: @data
           }
