@@ -1,6 +1,6 @@
 # Change Logs
 
-## v5.0.5 (upcoming)
+## v5.0.5
 
  - fix bug: fallback i18n transformer doesn't support keySeparator
 
