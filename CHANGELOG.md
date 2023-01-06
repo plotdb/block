@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.0.5
+
+ - fix bug: fallback i18n transformer doesn't support keySeparator
+
+
 ## v5.0.4
 
  - init parent field of internal context object right at initialization.
