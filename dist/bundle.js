@@ -117,7 +117,7 @@ block.i18n = {
   module: {
     lng: 'en',
     t: function(v, o){
-      var vs, lng, i$, to$, i, ref$, ns, t, u, ref1$, j$, to1$, j, that;
+      var vs, lng, i$, to$, i, ref$, ns, t, _t, u, ref1$, j$, to1$, j, that;
       vs = Array.isArray(v)
         ? v
         : [v];
@@ -129,11 +129,11 @@ block.i18n = {
         }
         ref$ = vs[i].split(':'), ns = ref$[0], t = slice$.call(ref$, 1);
         t = t.join(':');
-        t = t.split('.');
+        _t = t.split('.');
         u = (ref$ = (ref1$ = this.res)[lng] || (ref1$[lng] = {}))[ns] || (ref$[ns] = {});
-        for (j$ = 0, to1$ = t.length; j$ < to1$; ++j$) {
+        for (j$ = 0, to1$ = _t.length; j$ < to1$; ++j$) {
           j = j$;
-          u = u[t[j]];
+          u = u[_t[j]];
         }
         if (that = u) {
           return that;

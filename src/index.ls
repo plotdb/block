@@ -65,9 +65,9 @@ block.i18n =
         if !vs[i] => continue
         [ns, ...t] = vs[i].split(':')
         t = t.join(':')
-        t = t.split('.')
+        _t = t.split('.')
         u = @res{}[lng]{}[ns]
-        for j from 0 til t.length => u = u[t[j]]
+        for j from 0 til _t.length => u = u[_t[j]]
         if u => return that
       return t or ns or v[* - 1]
     change-language: -> @lng = it or \en
