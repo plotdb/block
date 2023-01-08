@@ -1,3 +1,5 @@
+ - style should only transformed if `path` attribute is set?
+   - we thus may need multiple style tag support?
  - update document
  - data / update data / datadom
    - we should support updating data in block

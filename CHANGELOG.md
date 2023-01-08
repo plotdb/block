@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.0.7
+
+ - upgrade peerDependencies and dependencies
+
+
 ## v5.0.6
 
  - fix bug: `block.i18n` should keep the original text `t` to return if translation is not found.
