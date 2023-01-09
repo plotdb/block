@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.0.8
+
+ - update `@plotdb/rescope` dependency version to `5.0.6`
+
+
 ## v5.0.7
 
  - upgrade peerDependencies and dependencies

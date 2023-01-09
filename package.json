@@ -3,7 +3,7 @@
   "name": "@plotdb/block",
   "license": "MIT",
   "description": "block",
-  "version": "5.0.7",
+  "version": "5.0.8",
   "browser": "dist/index.min.js",
   "main": "dist/node.js",
   "homepage": "https://github.com/plotdb/block",
@@ -56,7 +56,7 @@
   },
   "peerDependencies": {
     "@plotdb/csscope": "^5.0.2",
-    "@plotdb/rescope": "^5.0.4",
+    "@plotdb/rescope": "^5.0.6",
     "proxise": "^1.0.1"
   },
   "frontendDependencies": {
@@ -93,7 +93,7 @@
   "dependencies": {
     "@plotdb/semver": "^0.0.3",
     "@plotdb/csscope": "^5.0.2",
-    "@plotdb/rescope": "^5.0.4",
+    "@plotdb/rescope": "^5.0.6",
     "proxise": "^1.0.1",
     "node-fetch": "^2.6.7"
   }
