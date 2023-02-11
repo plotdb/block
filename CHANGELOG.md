@@ -1,5 +1,11 @@
 # Change Logs
 
+## v5.1.0
+
+ - support `autoTransform` in `instance.attach`. expected to be default `i18n` in future upgrade.
+ - add event handling mechanism in `block.i18n.module` with an expected event `languageChanged`.
+
+
 ## v5.0.8
 
  - update `@plotdb/rescope` dependency version to `5.0.6`

@@ -142,11 +142,45 @@ block.i18n = {
       return t || ns || v[v.length - 1];
     },
     changeLanguage: function(it){
-      return this.lng = it || 'en';
+      return this._fire('languageChanged', this.lng = it) || 'en';
     },
     addResourceBundle: function(lng, ns, res, deep, overwrite){
       var ref$;
       return ((ref$ = this.res)[lng] || (ref$[lng] = {}))[ns] = res;
+    },
+    _evthdr: {},
+    on: function(n, cb){
+      var this$ = this;
+      return (Array.isArray(n)
+        ? n
+        : [n]).map(function(n){
+        var ref$;
+        return ((ref$ = this$._evthdr)[n] || (ref$[n] = [])).push(cb);
+      });
+    },
+    off: function(n, cb){
+      var this$ = this;
+      return (Array.isArray(n)
+        ? n
+        : [n]).map(function(n){
+        var idx, ref$;
+        if (~(idx = ((ref$ = this$._evthdr)[n] || (ref$[n] = [])).indexOf(cb))) {
+          return this$._evthdr[n].splice(idx, 1);
+        }
+      });
+    },
+    _fire: function(n){
+      var v, res$, i$, to$, ref$, len$, cb, results$ = [];
+      res$ = [];
+      for (i$ = 1, to$ = arguments.length; i$ < to$; ++i$) {
+        res$.push(arguments[i$]);
+      }
+      v = res$;
+      for (i$ = 0, len$ = (ref$ = this._evthdr[n] || []).length; i$ < len$; ++i$) {
+        cb = ref$[i$];
+        results$.push(cb.apply(this, v));
+      }
+      return results$;
     },
     res: {}
   },
@@ -842,7 +876,8 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         if (o.root) {
           return r.attach({
             root: o.root,
-            before: o.before
+            before: o.before,
+            autoTransform: o.autoTransform || null
           });
         }
       }).then(function(){
@@ -892,7 +927,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     return this.block.init();
   },
   attach: function(opt){
-    var _o, root, node, exts, s, i$, to$, i, es;
+    var _o, root, node, exts, s, i$, to$, i, es, this$ = this;
     opt == null && (opt = {});
     if (_o = this._defered) {
       if (_o.before) {
@@ -946,6 +981,11 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
         };
       }
     }
+    if (opt.autoTransform === 'i18n') {
+      block.i18n.module.on('languageChanged', this._i18nTransform = function(){
+        return this$.transform('i18n');
+      });
+    }
     return this.run({
       node: node,
       type: 'init'
@@ -955,6 +995,10 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     var node;
     node = this.dom();
     node.parentNode.removeChild(node);
+    if (this._i18nTransform) {
+      block.i18n.module.off('languageChanged', this._i18nTransform);
+      this._i18nTransform = null;
+    }
     return this.run({
       node: node,
       type: 'destroy'

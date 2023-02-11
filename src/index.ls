@@ -70,8 +70,14 @@ block.i18n =
         for j from 0 til _t.length => u = u[_t[j]]
         if u => return that
       return t or ns or v[* - 1]
-    change-language: -> @lng = it or \en
+    change-language: -> @_fire \languageChanged, @lng = it or \en
     add-resource-bundle: (lng, ns, res, deep, overwrite) -> @res{}[lng][ns] = res
+    _evthdr: {}
+    on: (n, cb) -> (if Array.isArray(n) => n else [n]).map (n) ~> @_evthdr.[][n].push cb
+    off: (n, cb) -> (if Array.isArray(n) => n else [n]).map (n) ~>
+      if ~(idx = @_evthdr.[][n].indexOf(cb)) => @_evthdr[n].splice idx, 1
+    # internal function
+    _fire: (n, ...v) -> for cb in (@_evthdr[n] or []) => cb.apply @, v
     res: {}
   use: -> @module = it
   add-resource-bundle: (lng, id, resource, deep = true, overwrite = true) ->
@@ -451,7 +457,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     <~ @init!then _
     r = new block.instance {block: @, ns: @ns, name: @name, path: @path, version: @version, data: o.data}
     r.init!
-      .then -> if o.root => r.attach o{root, before}
+      .then -> if o.root => r.attach {root: o.root, before: o.before, auto-transform: o.auto-transform or null}
       .then -> r
 
   # child: either
@@ -509,10 +515,15 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
         if opt.before => root.insertBefore node, opt.before
         else root.appendChild node
       else @_defered = {node, root, before: opt.before}
+    if opt.auto-transform == \i18n =>
+      block.i18n.module.on \languageChanged, @_i18n-transform = ~> @transform \i18n
     @run({node, type: \init})
   detach: ->
     node = @dom!
     node.parentNode.removeChild node
+    if @_i18n-transform =>
+      block.i18n.module.off \languageChanged, @_i18n-transform
+      @_i18n-transform = null
     @run({node, type: \destroy})
 
   interface: -> @obj[* - 1].interface!

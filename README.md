@@ -149,16 +149,23 @@ Additionally, `block` itself provides following functions:
      - `version` default to `main`, `path` default to `index.html` if not provided.
  - `block.id2obj(id)` - reversely convert id into block with `ns`, `name`, `version` and `path` fields.
  - `block.i18n`
-   - `module`: default i18n module object.
    - `use(obj)`: use `obj` to replace `module`.
    - `language`: current used language.
-   - `changeLangauge(ns)`: set default language to `ns`.
-   - `addResourceBundle(...)`: add resource bundle, with following parameters ( in order ):
-     - `lng`: ns for this resource to add.
-     - `id`: id if any. default undefined.
-     - `resource`: resource to add
-     - `deep`: default true.
-     - `overwrite`: default true. whether overwrite existing resource or not.
+   - `changeLanguage` and `addResourceBundle`: see below in `module`.
+     - TODO we may want to remove these, and rely on `module` directly.
+   - `module`: default i18n module object, which should support following APIs:
+     - `t(..)`: return translated text based on given input.
+     - `on(name, cb)`: listen to event `name` with listener `cb`. expected events:
+       - `languageChanged`: fired when language changes.
+     - `off(name, cb)`: remove listener `cb` from event `name`.
+     - `changeLangauge(ns)`: set default language to `ns`.
+     - `addResourceBundle(...)`: add resource bundle, with following parameters ( in order ):
+       - `lng`: ns for this resource to add.
+       - `id`: id if any. default undefined.
+       - `resource`: resource to add
+       - `deep`: default true.
+       - `overwrite`: default true. whether overwrite existing resource or not.
+
  - `block.env(win)` - set current environment to `win`.
 
 
@@ -318,13 +325,15 @@ To access `block.instance` context, block JavaScript should be implemented based
 
 #### APIs
 
- - `attach({root, before, data})`: attach DOM and initialize this instance.
+ - `attach({root, before, data, autoTransform})`: attach DOM and initialize this instance.
    - block instance is attahed to `root` before `before` if `before` is provided.
    - if a factory interface is exported by block JS, it will be used to create an internal context and be inited.
      - see `Internal JS context of a block` below.
    - return a Promise which resolves with a list of internal object based on inheriance hierarchy after inited.
    - when root is omitted, attach block in headless mode ( for pure script )
    - attach DOM by `appendChild` when `before` is omitted, and by `insertBefore` otherwise.
+   - `autoTransform`: default null. set to `i18n` to enable auto i18n transformation based on i18n module event.
+     - note: will be by default `i18n` in future release. explicitly set to null if that's what you want.
  - `detach()`: detach DOM. return Promise.
  - `i18n(text)`: return translated text based on the current context.
  - `path(p)`: return url for the given path `p`
