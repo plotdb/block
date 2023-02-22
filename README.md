@@ -507,6 +507,15 @@ To plug elements In child block to given slot, use `plug` attribute in child blo
     <div plug="layout"> ... </div>
 
 
+## Packed Block with Bundled Packages
+
+To ship bundled packages along with a block, simply append the corresponding `<template>` tag at the end of the block:
+
+    <div> ... </div><template rel="block"> ... </template>
+
+Actually, any `template` tag in this block with `rel` attribute set to `block` will be considered a bundle tag for `@plotdb/block`.
+
+
 ## Why block
 
 At first we just want to make web editing easier across expertise, and *block design* ( see [future of web design comes in blocks](https://thecode.co/block-web-design/), [Editor.js](https://editorjs.io/) ) seems to be a trend in web design. It's similar to web components but we will have to do more for making visually editing possible.
