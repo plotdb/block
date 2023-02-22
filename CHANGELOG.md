@@ -52,7 +52,7 @@
 
  - fix bug: `id()` should generate path depending on the type in bid.
  - fix bug: `document` should be `doc` in debundler
- - support bunding of `block` type files.
+ - support bundling of `block` type files.
  - `registry` should not return Promise now, and should consider `url` parameter now.
  - `registry.fetch` accepts and should consider `url` from `registry.url` now.
  - remove undocumented `fetch` option.
