@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.2.0
+
+ - support debundling from packed block with bundle packages.
+
+
 ## v5.1.0
 
  - support `autoTransform` in `instance.attach`. expected to be default `i18n` in future upgrade.

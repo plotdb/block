@@ -282,6 +282,8 @@ block.class = (opt={}) ->
       div = doc.createElement("div")
       # in case of unwanted space which creates more than 1 child.
       div.innerHTML = (code or '').trim!
+      @_templates = Array.from(div.querySelectorAll 'template[rel=block]').map (n) ->
+        n.parentNode.removeChild(n) # n is returned
       if div.childNodes.length > 1 => console.warn "DOM definition of a block should contain only one root."
     else if typeof(code) == \object =>
       @script = code.script # can be either a string, object or function
@@ -325,6 +327,9 @@ block.class = (opt={}) ->
 block.class.prototype = Object.create(Object.prototype) <<< do
   _init: ->
     block.init!
+      .then ~>
+        if !@_templates => return
+        Promise.all @_templates.map(~> @manager.debundle root: it)
       .then ~>
         # TODO see constructor above about @script
         # This involves eval which compile separatedly, may induce inefficiency.

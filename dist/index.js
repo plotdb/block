@@ -598,6 +598,9 @@ block['class'] = function(opt){
       code = sanitize(code);
       div = doc.createElement("div");
       div.innerHTML = (code || '').trim();
+      this._templates = Array.from(div.querySelectorAll('template[rel=block]')).map(function(n){
+        return n.parentNode.removeChild(n);
+      });
       if (div.childNodes.length > 1) {
         console.warn("DOM definition of a block should contain only one root.");
       }
@@ -655,6 +658,15 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
   _init: function(){
     var this$ = this;
     return block.init().then(function(){
+      if (!this$._templates) {
+        return;
+      }
+      return Promise.all(this$._templates.map(function(it){
+        return this$.manager.debundle({
+          root: it
+        });
+      }));
+    }).then(function(){
       var v, ref$, ret;
       this$['interface'] = this$.script instanceof Function
         ? this$.script()
