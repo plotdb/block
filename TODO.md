@@ -1,3 +1,4 @@
+ - `i18n` object for block.instance should align with block.i18n?
  - style should only transformed if `path` attribute is set?
    - we thus may need multiple style tag support?
  - update document
