@@ -67,7 +67,7 @@ block.i18n =
         t = t.join(':')
         _t = t.split('.')
         u = @res{}[lng]{}[ns]
-        for j from 0 til _t.length => u = u[_t[j]]
+        for j from 0 til _t.length => if !u => break else u = u[_t[j]]
         if u => return that
       return t or ns or v[* - 1]
     change-language: -> @_fire \languageChanged, @lng = it or \en

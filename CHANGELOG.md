@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.2.1
+
+ - fix bug: default i18n translator may access fields null objects accidentally
+
+
 ## v5.2.0
 
  - support debundling from packed block with bundle packages.

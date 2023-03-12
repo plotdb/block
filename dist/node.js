@@ -148,7 +148,11 @@ block.i18n = {
         u = (ref$ = (ref1$ = this.res)[lng] || (ref1$[lng] = {}))[ns] || (ref$[ns] = {});
         for (j$ = 0, to1$ = _t.length; j$ < to1$; ++j$) {
           j = j$;
-          u = u[_t[j]];
+          if (!u) {
+            break;
+          } else {
+            u = u[_t[j]];
+          }
         }
         if (that = u) {
           return that;
