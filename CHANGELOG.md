@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.2.2
+
+ - fix bug: bundler incorrect ignores `http` protocol
+
+
 ## v5.2.1
 
  - fix bug: default i18n translator may access fields null objects accidentally

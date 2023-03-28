@@ -3,7 +3,7 @@ var win, doc
 err = (o="", id=404) -> Promise.reject(new Error(o) <<< {name: \lderror, id, message: o})
 
 _fetch = (u, c) ->
-  if block.__node and fs? and !/^https:/.exec(u) =>
+  if block.__node and fs? and !/^https?:/.exec(u) =>
     return new Promise (res, rej) ->
       fs.read-file u, (e, b) -> if e => rej e else res b.toString!
   (ret) <- fetch u, c .then _

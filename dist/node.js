@@ -22,7 +22,7 @@ err = function(o, id){
   return Promise.reject((ref$ = new Error(o), ref$.name = 'lderror', ref$.id = id, ref$.message = o, ref$));
 };
 _fetch = function(u, c){
-  if (block.__node && (typeof fs != 'undefined' && fs !== null) && !/^https:/.exec(u)) {
+  if (block.__node && (typeof fs != 'undefined' && fs !== null) && !/^https?:/.exec(u)) {
     return new Promise(function(res, rej){
       return fs.readFile(u, function(e, b){
         if (e) {
