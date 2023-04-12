@@ -368,8 +368,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
           @style-node.textContent = ret
 
         @factory = (i) ->
-          # this is null for base block. and it's not currently used internally anyway.
-          # should we keep this or perhaps we can remove it?
+          # this can be used to determine if it's for a base block.
+          # consider to add an API such as `isBase: -> !!@_instance`
           @_instance = i
           @
         @factory.prototype = Object.create(Object.prototype) <<< {
