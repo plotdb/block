@@ -288,6 +288,7 @@ block.class = (opt={}) ->
     else if typeof(code) == \object =>
       @script = code.script # can be either a string, object or function
       @style = code.style # should be string or CSSRuleList(todo)
+      # TODO redundant code? remove above/this?
       @ <<< code{style, script}
       dom = if code.dom instanceof Function => code.dom! else code.dom
       if dom instanceof win.Element => node = dom
