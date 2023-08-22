@@ -1,5 +1,5 @@
 (function(){
-var win, doc, err, _fetch, rid, sanitize, pubsub, block, slice$ = [].slice;
+var win, doc, err, _fetch, rid, sanitize, pubsub, block;
 err = function(o, id){
   var ref$;
   o == null && (o = "");
@@ -117,18 +117,19 @@ block.i18n = {
   module: {
     lng: 'en',
     t: function(v, o){
-      var vs, lng, i$, to$, i, ref$, ns, t, _t, u, ref1$, j$, to1$, j, that;
+      var vs, lng, i$, to$, i, t, j, ns, _t, u, ref$, ref1$, j$, to1$, that;
       vs = Array.isArray(v)
         ? v
         : [v];
       lng = this.lng;
       for (i$ = 0, to$ = vs.length; i$ < to$; ++i$) {
         i = i$;
-        if (!vs[i]) {
+        if (!((t = vs[i]) != null)) {
           continue;
         }
-        ref$ = vs[i].split(':'), ns = ref$[0], t = slice$.call(ref$, 1);
-        t = t.join(':');
+        j = t.indexOf(':');
+        ns = t.substring(0, j);
+        t = t.substring(j + 1);
         _t = t.split('.');
         u = (ref$ = (ref1$ = this.res)[lng] || (ref1$[lng] = {}))[ns] || (ref$[ns] = {});
         for (j$ = 0, to1$ = _t.length; j$ < to1$; ++j$) {
@@ -143,7 +144,7 @@ block.i18n = {
           return that;
         }
       }
-      return t || ns || v[v.length - 1];
+      return t || v[v.length - 1];
     },
     changeLanguage: function(it){
       return this._fire('languageChanged', this.lng = it) || 'en';

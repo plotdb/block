@@ -62,14 +62,15 @@ block.i18n =
       vs = if Array.isArray(v) => v else [v]
       lng = @lng
       for i from 0 til vs.length =>
-        if !vs[i] => continue
-        [ns, ...t] = vs[i].split(':')
-        t = t.join(':')
+        if !((t = vs[i])?) => continue
+        j = t.indexOf(\:)
+        ns = t.substring(0,j)
+        t = t.substring(j + 1)
         _t = t.split('.')
         u = @res{}[lng]{}[ns]
         for j from 0 til _t.length => if !u => break else u = u[_t[j]]
         if u => return that
-      return t or ns or v[* - 1]
+      return t or v[* - 1]
     change-language: -> @_fire \languageChanged, @lng = it or \en
     add-resource-bundle: (lng, ns, res, deep, overwrite) -> @res{}[lng][ns] = res
     _evthdr: {}

@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.2.3
+
+ - fix bug: incorrect result from internal i18n translator with empty string
+
+
 ## v5.2.2
 
  - fix bug: bundler incorrect ignores `http` protocol
