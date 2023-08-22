@@ -34,6 +34,10 @@ rid.hash = {}
 #  DOMPurify.sanitize( (code or ''), { ADD_TAGS: <[script style plug]>, ADD_ATTR: <[ld ld-each block plug]> })
 sanitize = (code) -> (code or '')
 
+# actually this is more like an event bus instead of pubsub.
+# we may consider it as a hybrid module by extending it with `pub` and `sub` api for nonblocking publishing.
+# furthermore we may want to implement methods such as `parent` or `child` for oriental messaging.
+# however this is impossible unless we add additional information in subscriber cb and name.
 pubsub = ->
   @subs = {}
   @
@@ -41,6 +45,17 @@ pubsub = ->
 pubsub.prototype = Object.create(Object.prototype) <<< do
   fire: (name, ...args) -> Promise.all(@subs[][name].map -> it.apply null, args)
   on: (name, cb) -> @subs[][name].push cb
+  /* # sample code for nonblocking message publishing
+  pub: (name, ...args) ->
+    ps = @subs[][name].map ->
+      (res, rej) <- new Promise _
+      Promise.resolve!
+        .then -> it.apply null, args
+        .then -> res!
+        .catch -> rej it
+    Promise.all ps
+  */
+
 
 block = {}
 block.id = (o) ->

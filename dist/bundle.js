@@ -76,6 +76,16 @@ pubsub.prototype = import$(Object.create(Object.prototype), {
     var ref$;
     return ((ref$ = this.subs)[name] || (ref$[name] = [])).push(cb);
   }
+  /* # sample code for nonblocking message publishing
+  pub: (name, ...args) ->
+    ps = @subs[][name].map ->
+      (res, rej) <- new Promise _
+      Promise.resolve!
+        .then -> it.apply null, args
+        .then -> res!
+        .catch -> rej it
+    Promise.all ps
+  */
 });
 block = {};
 block.id = function(o){
