@@ -1,5 +1,11 @@
 # Change Logs
 
+## v5.2.4 (upcoming)
+
+ - remove `index.html` from bundle key and proxy hash key to prevent potential key duplication
+ - when bundling, check if the given path is a directory and add `index.html` to try again if it is.
+
+
 ## v5.2.3
 
  - fix bug: incorrect result from internal i18n translator with empty string

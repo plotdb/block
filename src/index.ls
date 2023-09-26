@@ -5,7 +5,13 @@ err = (o="", id=404) -> Promise.reject(new Error(o) <<< {name: \lderror, id, mes
 _fetch = (u, c) ->
   if block.__node and fs? and !/^https?:/.exec(u) =>
     return new Promise (res, rej) ->
-      fs.read-file u, (e, b) -> if e => rej e else res b.toString!
+      (e, s) <- fs.stat u, _
+      if e => return rej e
+      n = if s.is-directory! => "#u/index.html"
+      else u
+      (e, b) <- fs.read-file n, _
+      if e => return rej e
+      return res b.toString!
   (ret) <- fetch u, c .then _
   if ret and ret.ok => return ret.text!
   if !ret => return err!
@@ -187,6 +193,8 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     [ns, n, v, p] = [opt.ns or '', opt.name, opt.version or \main, opt.path or 'index.html']
     obj = {ns: ns, name: n, version: v, path: p}
     if !(n and v) => return err("",1015)
+    # unify path as key to prevent from duplicate key confusion. see `get`.
+    p = p.replace /\/(index\.html)?$/, ''
     @hash{}[ns]{}[n]
     if /[^0-9.]/.exec(v) and !opt.force =>
       if @_ver.map{}[ns][n] and @_ver.map[ns][n][v] => if @hash[ns][n]{}[@_ver.map[ns][n][v]][p] => return that
@@ -230,6 +238,9 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
       opts.map (opt = {}) ~>
         if typeof(opt) == \string => opt = block.id2obj opt
         [ns, n, v, p] = [opt.ns or '', opt.name, opt.version or \main, opt.path or 'index.html']
+        # in most cases, `<path>/index.html` = `<path>`, which cause confusion.
+        # unify path as key to prevent from this.
+        p = p.replace /\/(index\.html)?$/, ''
         if !@proxy{}[ns]{}[n]{}[v][p] => @proxy[ns][n][v][p] = proxise (opt) ~> @_get(opt)
         @proxy[ns][n][v][p] opt
     ).then -> if Array.isArray(opt) => return it else return it.0

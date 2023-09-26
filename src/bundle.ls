@@ -3,7 +3,10 @@ block.manager.prototype.bundle = (opt = {}) ->
   hash = {}
   _ = (list, blocks = [], deps = {js: [], css: [], block: []}) ->
     if !list.length => return Promise.resolve {blocks, deps}
-    bd = list.splice 0, 1 .0
+    # we are going to modify it, so clone it.
+    bd = JSON.parse(JSON.stringify(list.splice 0, 1 .0))
+    # prevent duplicate key (`<path>` vs `<path>/index.html`) confusion.
+    bd.path = (bd.path or '').replace(/\/(index\.html)?$/,'')
     id = block.id bd
     if hash[id] => return Promise.resolve!then -> _ list, blocks, deps
     _fetch mgr.get-url(bd), {method: \GET}

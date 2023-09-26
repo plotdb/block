@@ -9,12 +9,18 @@ err = function(o, id){
 _fetch = function(u, c){
   if (block.__node && (typeof fs != 'undefined' && fs !== null) && !/^https?:/.exec(u)) {
     return new Promise(function(res, rej){
-      return fs.readFile(u, function(e, b){
+      return fs.stat(u, function(e, s){
+        var n;
         if (e) {
           return rej(e);
-        } else {
-          return res(b.toString());
         }
+        n = s.isDirectory() ? u + "/index.html" : u;
+        return fs.readFile(n, function(e, b){
+          if (e) {
+            return rej(e);
+          }
+          return res(b.toString());
+        });
       });
     });
   }
@@ -395,6 +401,7 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
     if (!(n && v)) {
       return err("", 1015);
     }
+    p = p.replace(/\/(index\.html)?$/, '');
     (ref$ = (ref1$ = this.hash)[ns] || (ref1$[ns] = {}))[n] || (ref$[n] = {});
     if (/[^0-9.]/.exec(v) && !opt.force) {
       if (((ref$ = this._ver.map)[ns] || (ref$[ns] = {}))[n] && this._ver.map[ns][n][v]) {
@@ -482,6 +489,7 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
         opt = block.id2obj(opt);
       }
       ref$ = [opt.ns || '', opt.name, opt.version || 'main', opt.path || 'index.html'], ns = ref$[0], n = ref$[1], v = ref$[2], p = ref$[3];
+      p = p.replace(/\/(index\.html)?$/, '');
       if (!((ref$ = (ref1$ = (ref2$ = this$.proxy)[ns] || (ref2$[ns] = {}))[n] || (ref1$[n] = {}))[v] || (ref$[v] = {}))[p]) {
         this$.proxy[ns][n][v][p] = proxise(function(opt){
           return this$._get(opt);
