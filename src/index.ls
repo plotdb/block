@@ -245,49 +245,52 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
         @proxy[ns][n][v][p] opt
     ).then -> if Array.isArray(opt) => return it else return it.0
 
-  debundle: (opt = {}) ->
-    mgr = opt.manager or @
-    lc = {}
-    if !opt.root =>
-      p = if opt.url => _fetch opt.url, {method: \GET}
-      else Promise.resolve(opt.code or '')
-      p = p.then (c) ->
-        if !block.debundle-node => doc.body.appendChild block.debundle-node = doc.createElement \div
-        block.debundle-node.style.display = \none
-        block.debundle-node.appendChild(div = doc.createElement \div)
-        div.innerHTML = c
-        div.querySelector('template')
-    else p = Promise.resolve( if typeof(opt.root) == \string => doc.querySelector(opt.root) else opt.root )
-    p.then (root) ->
-      if !root => return
-      if root.content => root = root.content
-      [nodes, classes] = [{}, {}]
-      Array.from(root.childNodes).map (n) ~>
-        if n.nodeType != doc.ELEMENT_NODE => return
-        if n.nodeName == \SCRIPT => lc.script = n.cloneNode true
-        else if n.nodeName == \STYLE => lc.style = n.cloneNode true
-        else if !(id = n.getAttribute(\block)) => return
-        else nodes[id] = n
-      if lc.script =>
-        # needed if lc.script is loaded from fetch + innerHTML
-        s = doc.createElement \script
-        s.textContent = lc.script.textContent
-        lc.script = s
-        lc.script.import = ~> lc.codes = if typeof(it) == \function => it! else it
-        lc.script.setAttribute \type, \text/javascript
-        doc.body.appendChild lc.script
-      if lc.style =>
-        # TODO we may need path translation here
-        lc.style.setAttribute \type, \text/css
-        doc.body.appendChild lc.style
-      for k,node of nodes =>
-        {ns, name, version, path} = block.id2obj(k)
-        bc = new block.class {
-          manager: mgr, ns: ns, name: name, version: version, path: path,
-          code: script: lc.codes[k], dom: node, style: ""
-        }
-        mgr.set bc
-
+  debundle: (o = {}) ->
+    o = if Array.isArray(o) => o else [o]
+    ps = o.map (opt) ~>
+      <~ Promise.resolve!then _
+      mgr = opt.manager or @
+      lc = {}
+      if !opt.root =>
+        p = if opt.url => _fetch opt.url, {method: \GET}
+        else Promise.resolve(opt.code or '')
+        p = p.then (c) ->
+          if !block.debundle-node => doc.body.appendChild block.debundle-node = doc.createElement \div
+          block.debundle-node.style.display = \none
+          block.debundle-node.appendChild(div = doc.createElement \div)
+          div.innerHTML = c
+          div.querySelector('template')
+      else p = Promise.resolve( if typeof(opt.root) == \string => doc.querySelector(opt.root) else opt.root )
+      p.then (root) ->
+        if !root => return
+        if root.content => root = root.content
+        [nodes, classes] = [{}, {}]
+        Array.from(root.childNodes).map (n) ~>
+          if n.nodeType != doc.ELEMENT_NODE => return
+          if n.nodeName == \SCRIPT => lc.script = n.cloneNode true
+          else if n.nodeName == \STYLE => lc.style = n.cloneNode true
+          else if !(id = n.getAttribute(\block)) => return
+          else nodes[id] = n
+        if lc.script =>
+          # needed if lc.script is loaded from fetch + innerHTML
+          s = doc.createElement \script
+          s.textContent = lc.script.textContent
+          lc.script = s
+          lc.script.import = ~> lc.codes = if typeof(it) == \function => it! else it
+          lc.script.setAttribute \type, \text/javascript
+          doc.body.appendChild lc.script
+        if lc.style =>
+          # TODO we may need path translation here
+          lc.style.setAttribute \type, \text/css
+          doc.body.appendChild lc.style
+        for k,node of nodes =>
+          {ns, name, version, path} = block.id2obj(k)
+          bc = new block.class {
+            manager: mgr, ns: ns, name: name, version: version, path: path,
+            code: script: lc.codes[k], dom: node, style: ""
+          }
+          mgr.set bc
+    Promise.all ps
 
 block.class = (opt={}) ->
   @opt = opt

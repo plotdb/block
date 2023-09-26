@@ -519,87 +519,96 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
       }
     });
   },
-  debundle: function(opt){
-    var mgr, lc, p;
-    opt == null && (opt = {});
-    mgr = opt.manager || this;
-    lc = {};
-    if (!opt.root) {
-      p = opt.url
-        ? _fetch(opt.url, {
-          method: 'GET'
-        })
-        : Promise.resolve(opt.code || '');
-      p = p.then(function(c){
-        var div;
-        if (!block.debundleNode) {
-          doc.body.appendChild(block.debundleNode = doc.createElement('div'));
+  debundle: function(o){
+    var ps, this$ = this;
+    o == null && (o = {});
+    o = Array.isArray(o)
+      ? o
+      : [o];
+    ps = o.map(function(opt){
+      return Promise.resolve().then(function(){
+        var mgr, lc, p;
+        mgr = opt.manager || this$;
+        lc = {};
+        if (!opt.root) {
+          p = opt.url
+            ? _fetch(opt.url, {
+              method: 'GET'
+            })
+            : Promise.resolve(opt.code || '');
+          p = p.then(function(c){
+            var div;
+            if (!block.debundleNode) {
+              doc.body.appendChild(block.debundleNode = doc.createElement('div'));
+            }
+            block.debundleNode.style.display = 'none';
+            block.debundleNode.appendChild(div = doc.createElement('div'));
+            div.innerHTML = c;
+            return div.querySelector('template');
+          });
+        } else {
+          p = Promise.resolve(typeof opt.root === 'string'
+            ? doc.querySelector(opt.root)
+            : opt.root);
         }
-        block.debundleNode.style.display = 'none';
-        block.debundleNode.appendChild(div = doc.createElement('div'));
-        div.innerHTML = c;
-        return div.querySelector('template');
-      });
-    } else {
-      p = Promise.resolve(typeof opt.root === 'string'
-        ? doc.querySelector(opt.root)
-        : opt.root);
-    }
-    return p.then(function(root){
-      var ref$, nodes, classes, s, k, node, ns, name, version, path, bc, results$ = [];
-      if (!root) {
-        return;
-      }
-      if (root.content) {
-        root = root.content;
-      }
-      ref$ = [{}, {}], nodes = ref$[0], classes = ref$[1];
-      Array.from(root.childNodes).map(function(n){
-        var id;
-        if (n.nodeType !== doc.ELEMENT_NODE) {
-          return;
-        }
-        if (n.nodeName === 'SCRIPT') {
-          return lc.script = n.cloneNode(true);
-        } else if (n.nodeName === 'STYLE') {
-          return lc.style = n.cloneNode(true);
-        } else if (!(id = n.getAttribute('block'))) {} else {
-          return nodes[id] = n;
-        }
-      });
-      if (lc.script) {
-        s = doc.createElement('script');
-        s.textContent = lc.script.textContent;
-        lc.script = s;
-        lc.script['import'] = function(it){
-          return lc.codes = typeof it === 'function' ? it() : it;
-        };
-        lc.script.setAttribute('type', 'text/javascript');
-        doc.body.appendChild(lc.script);
-      }
-      if (lc.style) {
-        lc.style.setAttribute('type', 'text/css');
-        doc.body.appendChild(lc.style);
-      }
-      for (k in nodes) {
-        node = nodes[k];
-        ref$ = block.id2obj(k), ns = ref$.ns, name = ref$.name, version = ref$.version, path = ref$.path;
-        bc = new block['class']({
-          manager: mgr,
-          ns: ns,
-          name: name,
-          version: version,
-          path: path,
-          code: {
-            script: lc.codes[k],
-            dom: node,
-            style: ""
+        return p.then(function(root){
+          var ref$, nodes, classes, s, k, node, ns, name, version, path, bc, results$ = [];
+          if (!root) {
+            return;
           }
+          if (root.content) {
+            root = root.content;
+          }
+          ref$ = [{}, {}], nodes = ref$[0], classes = ref$[1];
+          Array.from(root.childNodes).map(function(n){
+            var id;
+            if (n.nodeType !== doc.ELEMENT_NODE) {
+              return;
+            }
+            if (n.nodeName === 'SCRIPT') {
+              return lc.script = n.cloneNode(true);
+            } else if (n.nodeName === 'STYLE') {
+              return lc.style = n.cloneNode(true);
+            } else if (!(id = n.getAttribute('block'))) {} else {
+              return nodes[id] = n;
+            }
+          });
+          if (lc.script) {
+            s = doc.createElement('script');
+            s.textContent = lc.script.textContent;
+            lc.script = s;
+            lc.script['import'] = function(it){
+              return lc.codes = typeof it === 'function' ? it() : it;
+            };
+            lc.script.setAttribute('type', 'text/javascript');
+            doc.body.appendChild(lc.script);
+          }
+          if (lc.style) {
+            lc.style.setAttribute('type', 'text/css');
+            doc.body.appendChild(lc.style);
+          }
+          for (k in nodes) {
+            node = nodes[k];
+            ref$ = block.id2obj(k), ns = ref$.ns, name = ref$.name, version = ref$.version, path = ref$.path;
+            bc = new block['class']({
+              manager: mgr,
+              ns: ns,
+              name: name,
+              version: version,
+              path: path,
+              code: {
+                script: lc.codes[k],
+                dom: node,
+                style: ""
+              }
+            });
+            results$.push(mgr.set(bc));
+          }
+          return results$;
         });
-        results$.push(mgr.set(bc));
-      }
-      return results$;
+      });
     });
+    return Promise.all(ps);
   }
 });
 block['class'] = function(opt){
