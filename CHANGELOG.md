@@ -1,6 +1,6 @@
 # Change Logs
 
-## v5.2.4 (upcoming)
+## v5.2.4
 
  - remove `index.html` from bundle key and proxy hash key to prevent potential key duplication
  - when bundling, check if the given path is a directory and add `index.html` to try again if it is.
