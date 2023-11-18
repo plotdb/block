@@ -430,6 +430,9 @@ The `pkg` field of a block interface is defined as:
  - `author`: author name. optional
  - `license`: License. optional.
  - `description`: description of this block. optional
+ - `syncInit`: default false.
+   - if true, each `init` in extend chain runs only after the returned Promise of the previous method resolves.
+   - otherwise, order of init methods are not guaranteed.
  - `extend`: optional. block identifier of block to extend.
    - `ns`, `name`, `version`, `path`: from parent block's identifier. optional
    - `dom`: default true. can be any of following:

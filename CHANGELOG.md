@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.2.5
+
+ - support `syncInit` option in `pkg` which enable synchronous `init` call in extend chain.
+
+
 ## v5.2.4
 
  - remove `index.html` from bundle key and proxy hash key to prevent potential key duplication

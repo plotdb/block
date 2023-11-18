@@ -1135,7 +1135,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     }
     return new Promise(function(res, rej){
       var _;
-      _ = function(list, idx, gtx, parent){
+      _ = function(list, idx, gtx, parent, sync){
         var p, b, ref$;
         list == null && (list = []);
         idx == null && (idx = 0);
@@ -1150,7 +1150,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
         }
         b = list[idx];
         return function(ctx){
-          var payload, o;
+          var payload, o, _p, sync;
           import$(gtx, ctx);
           payload = {
             root: node,
@@ -1189,9 +1189,16 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
             o.parent = this$.obj[idx - 1];
           }
           if (o = this$.obj[idx]) {
-            ps.push(o[type](payload));
+            ps.push(_p = o[type](payload));
           }
-          return _(list, idx + 1, gtx, o);
+          sync = sync || b['interface'].pkg.syncInit;
+          if (!(sync && _p)) {
+            return _(list, idx + 1, gtx, o, sync);
+          } else {
+            return Promise.resolve(_p).then(function(){
+              return _(list, idx + 1, gtx, o, sync);
+            });
+          }
         }(b._ctx.ctx
           ? b._ctx.ctx()
           : (ref$ = b._ctx).local || (ref$.local = {}));

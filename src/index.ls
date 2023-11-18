@@ -623,7 +623,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
       cs = [c] ++ cs
       c = c.extend
     new Promise (res, rej) ~>
-      _ = (list = [], idx = 0, gtx = {}, parent) ~>
+      _ = (list = [], idx = 0, gtx = {}, parent, sync) ~>
         if list.length <= idx =>
           p = Promise.all(ps)
             .then -> res it
@@ -663,8 +663,11 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
               )
             )
             o.parent = @obj[idx - 1]
-          if (o = @obj[idx]) => ps.push o[type](payload)
-          _ list, idx + 1, gtx, o
+
+          if (o = @obj[idx]) => ps.push(_p = o[type](payload))
+          sync = sync or b.interface.pkg.syncInit
+          if !(sync and _p) => _ list, idx + 1, gtx, o, sync
+          else Promise.resolve(_p).then ~> _ list, idx + 1, gtx, o, sync
         ) if b._ctx.ctx => b._ctx.ctx! else b._ctx.{}local # use `{}local` for rescope < v4
       _ cs, 0, {}
 
