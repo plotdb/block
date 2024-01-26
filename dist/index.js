@@ -396,7 +396,8 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
       ns: ns,
       name: n,
       version: v,
-      path: p
+      path: p,
+      ctx: opt.ctx
     };
     if (!(n && v)) {
       return err("", 1015);
@@ -757,7 +758,7 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         }
       }, ref$), this$['interface']);
     }).then(function(){
-      var ext;
+      var ext, ref$;
       this$['extends'] = [];
       if (!(ext = this$['interface'].pkg.extend)) {
         return;
@@ -769,6 +770,9 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         ext.ns = this$.ns;
         ext.name = this$.name;
         ext.version = this$.version;
+      }
+      if (this$.opt.ctx) {
+        ext = (ref$ = import$({}, ext), ref$.ctx = this$.opt.ctx, ref$);
       }
       return this$.manager.get(ext).then(function(it){
         var e;
@@ -825,6 +829,8 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
       });
       if (this$.extend) {
         this$._ctx = this$.extend.context();
+      } else if (this$.opt.ctx) {
+        this$._ctx = this$.opt.ctx;
       } else if (rescope.dualContext) {
         this$._ctx = rescope.dualContext();
       } else if (rescope.proxin) {

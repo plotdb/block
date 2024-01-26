@@ -191,7 +191,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
 
   _get: (opt) ->
     [ns, n, v, p] = [opt.ns or '', opt.name, opt.version or \main, opt.path or 'index.html']
-    obj = {ns: ns, name: n, version: v, path: p}
+    obj = {ns: ns, name: n, version: v, path: p, ctx: opt.ctx}
     if !(n and v) => return err("",1015)
     # unify path as key to prevent from duplicate key confusion. see `get`.
     p = p.replace /\/(index\.html)?$/, ''
@@ -415,6 +415,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         if !(ext = @interface.pkg.extend) => return
         if !@manager => return new Error("no available manager to get extended block")
         if !(ext.name or ext.url) => ext <<< @{ns, name, version}
+        if @opt.ctx => ext = {} <<< ext <<< {ctx: @opt.ctx}
         @manager.get ext
           .then ~>
             @extend = it
@@ -443,6 +444,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
           else if /\.css$/.exec(d.url or d.path or d) => d.type = \css
           else d.type = \js # default js type
         if @extend => @_ctx = @extend.context!
+        else if @opt.ctx => @_ctx = @opt.ctx
         else if rescope.dual-context => @_ctx = rescope.dual-context!
         # no dual-context in rescope <= 4.0.1. just a backlog, can be removed in future update.
         else if rescope.proxin => @_ctx = new rescope.proxin!

@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.3.0
+
+ - support `ctx` option in `block.manager.get` and `block.class` constructor to share caller context with classes.
+
+
 ## v5.2.5
 
  - support `syncInit` option in `pkg` which enable synchronous `init` call in extend chain.

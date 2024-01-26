@@ -221,8 +221,11 @@ A `block.manager` instance provides following methods:
    - `block`: a `block-class` object, explained below.
    - `set` also accepts Array of {name,version,block} object for batching `set`.
  - `getUrl({ns,name,version,path})`: get url for a block corresponding to the given block identifier.
- - `get({ns,name,version,path,force})`: return a `block-class` object corresponding to the given block identifier.
+ - `get({ns,name,version,path,force,ctx})`: return a `block-class` object corresponding to the given block identifier.
    - `force`: by default, `block.manager` caches result. set `force` to true to force `block.manager` re-fetch data.
+   - `ctx`: optional context object for providing context for the requested block class.
+     - note: class context is initialized when `init()` is called, which means that once a class is inited,
+       new `ctx` provided for `manager.get` won't work as expected. To re-initialize, set `force` to true.
    - `get` also accept an array of `{ns,name,version,path,force}` tuples for batching `get`.
       - in this case, `get` returns an array of `block.class`.
  - `from(block-id-obj, attach-opt)`: shorthand for manager.get + class.create + instance.attach + instace.interface
@@ -265,6 +268,8 @@ We usually don't have to create a `block.class` instance manually since `block.m
        - string: evaled to the interface, or a function which return the interface.
        - for detail of the "interface", see "interface of the internal object" section below.
  - `root`: optional. root of a DOM tree representing the block HTML code. Overwrite `code`.
+ - `ctx`: optional context object, providing additional preloaded dependencies for this class.
+
 
 #### APIs
 
