@@ -36,8 +36,8 @@ Prepare options for `jsdom`:
     opts =
       # suppress SecurityError for localStorage availability in opaque origin
       url: \http://localhost
-      # we use window.eval for context extracting in rescope
-      runScripts: \outside-only
+      # we use window.eval for context extracting in rescope. use `outside-only` if JS is not required.
+      runScripts: \dangerously
       # jsdom window doesn't have `rescope` and `csscope` so we manually inject them.
       beforeParse: (window) -> window <<< {rescope,csscope}
     # with an empty document:
