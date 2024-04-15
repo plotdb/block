@@ -20,3 +20,34 @@ To run block manager in nodejs context, you have to provide a window for it to w
 
     mgr.bundle({blocks: [ ... ]})
       .then ({code, deps}) -> /* write `code` to desired out file ... */
+
+
+# Debundling in NodeJS
+
+`jsdom` is required to debundle since we use browser-context APIs. In order to make `jsdom` works correctly, you will have to set several options:
+
+    opts =
+      # suppress SecurityError for localStorage availability in opaque origin
+      url: \http://localhost
+      # we use window.eval for context extracting in rescope
+      runScripts: \outside-only
+    # with an empty document:
+    html = "<DOCTYPE html><html><body></body></html>"
+
+
+Now you are ready for constructing a new JSDOM:
+
+    dom = new jsdom.JSDOM(html, opts)
+    win = dom.window
+
+
+Last, provide `win` as a executing context for `@plotdb/block`:
+
+    block.env(win);
+
+
+Now you are ready to debundle:
+
+    new block.manager!
+      .debundle [code: '...']
+      .then -> ...
