@@ -24,13 +24,22 @@ To run block manager in nodejs context, you have to provide a window for it to w
 
 # Debundling in NodeJS
 
-`jsdom` is required to debundle since we use browser-context APIs. In order to make `jsdom` works correctly, you will have to set several options:
+`jsdom` is required to debundle since we use browser-context APIs. In order to make `jsdom` works correctly, you will have to set several options.
+
+First, import required modules:
+
+    require! <[@plotdb/block @plotdb/csscope @plotdb/rescope]>
+
+
+Prepare options for `jsdom`:
 
     opts =
       # suppress SecurityError for localStorage availability in opaque origin
       url: \http://localhost
       # we use window.eval for context extracting in rescope
       runScripts: \outside-only
+      # jsdom window doesn't have `rescope` and `csscope` so we manually inject them.
+      beforeParse: (window) -> window <<< {rescope,csscope}
     # with an empty document:
     html = "<DOCTYPE html><html><body></body></html>"
 
