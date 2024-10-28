@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.3.1
+
+ - escape colon ":" in i18n token to prevent from been treated incorrectly as key separatoor
+
+
 ## v5.3.0
 
  - support `ctx` option in `block.manager.get` and `block.class` constructor to share caller context with classes.

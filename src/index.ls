@@ -488,7 +488,12 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 
   i18n: (t, o) ->
     id = @_id_t
-    block.i18n.module.t( ["#id:#t"] ++ (@extends.map -> "#{it._id_t}:#t") ++ ["#t"], o )
+    # we don't want colon in input mess up with our namespace
+    # so we escape them with U+F8FF, last glyph in PUA A since it should rarely be used
+    # alternatively we can consider using U+A789 (꞉) in input text
+    t = t.replace /:/g, '\uf8ff'
+    r = block.i18n.module.t( ["#id:#t"] ++ (@extends.map -> "#{it._id_t}:#t") ++ ["#t"], o )
+    (r or '').replace /\uf8ff/g, \:
 
   create: (o={}) ->
     # defer init in create since we may not use this block even if we load it.

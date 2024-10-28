@@ -918,11 +918,13 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
     }).replace(/\/[^/]*$/, '/') + p;
   },
   i18n: function(t, o){
-    var id;
+    var id, r;
     id = this._id_t;
-    return block.i18n.module.t([id + ":" + t].concat(this['extends'].map(function(it){
+    t = t.replace(/:/g, '\uf8ff');
+    r = block.i18n.module.t([id + ":" + t].concat(this['extends'].map(function(it){
       return it._id_t + ":" + t;
     }), [t + ""]), o);
+    return (r || '').replace(/\uf8ff/g, ':');
   },
   create: function(o){
     var this$ = this;
