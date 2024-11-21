@@ -70,9 +70,9 @@ Following is an example with Pug, LiveScript and Stylus with additional Pug filt
 Script can either be an object described as below, or a function returning that object. Styles will be automatically scoped and limited in this block.
 
 
-### Block Identifier and File Accessing
+### Block Identifier (BID) and File Accessing
 
-To use a block, we need to know how to identify it. Like npm modules, blocks are defined with `name`, `version` and an optional `ns`, where:
+To use a block, we need to know how to identify it. This is called Block IDentifier (BID). Like npm modules, blocks are defined with `name`, `version` and an optional `ns`, where:
 
  - `ns`: Namespace, such as `npm` or `github`. How this works depends on how registry is implemented.
  - `name`: Block name. Use the naming convention as npm. e.g., `@loadingio/spinner`
@@ -83,6 +83,22 @@ Additionally, files in a block are identified with `path` and `type fields:
  - `path`: path of the block definition file inside the module `name@version`.
    - if omitted, inferred by `type` field, or decided by block manager.
  - `type`: type of the requested file. if omitted, inferred from `path`, or decided by block manager.
+
+For extensibility, additional fields can be used for specified purposes, which won't be used by `@plotdb/block`:
+
+ - `parts`: for defining a set of related bids. additional bids are stored as members under this object in bid object format; their fields are optional and fallback to the base bird if omitted. For example:
+
+    {
+      ns: "local", name: "mybid",
+      parts: {
+        "reader": { path: "reader.html" }, /* its `ns` and `name` will fallback to `local` and `mybid` */
+        "writer": { path: "reader.html" }
+      }
+    }
+
+    `parts` field is standardized solely to unify related usage.  `@plotdb/block` doesn't include code to actually handle it.
+ - `opt`: Optional customized data goes here. Use it for any custom fields to be stored in bid if needed.
+
 
 This block identifier can either be an object or a string, such as this object:
 
