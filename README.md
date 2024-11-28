@@ -233,7 +233,7 @@ A `block.manager` instance provides following methods:
 
  - `registry(v)`: update `registry` dynamically.
    - `v`: can be a function, string or an object, similar to the option in constructor.
- - `set({name,version,path,block}): register a block with `name`, `version` and `path`.
+ - `set({ns,name,version,path,block}): register a block with `ns`, `name`, `version` and `path`.
    - `block`: a `block-class` object, explained below.
    - `set` also accepts Array of {name,version,block} object for batching `set`.
  - `getUrl({ns,name,version,path})`: get url for a block corresponding to the given block identifier.
