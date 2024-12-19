@@ -994,7 +994,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     return this.block.init();
   },
   attach: function(opt){
-    var _o, root, node, exts, s, i$, to$, i, es, this$ = this;
+    var _o, list, i$, i, b, i18n, lng, res, root, node, exts, s, to$, es, this$ = this;
     opt == null && (opt = {});
     if (_o = this._defered) {
       if (_o.before) {
@@ -1006,6 +1006,21 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     }
     if (opt.data) {
       this.data = opt.data;
+    }
+    if (opt.i18n) {
+      this._i18nModule = opt.i18n;
+      list = [this.block].concat(this.block['extends']);
+      for (i$ = list.length - 1; i$ >= 0; --i$) {
+        i = i$;
+        b = list[i];
+        i18n = b['interface'].pkg.i18n || {};
+        for (lng in i18n) {
+          res = i18n[lng];
+          this._i18nModule.addResourceBundle(lng, b._id_t, res, true, true);
+        }
+      }
+    } else {
+      this._i18nModule = block.i18n.module;
     }
     root = opt.root;
     root = !root
@@ -1049,7 +1064,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
       }
     }
     if (opt.autoTransform === 'i18n') {
-      block.i18n.module.on('languageChanged', this._i18nTransform = function(){
+      this._i18nModule.on('languageChanged', this._i18nTransform = function(){
         return this$.transform('i18n');
       });
     }
@@ -1063,7 +1078,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     node = this.dom();
     node.parentNode.removeChild(node);
     if (this._i18nTransform) {
-      block.i18n.module.off('languageChanged', this._i18nTransform);
+      this._i18nModule.off('languageChanged', this._i18nTransform);
       this._i18nTransform = null;
     }
     return this.run({
@@ -1138,7 +1153,16 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     return this.block._path(it);
   },
   i18n: function(v, o){
-    return this.block.i18n(v, o);
+    var id, t, r;
+    if (!this._i18nModule) {
+      return this.block.i18n(v, o);
+    }
+    id = this.block._id_t;
+    t = v.replace(/:/g, '\uf8ff');
+    r = this._i18nModule.t([id + ":" + t].concat(this.block['extends'].map(function(it){
+      return it._id_t + ":" + t;
+    }), [t + ""]), o);
+    return (r || '').replace(/\uf8ff/g, ':');
   },
   run: function(arg$){
     var node, type, cs, ps, c, this$ = this;
@@ -1184,23 +1208,23 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
             pubsub: this$.pubsub,
             i18n: {
               getLanguage: function(){
-                return block.i18n.language;
+                return this$._i18nModule.language;
               },
               addResourceBundles: function(resources){
                 var lng, res, results$ = [];
                 resources == null && (resources = {});
                 for (lng in resources) {
                   res = resources[lng];
-                  results$.push(block.i18n.addResourceBundle(lng, this$.block._id_t, res));
+                  results$.push(this$._i18Module.addResourceBundle(lng, this$.block._id_t, res, true, true));
                 }
                 return results$;
               },
               t: function(v, o){
-                return this$.block.i18n(v, o);
+                return this$.i18n(v, o);
               }
             },
             t: function(v, o){
-              return this$.block.i18n(v, o);
+              return this$.i18n(v, o);
             },
             path: function(it){
               return this$._path(it);

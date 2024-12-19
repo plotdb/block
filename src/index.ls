@@ -102,6 +102,7 @@ block.i18n =
     _fire: (n, ...v) -> for cb in (@_evthdr[n] or []) => cb.apply @, v
     res: {}
   use: -> @module = it
+  # TODO deep and overwrite is default false in i18next. we will want to align this with them.
   add-resource-bundle: (lng, id, resource, deep = true, overwrite = true) ->
     block.i18n.module.add-resource-bundle lng, id, resource, deep, overwrite
   change-language: -> block.i18n.module.change-language it
@@ -536,6 +537,16 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
       else _o.root.appendChild _o.node
       return Promise.resolve!
     if opt.data => @data = opt.data
+    if opt.i18n =>
+      @_i18n-module = opt.i18n
+      list = [@block] ++ (@block.extends)
+      for i from list.length - 1 to 0 by -1
+        b = list[i]
+        i18n = b.interface.pkg.i18n or {}
+        for lng, res of i18n =>
+          @_i18n-module.add-resource-bundle lng, b._id_t, res, true, true
+    else @_i18n-module = block.i18n.module
+
     root = opt.root
     root = if !root => null else if typeof(root) == \string => doc.querySelector(root) else root
     block.global.csscope.apply @block.csscopes.global
@@ -559,13 +570,13 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
         else root.appendChild node
       else @_defered = {node, root, before: opt.before}
     if opt.auto-transform == \i18n =>
-      block.i18n.module.on \languageChanged, @_i18n-transform = ~> @transform \i18n
+      @_i18n-module.on \languageChanged, @_i18n-transform = ~> @transform \i18n
     @run({node, type: \init})
   detach: ->
     node = @dom!
     node.parentNode.removeChild node
     if @_i18n-transform =>
-      block.i18n.module.off \languageChanged, @_i18n-transform
+      @_i18n-module.off \languageChanged, @_i18n-transform
       @_i18n-transform = null
     @run({node, type: \destroy})
 
@@ -616,7 +627,13 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     @transform \path
 
   _path: -> @block._path it
-  i18n: (v, o) -> @block.i18n v, o
+  i18n: (v, o) ->
+    if !@_i18n-module => return @block.i18n v, o
+    id = @block._id_t
+    # see class.i18n for more information about this colon replace thing.
+    t = v.replace /:/g, '\uf8ff'
+    r = @_i18n-module.t( ["#id:#t"] ++ (@block.extends.map -> "#{it._id_t}:#t") ++ ["#t"], o )
+    (r or '').replace /\uf8ff/g, \:
 
   # run factory methods, recursively.
   # we will need a bus for communication.
@@ -649,12 +666,12 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
             ctx: gtx, context: gtx,
             pubsub: @pubsub
             i18n:
-              get-language: -> block.i18n.language
+              get-language: ~> @_i18n-module.language
               add-resource-bundles: (resources = {}) ~>
                 for lng, res of resources =>
-                  block.i18n.add-resource-bundle lng, @block._id_t, res
-              t: (v, o) ~> @block.i18n(v, o)
-            t: (v, o) ~> @block.i18n(v, o)
+                  @_i18-module.add-resource-bundle lng, @block._id_t, res, true, true
+              t: (v, o) ~> @i18n(v, o)
+            t: (v, o) ~> @i18n(v, o)
             path: ~> @_path(it)
             data: @data
           }

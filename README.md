@@ -346,7 +346,7 @@ To access `block.instance` context, block JavaScript should be implemented based
 
 #### APIs
 
- - `attach({root, before, data, autoTransform})`: attach DOM and initialize this instance.
+ - `attach({root, before, data, autoTransform, i18n})`: attach DOM and initialize this instance.
    - block instance is attahed to `root` before `before` if `before` is provided.
    - if a factory interface is exported by block JS, it will be used to create an internal context and be inited.
      - see `Internal JS context of a block` below.
@@ -355,6 +355,10 @@ To access `block.instance` context, block JavaScript should be implemented based
    - attach DOM by `appendChild` when `before` is omitted, and by `insertBefore` otherwise.
    - `autoTransform`: default null. set to `i18n` to enable auto i18n transformation based on i18n module event.
      - note: will be by default `i18n` in future release. explicitly set to null if that's what you want.
+   - `i18n`: customized i18n module for this block instance. optional.
+     - by default, all instances use their corresponding classes' i18n api,
+       which in turns use the one from `block.i18n`, and this usually is a global i18n module.
+       this `i18n` option provides a mechanism to use a different i18n module for this instance.
  - `detach()`: detach DOM. return Promise.
  - `i18n(text)`: return translated text based on the current context.
  - `path(p)`: return url for the given path `p`
