@@ -108,6 +108,9 @@ block.i18n =
   change-language: -> block.i18n.module.change-language it
 Object.defineProperty block.i18n, \language, do
   get: -> block.i18n.module.lng or block.i18n.module.language
+# since we may still use fallback module and it store language in `lng`, this is still required
+Object.defineProperty block.i18n.module, \language, do
+  get: -> block.i18n.module.lng
 
 block.global =
   csscope:

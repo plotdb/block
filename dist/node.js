@@ -237,6 +237,11 @@ Object.defineProperty(block.i18n, 'language', {
     return block.i18n.module.lng || block.i18n.module.language;
   }
 });
+Object.defineProperty(block.i18n.module, 'language', {
+  get: function(){
+    return block.i18n.module.lng;
+  }
+});
 block.global = {
   csscope: {
     hash: {},
