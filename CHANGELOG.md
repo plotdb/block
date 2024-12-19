@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.4.0 (upcoming)
+
+ - support customized i18n object in block.instance.
+
+
 ## v5.3.1
 
  - escape colon ":" in i18n token to prevent from been treated incorrectly as key separatoor
