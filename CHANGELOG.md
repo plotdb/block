@@ -3,6 +3,7 @@
 ## v5.4.0 (upcoming)
 
  - support customized i18n object in block.instance.
+ - enable access to `language` in fallback 1i8n module
 
 
 ## v5.3.1
