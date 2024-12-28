@@ -1,5 +1,11 @@
 # Change Logs
 
+## v5.4.1
+
+ - append given manager in chain tail instead of replacing current chain.
+ - extend chain api to support `replace` option.
+
+
 ## v5.4.0
 
  - support customized i18n object in block.instance.

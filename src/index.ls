@@ -149,7 +149,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     else @rescope.init!
   id: block.id
   id2obj: block.id2obj
-  chain: -> @_chain = it
+  chain: (c, o) -> if !@_chain or (o and o.replace) => @_chain = c else @_chain.chain c
   registry: (r) ->
     if typeof(r) in <[string function]> or r.url or r.fetch => r = {lib: r, block: r}
     if r.lib? =>

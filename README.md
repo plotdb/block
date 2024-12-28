@@ -250,7 +250,10 @@ A `block.manager` instance provides following methods:
      - `interface`: created interface
    - `block-id-obj`: block identifier object. see `get()` and above description.
    - `attach-opt`: attach options. see `block.instance`'s `attach()` function.
- - `chain(mgr)`: set a fallback manager for chaining lookup of requested block.
+ - `chain(mgr, opt)`: set a fallback manager for chaining lookup of requested block.
+   - given `mgr` will be append to the end of the chain if there are already fallback managers.
+   - opt is an object with following fields as parameters:
+     - `replace`: default false. replace the current chain head with the given `mgr` if true.
  - `rescope`: rescope object, either global one or customized one.
  - `csscope`: csscope object, either global one or customized one.
  - `id`: shortcut for `block.id`

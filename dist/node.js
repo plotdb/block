@@ -312,8 +312,12 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
   },
   id: block.id,
   id2obj: block.id2obj,
-  chain: function(it){
-    return this._chain = it;
+  chain: function(c, o){
+    if (!this._chain || (o && o.replace)) {
+      return this._chain = c;
+    } else {
+      return this._chain.chain(c);
+    }
   },
   registry: function(r){
     var ref$;
