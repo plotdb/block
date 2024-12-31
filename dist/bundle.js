@@ -386,10 +386,10 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
     var r;
     o.type = 'block';
     r = this._ref(o);
-    return r.then
-      ? r
-      : !r
-        ? err(o)
+    return !r
+      ? err(o)
+      : r.then
+        ? r
         : _fetch(r, {
           method: 'GET'
         }).then(function(it){

@@ -189,8 +189,8 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
   fetch: (o) ->
     o <<< {type: \block}
     r = @_ref o
-    return if r.then => r
-    else if !r => err o
+    return if !r => err o
+    else if r.then => r
     else _fetch r, {method: \GET} .then -> {content: it}
 
   _get: (opt) ->

@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.4.2
+
+ - fix bug: `fetch` should check return value of `_ref` again null before testing its `then` member.
+
+
 ## v5.4.1
 
  - append given manager in chain tail instead of replacing current chain.
