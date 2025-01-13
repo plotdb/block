@@ -721,6 +721,9 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         this$['interface'] = {};
       }
       (ref$ = this$['interface']).pkg || (ref$.pkg = {});
+      if (!this$.ns) {
+        this$.ns = this$['interface'].pkg.ns;
+      }
       if (!this$.name) {
         this$.name = this$['interface'].pkg.name;
       }

@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.4.3 (upcoming)
+
+ - fix bug: `ns` isn't available in block.class even if given in block pkg information.
+
+
 ## v5.4.2
 
  - fix bug: `fetch` should check return value of `_ref` again null before testing its `then` member.

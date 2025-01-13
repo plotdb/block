@@ -375,6 +375,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         else (v or {}))
         if !@interface => @interface = {}
         @interface.{}pkg
+        if !@ns => @ns = @interface.pkg.ns
         if !@name => @name = @interface.pkg.name
         if !@version => @version = @interface.pkg.version
         if !@path => @path = @interface.pkg.path
