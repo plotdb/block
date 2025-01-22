@@ -949,16 +949,19 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         name: this$.name,
         path: this$.path,
         version: this$.version,
-        data: o.data
+        data: o.data,
+        host: o.host
       });
       return r.init().then(function(){
-        if (o.root) {
-          return r.attach({
-            root: o.root,
-            before: o.before,
-            autoTransform: o.autoTransform || null
-          });
+        if (!o.root) {
+          return;
         }
+        return r.attach({
+          root: o.root,
+          before: o.before,
+          host: o.host,
+          autoTransform: o.autoTransform || null
+        });
       }).then(function(){
         return r;
       });
@@ -996,6 +999,7 @@ block.instance = function(opt){
   this.path = opt.path;
   this.block = opt.block;
   this.data = opt.data;
+  this.host = opt.host;
   this.init = proxise.once(function(){
     return this$._init();
   });
@@ -1018,6 +1022,9 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     }
     if (opt.data) {
       this.data = opt.data;
+    }
+    if (opt.data) {
+      this.host = opt.host;
     }
     if (opt.i18n) {
       this._i18nModule = opt.i18n;
@@ -1241,7 +1248,8 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
             path: function(it){
               return this$._path(it);
             },
-            data: this$.data
+            data: this$.data,
+            host: this$.host
           };
           if (type === 'init') {
             this$.obj.push(o = new b.factory(this$.block === b ? this$ : null));

@@ -503,9 +503,18 @@ block.class.prototype = Object.create(Object.prototype) <<< do
   create: (o={}) ->
     # defer init in create since we may not use this block even if we load it.
     <~ @init!then _
-    r = new block.instance {block: @, ns: @ns, name: @name, path: @path, version: @version, data: o.data}
+    r = new block.instance {
+      block: @, ns: @ns, name: @name, path: @path, version: @version, data: o.data, host: o.host
+    }
     r.init!
-      .then -> if o.root => r.attach {root: o.root, before: o.before, auto-transform: o.auto-transform or null}
+      .then ->
+        if !o.root => return
+        r.attach {
+          root: o.root
+          before: o.before
+          host: o.host
+          auto-transform: o.auto-transform or null
+        }
       .then -> r
 
   # child: either
@@ -529,7 +538,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     else node
 
 block.instance = (opt = {}) ->
-  @ <<< opt{ns, name, version, path, block, data}
+  @ <<< opt{ns, name, version, path, block, data, host}
   @init = proxise.once ~> @_init!
   @
 
@@ -541,6 +550,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
       else _o.root.appendChild _o.node
       return Promise.resolve!
     if opt.data => @data = opt.data
+    if opt.data => @host = opt.host
     if opt.i18n =>
       @_i18n-module = opt.i18n
       list = [@block] ++ (@block.extends)
@@ -678,6 +688,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
             t: (v, o) ~> @i18n(v, o)
             path: ~> @_path(it)
             data: @data
+            host: @host
           }
           if type == \init =>
             @obj.push(

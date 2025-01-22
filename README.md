@@ -294,6 +294,7 @@ We usually don't have to create a `block.class` instance manually since `block.m
 
  - `create(opt)`: create a `block.instance` based on this object. options:
    - `data`: instance data. defined by user and passed directly to block instance javascript.
+   - `host`: context of caller object. defined by caller. optional.
    - `root` and `before`: parameters passed to `attach`.
      - instance will and only will be attached automatically if `root` is provided.
  - `context()`: get library context corresponding to this block.
@@ -349,7 +350,7 @@ To access `block.instance` context, block JavaScript should be implemented based
 
 #### APIs
 
- - `attach({root, before, data, autoTransform, i18n})`: attach DOM and initialize this instance.
+ - `attach({root, before, data, host, autoTransform, i18n})`: attach DOM and initialize this instance.
    - block instance is attahed to `root` before `before` if `before` is provided.
    - if a factory interface is exported by block JS, it will be used to create an internal context and be inited.
      - see `Internal JS context of a block` below.
@@ -362,6 +363,7 @@ To access `block.instance` context, block JavaScript should be implemented based
      - by default, all instances use their corresponding classes' i18n api,
        which in turns use the one from `block.i18n`, and this usually is a global i18n module.
        this `i18n` option provides a mechanism to use a different i18n module for this instance.
+   - `host`: context object of creator.
  - `detach()`: detach DOM. return Promise.
  - `i18n(text)`: return translated text based on the current context.
  - `path(p)`: return url for the given path `p`
@@ -377,6 +379,16 @@ Additionally, following are the private members:
    - see below for the detail of the internal context object.
    - it's a list of all objects from the inheritant chain. base block comes first.
    - each item in this list contains block's data and interface.
+
+
+#### Host Context
+
+While block can define how it should interact with the caller by `data` attribute, `data` is meant to be defined by the block, or, at least by the block and its host. This can sometimes be confusing if a block is released publicly - everyone should be able to call it. Thus, we may want to identify who is creating us.
+
+Since `data` is meant to be defined by the block, an additional field `host` is introduced, with its interface is predefined here.
+
+(TBD host interface)
+
 
 
 ### Internal JS Context of a block
@@ -422,7 +434,8 @@ The detail of the fields of interface is as below:
         - `on(event, cb(parmas))`: handle event with `cb` callback, params from `fire`.
           - return value will be passed and resolved to the returned promise of `fire`.
         - `fire(event, params): fire `event`. return promise.
-     - `data`: data passing to `create`. optional and up to user.
+     - `data`: data passed to `create`. optional and up to user.
+     - `host`: host object passed to `create`. optional and up to caller.
      - `path(p)`: path transformer to convert `p` to a local string based on the identifier of this block.
      - `t(text)`: translation function based on local, base class and global i18n information. shorthand of `i18n.t`.
      - `i18n`: i18n related helpers including:
