@@ -387,8 +387,10 @@ While block can define how it should interact with the caller by `data` attribut
 
 Since `data` is meant to be defined by the block, an additional field `host` is introduced, with its interface is predefined here.
 
-(TBD host interface)
+Since host object is provided directly by the block users, users should be responsible for constructing a correct host object. A host object should be either an object or an Array of such object with following fields:
 
+ - `bid`: either a string or an object with fields that can be used to identify a block.
+ - `interface`: a function that returns the interface defined solely by the block identified by `bid`.
 
 
 ### Internal JS Context of a block
