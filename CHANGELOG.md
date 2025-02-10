@@ -1,9 +1,9 @@
 # Change Logs
 
-## v5.4.3 (upcoming)
+## v5.4.3
 
  - fix bug: `ns` isn't available in block.class even if given in block pkg information.
- - add a new field `host` representing host (caller) context
+ - add a new field `host` representing host (caller) context (experimental)
  - fix bug: missing `n` in `i18n` in `add-resource-bundles` in interface for block instance.
 
 
