@@ -1234,7 +1234,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
                 resources == null && (resources = {});
                 for (lng in resources) {
                   res = resources[lng];
-                  results$.push(this$._i18Module.addResourceBundle(lng, this$.block._id_t, res, true, true));
+                  results$.push(this$._i18nModule.addResourceBundle(lng, this$.block._id_t, res, true, true));
                 }
                 return results$;
               },

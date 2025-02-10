@@ -683,7 +683,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
               get-language: ~> @_i18n-module.language
               add-resource-bundles: (resources = {}) ~>
                 for lng, res of resources =>
-                  @_i18-module.add-resource-bundle lng, @block._id_t, res, true, true
+                  @_i18n-module.add-resource-bundle lng, @block._id_t, res, true, true
               t: (v, o) ~> @i18n(v, o)
             t: (v, o) ~> @i18n(v, o)
             path: ~> @_path(it)
