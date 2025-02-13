@@ -111,6 +111,9 @@ pubsub.prototype = import$(Object.create(Object.prototype), {
 block = {};
 block.id = function(o){
   var path;
+  if (typeof o === 'string') {
+    return o;
+  }
   path = o.path || (o.type === 'js'
     ? 'index.min.js'
     : o.type === 'css' ? 'index.min.css' : 'index.html');

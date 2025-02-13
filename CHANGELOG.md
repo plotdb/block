@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.4.4 (upcoming)
+
+ - let `block.id` return the given parameter directly if it's a string. 
+
+
 ## v5.4.3
 
  - fix bug: `ns` isn't available in block.class even if given in block pkg information.
