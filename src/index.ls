@@ -680,6 +680,11 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
             root: node, parent: parent, manager: @block.manager
             ctx: gtx, context: gtx,
             pubsub: @pubsub
+            # this is kinda confusing. it's actually a customized i18n object inside @plotdb/block
+            # so kinda not standard one. we may want to use a standard i18n object for consistency
+            # however we may also want to provide a subset of i18n object
+            # when user doesn't use i18next or compatible module, so this may still be needed.
+            # anyway it should be good to remove these extended api (getLanguage and addResourceBundles)
             i18n:
               get-language: ~> @_i18n-module.language
               add-resource-bundles: (resources = {}) ~>
