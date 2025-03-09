@@ -294,7 +294,6 @@ We usually don't have to create a `block.class` instance manually since `block.m
 
  - `create(opt)`: create a `block.instance` based on this object. options:
    - `data`: instance data. defined by user and passed directly to block instance javascript.
-   - `host`: context of caller object. defined by caller. optional.
    - `root` and `before`: parameters passed to `attach`.
      - instance will and only will be attached automatically if `root` is provided.
  - `context()`: get library context corresponding to this block.
@@ -363,7 +362,9 @@ To access `block.instance` context, block JavaScript should be implemented based
      - by default, all instances use their corresponding classes' i18n api,
        which in turns use the one from `block.i18n`, and this usually is a global i18n module.
        this `i18n` option provides a mechanism to use a different i18n module for this instance.
-   - `host`: context object of creator.
+   - `host`: context object provided by caller.
+     - based on how `pkg.host` is set, it can be an object or an array of such object.
+     - see `Host Context` section for more detail.
  - `detach()`: detach DOM. return Promise.
  - `i18n(text)`: return translated text based on the current context.
  - `path(p)`: return url for the given path `p`
@@ -383,14 +384,38 @@ Additionally, following are the private members:
 
 #### Host Context
 
-While block can define how it should interact with the caller by `data` attribute, `data` is meant to be defined by the block, or, at least by the block and its host. This can sometimes be confusing if a block is released publicly - everyone should be able to call it. Thus, we may want to identify who is creating us.
+While user can define how a block should interact with the caller by `data` attribute, `data` is meant to be defined by the block, or, at least by the block and its host.
 
-Since `data` is meant to be defined by the block, an additional field `host` is introduced, with its interface is predefined here.
+This can sometimes be confusing in container/plugin scenario, in which blocks are designed to communicate with its container, yet container can't distinguish if a certain block is implemented based on the interface provide by this container.
 
-Since host object is provided directly by the block users, users should be responsible for constructing a correct host object. A host object should be either an object or an Array of such object with following fields:
+Thus, we need a method to identify this container/plugin relationship.
 
- - `bid`: either a string or an object with fields that can be used to identify a block.
+For this purpose, an additional field `host` is introduced in `pkg` and `init` parameter:
+
+    {
+        pkg: {host: {name: "...", version: "...", ...}},
+        init: ({host, data, manager, ...}) ->
+        ...
+    }
+
+And block caller should provide its host:
+
+    someclass.from(
+        { name: "...", ... },
+        { host: {bid: "mypkg", interface: (-> ...)}, ... }
+    )
+
+As shown as above, users are responsible for providing the host object.  A host object should be either a block instance or an Array of such object; for simplicity, a duck typed object with following fields can be used:
+
+ - `bid`: a string representing the block identifier of this host.
+ - `ns`, `name`, `version`, `path`: block identifier for this given host. ignored if `bid` is provided.
  - `interface`: a function that returns the interface defined solely by the block identified by `bid`.
+
+Hosts users provided will be in turn provided to `host` parameter of block instance's `init` function with following rules:
+
+ - when `pkg.host` is not defined, all available hosts are provided as an array.
+ - when `pkg.host` is a block identifier object, either an object matching that bid or a dummy object with `interface` function is provided.
+ - when `pkg.host` is a list of bid, all matched hosts are provided as specified order in an array.
 
 
 ### Internal JS Context of a block
@@ -488,6 +513,8 @@ The `pkg` field of a block interface is defined as:
      - `"overwrite"`: overwrite parent style but extend style from grantparent, if any.
    - use `plug` ( for html ), `parent` and `pubsub` ( js ) to work with extended block.
      - for more information about `plug`, see `HTML Plugs` section below.
+ - `host`: optional. block identifier of host block it supports.
+   - can be either an object of bid or an array of such object.
  - `dependencies`: dependencies of this block.
    - list or modules, in case of mutual dependencies:
      ["some-url", {url: "some-url", async: false, dev: true, global: true, type: "css, js or block"}]

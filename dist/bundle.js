@@ -773,7 +773,10 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         }
       }, ref$), this$['interface']);
     }).then(function(){
-      var ext, ref$;
+      var that, ext, ref$;
+      this$.acceptedHosts = (that = this$['interface'].pkg.host)
+        ? that
+        : [];
       this$['extends'] = [];
       if (!(ext = this$['interface'].pkg.extend)) {
         return;
@@ -933,12 +936,12 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
       var r;
       r = new block.instance({
         block: this$,
+        data: o.data,
+        host: o.host,
         ns: this$.ns,
         name: this$.name,
         path: this$.path,
-        version: this$.version,
-        data: o.data,
-        host: o.host
+        version: this$.version
       });
       return r.init().then(function(){
         if (!o.root) {
@@ -987,7 +990,6 @@ block.instance = function(opt){
   this.path = opt.path;
   this.block = opt.block;
   this.data = opt.data;
-  this.host = opt.host;
   this.init = proxise.once(function(){
     return this$._init();
   });
@@ -1011,8 +1013,12 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     if (opt.data) {
       this.data = opt.data;
     }
-    if (opt.data) {
-      this.host = opt.host;
+    if (opt.host) {
+      this.host = Array.isArray(opt.host)
+        ? opt.host
+        : [opt.host].filter(function(it){
+          return it;
+        });
     }
     if (opt.i18n) {
       this._i18nModule = opt.i18n;
@@ -1159,6 +1165,28 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
   _path: function(it){
     return this.block._path(it);
   },
+  _gethost: function(arg$){
+    var host, accept, accepts, ret;
+    host = arg$.host, accept = arg$.accept;
+    accepts = (Array.isArray(accept)
+      ? accept
+      : [accept]).filter(function(it){
+      return it;
+    });
+    if (!accepts.length) {
+      return host;
+    }
+    ret = accepts.map(function(a){
+      return host.filter(function(h){
+        return (h.bid ? block.id2obj(h.bid) : h).name === a.name;
+      })[0];
+    });
+    return Array.isArray(accept)
+      ? ret
+      : ret[0] || {
+        'interface': function(){}
+      };
+  },
   i18n: function(v, o){
     var id, t, r;
     if (!this._i18nModule) {
@@ -1237,7 +1265,10 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
               return this$._path(it);
             },
             data: this$.data,
-            host: this$.host
+            host: this$._gethost({
+              host: this$.host,
+              accept: b.acceptedHosts
+            })
           };
           if (type === 'init') {
             this$.obj.push(o = new b.factory(this$.block === b ? this$ : null));

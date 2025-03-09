@@ -417,6 +417,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
             if @parent.interface instanceof Function => @parent.interface! else @parent.interface
         } <<< @interface
       .then ~>
+        @accepted-hosts = if @interface.pkg.host => that else []
         @extends = []
         if !(ext = @interface.pkg.extend) => return
         if !@manager => return new Error("no available manager to get extended block")
@@ -505,7 +506,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     # defer init in create since we may not use this block even if we load it.
     <~ @init!then _
     r = new block.instance {
-      block: @, ns: @ns, name: @name, path: @path, version: @version, data: o.data, host: o.host
+      block: @, data: o.data, host: o.host
+      ns: @ns, name: @name, path: @path, version: @version
     }
     r.init!
       .then ->
@@ -539,7 +541,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
     else node
 
 block.instance = (opt = {}) ->
-  @ <<< opt{ns, name, version, path, block, data, host}
+  @ <<< opt{ns, name, version, path, block, data}
   @init = proxise.once ~> @_init!
   @
 
@@ -551,7 +553,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
       else _o.root.appendChild _o.node
       return Promise.resolve!
     if opt.data => @data = opt.data
-    if opt.data => @host = opt.host
+    if opt.host => @host = if Array.isArray(opt.host) => opt.host else [opt.host].filter(->it)
     if opt.i18n =>
       @_i18n-module = opt.i18n
       list = [@block] ++ (@block.extends)
@@ -642,6 +644,14 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     @transform \path
 
   _path: -> @block._path it
+
+  _gethost: ({host, accept}) ->
+    accepts = (if Array.isArray(accept) => accept else [accept]).filter(->it)
+    if !accepts.length => return host
+    ret = accepts.map (a) ->
+      host.filter((h) -> (if h.bid => block.id2obj h.bid else h).name == a.name).0
+    return if Array.isArray(accept) => ret else ret.0 or {interface:->}
+
   i18n: (v, o) ->
     if !@_i18n-module => return @block.i18n v, o
     id = @block._id_t
@@ -694,7 +704,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
             t: (v, o) ~> @i18n(v, o)
             path: ~> @_path(it)
             data: @data
-            host: @host
+            host: @_gethost {host: @host, accept: b.accepted-hosts}
           }
           if type == \init =>
             @obj.push(
