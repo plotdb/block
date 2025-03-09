@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.4.5 (upcoming)
+
+ - add `host` mechanism to support container/plugin model with declarative approach.
+
+
 ## v5.4.4
 
  - let `block.id` return the given parameter directly if it's a string. 
