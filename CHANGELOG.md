@@ -1,6 +1,6 @@
 # Change Logs
 
-## v5.4.5 (upcoming)
+## v5.5.0
 
  - add `host` mechanism to support container/plugin model with declarative approach.
 
