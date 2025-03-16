@@ -25,6 +25,7 @@ groups = {}
                 .then (bi) ->
                   bi.attach {root: node} .then -> bi.interface!
                 .then -> groups[node.getAttribute \data-name] = it
+        child: ({node}) ~> @mgr.from {name: node.dataset.name}, {root: node}
     view.init!
       .then ->
         view.render!
