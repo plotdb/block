@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.5.2
+
+ - apply fallback default plug after matching child plug to support nested plug
+
+
 ## v5.5.1
 
  - use `div` to replace `plug` node if a slot is not replaced.

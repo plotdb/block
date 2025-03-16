@@ -964,20 +964,28 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
     if (!byPass) {
       node = this.dom().cloneNode(true);
       Array.from(node.querySelectorAll('plug')).forEach(function(p){
+        var name, n;
+        name = p.getAttribute('name');
+        if (!child) {
+          return;
+        }
+        n = child.querySelector(":scope :not([plug]) [plug=" + name + "], :scope > [plug=" + name + "]");
+        if (n) {
+          return p.replaceWith(n);
+        }
+      });
+      Array.from(node.querySelectorAll('plug')).forEach(function(p){
         var name, n, i$, ref$, len$, attr;
         name = p.getAttribute('name');
-        if (child) {
-          n = child.querySelector(":scope :not([plug]) [plug=" + name + "], :scope > [plug=" + name + "]");
+        p.removeAttribute('name');
+        p.setAttribute('plug', name);
+        n = document.createElement('div');
+        for (i$ = 0, len$ = (ref$ = p.attributes).length; i$ < len$; ++i$) {
+          attr = ref$[i$];
+          n.setAttribute(attr.name, attr.value);
         }
-        if (!n) {
-          n = document.createElement('div');
-          for (i$ = 0, len$ = (ref$ = p.attributes).length; i$ < len$; ++i$) {
-            attr = ref$[i$];
-            n.setAttribute(attr.name, attr.value);
-          }
-          while (p.firstChild) {
-            n.appendChild(p.firstChild);
-          }
+        while (p.firstChild) {
+          n.appendChild(p.firstChild);
         }
         return p.replaceWith(n);
       });

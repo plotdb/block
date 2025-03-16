@@ -530,14 +530,18 @@ block.class.prototype = Object.create(Object.prototype) <<< do
       Array.from(node.querySelectorAll('plug')).for-each (p) ->
         name = p.getAttribute(\name)
         # child content may contain elements for `plug` - replace parent plug with child, if any found.
-        if child =>
-          # we skip nested plugs so recursive plug applying is possible.
-          n = child.querySelector(":scope :not([plug]) [plug=#{name}], :scope > [plug=#{name}]")
-        # child plug not found or no child at all - we replace plug with normal div
-        if !n =>
-          n = document.createElement \div
-          for attr in p.attributes => n.setAttribute attr.name, attr.value
-          while p.firstChild => n.appendChild p.firstChild
+        if !child => return
+        # we skip nested plugs so recursive plug applying is possible.
+        n = child.querySelector(":scope :not([plug]) [plug=#{name}], :scope > [plug=#{name}]")
+        if n => p.replaceWith n
+      # scan again for plugs not replaced - we convert those plugs to div with fallback DOM tree
+      Array.from(node.querySelectorAll('plug')).for-each (p) ->
+        name = p.getAttribute(\name)
+        p.removeAttribute(\name)
+        p.setAttribute \plug, name
+        n = document.createElement \div
+        for attr in p.attributes => n.setAttribute attr.name, attr.value
+        while p.firstChild => n.appendChild p.firstChild
         p.replaceWith n
     else node = child
     return if @extend and @extend-dom != false =>
