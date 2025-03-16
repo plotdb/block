@@ -1,6 +1,6 @@
 # Change Logs
 
-## v5.5.1 (upcoming)
+## v5.5.1
 
  - use `div` to replace `plug` node if a slot is not replaced.
 
