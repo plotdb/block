@@ -580,6 +580,18 @@ To plug elements In child block to given slot, use `plug` attribute in child blo
     <div plug="layout"> ... </div>
 
 
+Note: slots without plugs will be converted to `<div>` node. 
+
+You can also create a block instance under a root with predefined plugs to inject custom nodes into a block without extending it:
+
+
+    <div ld="root"><div plug="name"> Hello </div></div>
+    <script>
+      manager.from({name: "myblock"}, {root: document.querySelector('[ld=root]')})
+    </script>
+
+
+
 ## Packed Block with Bundled Packages
 
 To ship bundled packages along with a block, simply append the corresponding `<template>` tag at the end of the block:
