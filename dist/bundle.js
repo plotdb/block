@@ -963,16 +963,24 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
     byPass == null && (byPass = false);
     if (!byPass) {
       node = this.dom().cloneNode(true);
-      if (child) {
-        Array.from(node.querySelectorAll('plug')).map(function(it){
-          var name, n;
-          name = it.getAttribute('name');
+      Array.from(node.querySelectorAll('plug')).forEach(function(p){
+        var name, n, i$, ref$, len$, attr;
+        name = p.getAttribute('name');
+        if (child) {
           n = child.querySelector(":scope :not([plug]) [plug=" + name + "], :scope > [plug=" + name + "]");
-          if (n) {
-            return it.replaceWith(n);
+        }
+        if (!n) {
+          n = document.createElement('div');
+          for (i$ = 0, len$ = (ref$ = p.attributes).length; i$ < len$; ++i$) {
+            attr = ref$[i$];
+            n.setAttribute(attr.name, attr.value);
           }
-        });
-      }
+          while (p.firstChild) {
+            n.appendChild(p.firstChild);
+          }
+        }
+        return p.replaceWith(n);
+      });
     } else {
       node = child;
     }

@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.5.1 (upcoming)
+
+ - use `div` to replace `plug` node if a slot is not replaced.
+
+
 ## v5.5.0
 
  - add `host` mechanism to support container/plugin model with declarative approach.

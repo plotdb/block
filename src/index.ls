@@ -526,14 +526,19 @@ block.class.prototype = Object.create(Object.prototype) <<< do
   resolve-plug-and-clone-node: (child, by-pass = false) ->
     if !by-pass =>
       node = @dom!cloneNode true
-      # child content may contain elements for `plug` - replace parent plug with child, if any found.
-      if child =>
-        # list all plugs used in sample dom, and replace them with child [plug].
-        Array.from(node.querySelectorAll('plug')).map ->
-          name = it.getAttribute(\name)
+      # list all plugs used in sample dom, and replace them with child [plug].
+      Array.from(node.querySelectorAll('plug')).for-each (p) ->
+        name = p.getAttribute(\name)
+        # child content may contain elements for `plug` - replace parent plug with child, if any found.
+        if child =>
           # we skip nested plugs so recursive plug applying is possible.
           n = child.querySelector(":scope :not([plug]) [plug=#{name}], :scope > [plug=#{name}]")
-          if n => it.replaceWith n
+        # child plug not found or no child at all - we replace plug with normal div
+        if !n =>
+          n = document.createElement \div
+          for attr in p.attributes => n.setAttribute attr.name, attr.value
+          while p.firstChild => n.appendChild p.firstChild
+        p.replaceWith n
     else node = child
     return if @extend and @extend-dom != false =>
       if @extend-dom == \overwrite => @extend.resolve-plug-and-clone-node(node, true)
