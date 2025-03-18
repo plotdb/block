@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.5.3
+
+ - add event handler / language getter in i18n interface provided to block instance when initializing
+
+
 ## v5.5.2
 
  - apply fallback default plug after matching child plug to support nested plug

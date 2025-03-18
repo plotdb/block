@@ -677,6 +677,20 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     c = @block
     if !@obj => @obj = []
     if !@pubsub => @pubsub = new pubsub!
+    # this is kinda confusing. it's actually a customized i18n object inside @plotdb/block
+    # so kinda not standard one. we may want to use a standard i18n object for consistency
+    # however we may also want to provide a subset of i18n object
+    # when user doesn't use i18next or compatible module, so this may still be needed.
+    # anyway it should be good to remove these extended api (getLanguage and addResourceBundles)
+    i18n-obj =
+      t: (v, o) ~> @i18n(v, o)
+      on: (n,cb) ~> @_i18n-module.on n, cb
+      # not standard api. keep it for now for backward compatibility
+      get-language: ~> @_i18n-module.language
+      add-resource-bundles: (resources = {}) ~>
+        for lng, res of resources =>
+          @_i18n-module.add-resource-bundle lng, @block._id_t, res, true, true
+    Object.defineProperty i18n-obj, \language, {get: ~>@_i18n-module.language}
     while c =>
       cs = [c] ++ cs
       c = c.extend
@@ -699,17 +713,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
             root: node, parent: parent, manager: @block.manager
             ctx: gtx, context: gtx,
             pubsub: @pubsub
-            # this is kinda confusing. it's actually a customized i18n object inside @plotdb/block
-            # so kinda not standard one. we may want to use a standard i18n object for consistency
-            # however we may also want to provide a subset of i18n object
-            # when user doesn't use i18next or compatible module, so this may still be needed.
-            # anyway it should be good to remove these extended api (getLanguage and addResourceBundles)
-            i18n:
-              get-language: ~> @_i18n-module.language
-              add-resource-bundles: (resources = {}) ~>
-                for lng, res of resources =>
-                  @_i18n-module.add-resource-bundle lng, @block._id_t, res, true, true
-              t: (v, o) ~> @i18n(v, o)
+            i18n: i18n-obj
             t: (v, o) ~> @i18n(v, o)
             path: ~> @_path(it)
             data: @data

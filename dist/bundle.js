@@ -1216,7 +1216,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     return (r || '').replace(/\uf8ff/g, ':');
   },
   run: function(arg$){
-    var node, type, cs, ps, c, this$ = this;
+    var node, type, cs, ps, c, i18nObj, this$ = this;
     node = arg$.node, type = arg$.type;
     cs = [];
     ps = [];
@@ -1227,6 +1227,31 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     if (!this.pubsub) {
       this.pubsub = new pubsub();
     }
+    i18nObj = {
+      t: function(v, o){
+        return this$.i18n(v, o);
+      },
+      on: function(n, cb){
+        return this$._i18nModule.on(n, cb);
+      },
+      getLanguage: function(){
+        return this$._i18nModule.language;
+      },
+      addResourceBundles: function(resources){
+        var lng, res, results$ = [];
+        resources == null && (resources = {});
+        for (lng in resources) {
+          res = resources[lng];
+          results$.push(this$._i18nModule.addResourceBundle(lng, this$.block._id_t, res, true, true));
+        }
+        return results$;
+      }
+    };
+    Object.defineProperty(i18nObj, 'language', {
+      get: function(){
+        return this$._i18nModule.language;
+      }
+    });
     while (c) {
       cs = [c].concat(cs);
       c = c.extend;
@@ -1257,23 +1282,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
             ctx: gtx,
             context: gtx,
             pubsub: this$.pubsub,
-            i18n: {
-              getLanguage: function(){
-                return this$._i18nModule.language;
-              },
-              addResourceBundles: function(resources){
-                var lng, res, results$ = [];
-                resources == null && (resources = {});
-                for (lng in resources) {
-                  res = resources[lng];
-                  results$.push(this$._i18nModule.addResourceBundle(lng, this$.block._id_t, res, true, true));
-                }
-                return results$;
-              },
-              t: function(v, o){
-                return this$.i18n(v, o);
-              }
-            },
+            i18n: i18nObj,
             t: function(v, o){
               return this$.i18n(v, o);
             },
