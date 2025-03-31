@@ -1044,13 +1044,11 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     if (opt.data) {
       this.data = opt.data;
     }
-    if (opt.host) {
-      this.host = Array.isArray(opt.host)
-        ? opt.host
-        : [opt.host].filter(function(it){
-          return it;
-        });
-    }
+    this.host = (Array.isArray(opt.host)
+      ? opt.host
+      : [opt.host]).filter(function(it){
+      return it;
+    });
     if (opt.i18n) {
       this._i18nModule = opt.i18n;
       list = [this.block].concat(this.block['extends']);
@@ -1208,7 +1206,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
       return host;
     }
     ret = accepts.map(function(a){
-      return host.filter(function(h){
+      return (host || []).filter(function(h){
         return (h.bid ? block.id2obj(h.bid) : h).name === a.name;
       })[0];
     });

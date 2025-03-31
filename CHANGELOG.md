@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.5.4
+
+ - fix bug: host should always be inited and checked for existence before using
+
+
 ## v5.5.3
 
  - add event handler / language getter in i18n interface provided to block instance when initializing

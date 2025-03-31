@@ -562,7 +562,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
       else _o.root.appendChild _o.node
       return Promise.resolve!
     if opt.data => @data = opt.data
-    if opt.host => @host = if Array.isArray(opt.host) => opt.host else [opt.host].filter(->it)
+    @host = (if Array.isArray(opt.host) => opt.host else [opt.host]).filter(->it)
     if opt.i18n =>
       @_i18n-module = opt.i18n
       list = [@block] ++ (@block.extends)
@@ -658,7 +658,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     accepts = (if Array.isArray(accept) => accept else [accept]).filter(->it)
     if !accepts.length => return host
     ret = accepts.map (a) ->
-      host.filter((h) -> (if h.bid => block.id2obj h.bid else h).name == a.name).0
+      (host or []).filter((h) -> (if h.bid => block.id2obj h.bid else h).name == a.name).0
     return if Array.isArray(accept) => ret else ret.0 or {interface:->}
 
   i18n: (v, o) ->
