@@ -47,3 +47,34 @@ You can also use the created class directly:
     myclass
       .create()
       .then ...
+
+
+## With Template
+
+Here is a simple pattern to use inline blocks with pattern:
+
+    // HTML, in Pug
+    // each template contains only one single child as the root of a block
+    template(data-name="myblock"): div ....
+
+and the corresponding livescript code:
+
+    node = document.querySelector("template")
+    manager.set {
+      name: node.dataset.name, version: "main", path: "index.html"
+      block: new block.class({root: node.content.cloneNode(true).childNodes[0]}, manager: manager})
+    }
+
+You can use `ldview` to abstract this concept:
+
+    // HTML in Pug
+    template(ld="template", data-name="myblock"): div ...
+
+and the corresponding livescript code:
+
+    viewcfg = handler: template: ({node}) ->
+      manager.set do
+        name: node.dataset.name, version: "main", path: "index.html"
+        block: new block.class({root: node.content.cloneNode(true).childNodes[0]}, manager: manager})
+      }
+
