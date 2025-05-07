@@ -466,7 +466,9 @@ The detail of the fields of interface is as below:
      - `path(p)`: path transformer to convert `p` to a local string based on the identifier of this block.
      - `t(text)`: translation function based on local, base class and global i18n information. shorthand of `i18n.t`.
      - `i18n`: i18n related helpers including:
-       - getLanguage()`: return current used language.
+       - `language`: get current used language.
+       - (deprecated) `getLanguage()`: return current used language.
+         - Not standard and cause confusion, so please use `i18n.language` instead.
        - `t(text)`: as described above.
        - `addResourceBundles(res)`: dynamically adding i18n resources. sample `res`:
 
