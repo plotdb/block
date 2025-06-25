@@ -478,7 +478,8 @@ The detail of the fields of interface is as below:
  - `interface`: for accessing custom object. optional.
     - either a function returning interface object, or the interface object itself.
     - child block always overwrite parents' interface in an inheritance chain, if available
- - `mod`: reserved for block javascript. future implement update of `@plotdb/block` should not use it.
+ - `mod`: your safe namespace. You can safely use `this.mod` to store your custom properties.
+   -  The library won't and shouldn't use this name for new features in the future.
  - `exports(global)`: (TBD) for sharing block as a JS library. return objects to export. optional
    - user can use a block as a library by adding it in the `dependencies` config, such as:
      - [{name: "some-block", version: "some-vesion", path: "path-to-file"}, ...]
