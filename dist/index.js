@@ -67,20 +67,25 @@ pubsub = function(){
   return this;
 };
 pubsub.prototype = import$(Object.create(Object.prototype), {
-  fire: function(name){
+  fire: function(n){
     var args, res$, i$, to$, ref$;
     res$ = [];
     for (i$ = 1, to$ = arguments.length; i$ < to$; ++i$) {
       res$.push(arguments[i$]);
     }
     args = res$;
-    return Promise.all(((ref$ = this.subs)[name] || (ref$[name] = [])).map(function(it){
+    return Promise.all(((ref$ = this.subs)[n] || (ref$[n] = [])).map(function(it){
       return it.apply(null, args);
     }));
   },
-  on: function(name, cb){
-    var ref$;
-    return ((ref$ = this.subs)[name] || (ref$[name] = [])).push(cb);
+  on: function(n, cb){
+    var this$ = this;
+    return (Array.isArray(n)
+      ? n
+      : [n]).map(function(n){
+      var ref$;
+      return ((ref$ = this$.subs)[n] || (ref$[n] = [])).push(cb);
+    });
   }
   /* # sample code for nonblocking message publishing
   pub: (name, ...args) ->

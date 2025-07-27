@@ -1,5 +1,11 @@
 # Change Logs
 
+## v5.5.5 (upcoming)
+
+ - support multiple event names in pubsub listener api
+ - upgrade dependencies
+
+
 ## v5.5.4
 
  - fix bug: host should always be inited and checked for existence before using

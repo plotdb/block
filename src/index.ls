@@ -49,8 +49,8 @@ pubsub = ->
   @
 
 pubsub.prototype = Object.create(Object.prototype) <<< do
-  fire: (name, ...args) -> Promise.all(@subs[][name].map -> it.apply null, args)
-  on: (name, cb) -> @subs[][name].push cb
+  fire: (n, ...args) -> Promise.all(@subs[][n].map -> it.apply null, args)
+  on: (n, cb) -> (if Array.isArray(n) => n else [n]).map (n) ~> @subs[][n].push cb
   /* # sample code for nonblocking message publishing
   pub: (name, ...args) ->
     ps = @subs[][name].map ->
