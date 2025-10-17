@@ -4,6 +4,7 @@
 
  - support multiple event names in pubsub listener api
  - upgrade dependencies
+ - fix bug: transform failed if registry is not well-defined.
 
 
 ## v5.5.4

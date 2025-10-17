@@ -917,13 +917,15 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
     return this.node;
   },
   _path: function(p){
+    var _;
     p == null && (p = '');
-    return this.manager.getUrl({
+    _ = this.manager.getUrl({
       ns: this.ns,
       name: this.name,
       version: this.version,
       path: this.path
-    }).replace(/\/[^/]*$/, '/') + p;
+    }) || '';
+    return _.replace(/\/[^/]*$/, '/') + p;
   },
   i18n: function(t, o){
     var id, r;

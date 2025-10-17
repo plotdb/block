@@ -489,9 +489,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
   dom: -> @node
 
   _path: (p = '') ->
-    @manager
-      .get-url @{ns, name, version, path}
-      .replace(/\/[^/]*$/, '/') + p
+    _ = @manager.get-url @{ns, name, version, path} or ''
+    _.replace(/\/[^/]*$/, '/') + p
 
   i18n: (t, o) ->
     id = @_id_t
