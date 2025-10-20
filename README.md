@@ -524,6 +524,8 @@ The `pkg` field of a block interface is defined as:
    - for now, `block` type dependencies are used for hint of bundling.
    - options in object notation:
      - `async: true to load this module asynchronously. true by default.
+       - NOTE: this flag is deprecated since libraries are all asynchronously fetched, but load synchronously
+         check `@plotdb/rescope` for more information.
      - `global: for CSS. true if the CSS should also work in global scope. ( under body ). default false.
      - `type`: default `js`. either `css` or `js`.
        - (TBD) support `block` type for preloading block / export block library.
