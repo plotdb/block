@@ -390,7 +390,7 @@ This can sometimes be confusing in container/plugin scenario, in which blocks ar
 
 Thus, we need a method to identify this container/plugin relationship.
 
-For this purpose, an additional field `host` is introduced in `pkg` and `init` parameter:
+For this purpose, an additional field `host` is introduced in `pkg` and `init` parameters:
 
     {
         pkg: {host: {name: "...", version: "...", ...}},
@@ -405,13 +405,13 @@ And block caller should provide its host:
         { host: {bid: "mypkg", interface: (-> ...)}, ... }
     )
 
-As shown as above, users are responsible for providing the host object.  A host object should be either a block instance or an Array of such object; for simplicity, a duck typed object with following fields can be used:
+As shown as above, users are responsible for providing the host object. A host object should be either a block instance or an array of such object; for simplicity, a duck typed object with following fields can be used:
 
  - `bid`: a string representing the block identifier of this host.
  - `ns`, `name`, `version`, `path`: block identifier for this given host. ignored if `bid` is provided.
  - `interface`: a function that returns the interface defined solely by the block identified by `bid`.
 
-Hosts users provided will be in turn provided to `host` parameter of block instance's `init` function with following rules:
+Hosts provided here will be in turn provided to `host` parameter of block instance's `init` function with following rules:
 
  - when `pkg.host` is not defined, all available hosts are provided as an array.
  - when `pkg.host` is a block identifier object, either an object matching that bid or a dummy object with `interface` function is provided.
