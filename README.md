@@ -417,6 +417,15 @@ Hosts provided here will be in turn provided to `host` parameter of block instan
  - when `pkg.host` is a block identifier object, either an object matching that bid or a dummy object with `interface` function is provided.
  - when `pkg.host` is a list of bid, all matched hosts are provided as specified order in an array.
 
+While we may want to impose some predefined conecpt in host interface, this may better left for devloper, since this can be defined via adding yet another layer of abstract bid.
+
+For example, we can define a host module `hostbase` that imposes additional constraints of how a host is implemented; in this case the definition is independent to `@plotdb/block` and keep `@plotdb/block` neutral.
+
+Even if we have to extend the host / client design, we can still consider add new mechanisms over the duck typed object, such as `client` as an additional APIs in below example:
+
+    { bid: "somehost", interface: function() { ... }, client: function() { ... } }
+
+
 
 ### Internal JS Context of a block
 
