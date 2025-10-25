@@ -417,6 +417,18 @@ Hosts provided here will be in turn provided to `host` parameter of block instan
  - when `pkg.host` is a block identifier object, either an object matching that bid or a dummy object with `interface` function is provided.
  - when `pkg.host` is a list of bid, all matched hosts are provided as specified order in an array.
 
+
+##### Typical Host Compoments
+
+When building a host, following components are usually required:
+
+ - main module
+ - interface, which is passed to client modules
+ - fallback, which can be depended by clients for fallback when used without host
+
+
+##### Host Design Consideration
+
 While we may want to impose some predefined conecpt in host interface, this may better left for devloper, since this can be defined via adding yet another layer of abstract bid.
 
 For example, we can define a host module `hostbase` that imposes additional constraints of how a host is implemented; in this case the definition is independent to `@plotdb/block` and keep `@plotdb/block` neutral.
