@@ -409,12 +409,26 @@ block.class.prototype = Object.create(Object.prototype) <<< do
           # consider to add an API such as `isBase: -> !!@_instance`
           @_instance = i
           @
+        get-client = (opt) ->
+          return if !(@parent and (@parent.client instanceof Function)) => null else @parent.client(opt)
         @factory.prototype = Object.create(Object.prototype) <<< {
           init: (->), destroy: (->), _class: @
           # default interface which get interface from parent.
           interface: ->
             if !@parent => return
             if @parent.interface instanceof Function => @parent.interface! else @parent.interface
+          # default client which get client from parent.
+          client: get-client
+          clients: (opt) ->
+            if !@parent => return [@client opt]
+            # client by default fallback to parent. this is based on interface design,
+            # yet we want to separate clients in parent and child,
+            # thus we need a way to know if a block defines its own `client` function.
+            # here we use `get-client` and provide an additional `clients` function
+            # to return a full client array (TODO empty is preserved - is it necessary?)
+            # it's in an recursive fashion - clients of every block returns clients
+            # up to itself by adding itself to the parent.clients
+            return @parent.clients(opt) ++ (if @client == get-client => [null] else @client(opt))
         } <<< @interface
       .then ~>
         @accepted-hosts = if @interface.pkg.host => that else []
@@ -606,6 +620,8 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     @run({node, type: \destroy})
 
   interface: -> @obj[* - 1].interface!
+  client: (opt) -> @obj[* - 1].client(opt)
+  clients: (opt) ->  @obj[* - 1].clients(opt)
 
   # TBD
   # update: (ops) -> @datadom.update ops

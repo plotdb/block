@@ -1,10 +1,11 @@
 # Change Logs
 
-## v5.5.5 (upcoming)
+## v5.6.0 (upcoming)
 
  - support multiple event names in pubsub listener api
  - upgrade dependencies
  - fix bug: transform failed if registry is not well-defined.
+ - support `client` and `clients` API, host counterpart of a block
 
 
 ## v5.5.4

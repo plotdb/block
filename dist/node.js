@@ -732,7 +732,7 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         });
       }));
     }).then(function(){
-      var v, ref$, ret;
+      var v, ref$, ret, getClient;
       this$['interface'] = this$.script instanceof Function
         ? this$.script()
         : typeof this$.script === 'object'
@@ -782,6 +782,11 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         this._instance = i;
         return this;
       };
+      getClient = function(opt){
+        return !(this.parent && this.parent.client instanceof Function)
+          ? null
+          : this.parent.client(opt);
+      };
       return this$.factory.prototype = import$((ref$ = Object.create(Object.prototype), ref$.init = function(){}, ref$.destroy = function(){}, ref$._class = this$, ref$['interface'] = function(){
         if (!this.parent) {
           return;
@@ -791,6 +796,13 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         } else {
           return this.parent['interface'];
         }
+      }, ref$.client = getClient, ref$.clients = function(opt){
+        if (!this.parent) {
+          return [this.client(opt)];
+        }
+        return this.parent.clients(opt).concat(this.client === getClient
+          ? [null]
+          : this.client(opt));
       }, ref$), this$['interface']);
     }).then(function(){
       var that, ext, ref$;
@@ -1138,6 +1150,14 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
   'interface': function(){
     var ref$;
     return (ref$ = this.obj)[ref$.length - 1]['interface']();
+  },
+  client: function(opt){
+    var ref$;
+    return (ref$ = this.obj)[ref$.length - 1].client(opt);
+  },
+  clients: function(opt){
+    var ref$;
+    return (ref$ = this.obj)[ref$.length - 1].clients(opt);
   },
   _transform: function(node, tag, func){
     var regex, _, wk;

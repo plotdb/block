@@ -373,6 +373,9 @@ To access `block.instance` context, block JavaScript should be implemented based
  - `transform(cfg)`: (re)transform DOM based on the given `cfg` option, which is:
    - string: name of the transform (e.g., `i18n`) to apply.
  - `update(ops)`: (TBD) update `datadom` based on provided ops ( array of operational transformation ).
+ - `interface()`: return the interface of this instance. automatically fallback to parent interface if available.
+ - `client(opt)`: return the client of this instance. automatically fallback to parent client if available.
+ - `clients(opt)`: return all clients of this instance, including all extended blocks, in an Array.
 
 Additionally, following are the private members:
 
@@ -450,6 +453,8 @@ While `block.instance` represents the block instance itself, block JavaScript is
  - `init(opt)`: initialization function of this context.
  - `destroy(opt)`: destroy function of this context.
  - `interface()`: JS interface for block users to access.
+ - `client(opt)`: JS interface for host context to access. opt:
+   - `bid`: host identifier calling this API. always return null if the given host is not supported.
  - `parent`: JS Context of parent block, if any.
    - use `parent.interface()` to reach parent interface if needed.
 
