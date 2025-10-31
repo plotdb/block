@@ -233,9 +233,14 @@ A `block.manager` instance provides following methods:
 
  - `registry(v)`: update `registry` dynamically.
    - `v`: can be a function, string or an object, similar to the option in constructor.
- - `set({ns,name,version,path,block}): register a block with `ns`, `name`, `version` and `path`.
-   - `block`: a `block-class` object, explained below.
-   - `set` also accepts Array of {name,version,block} object for batching `set`.
+ - `set(opt)`: register a (list of) block.
+   - `opt` can be a single object or a list of object in following two formats:
+     - a plain object with following fields:
+       - `ns`, `name`, `version`, `path`: corresponding fields in bid 
+       - `block`: a `block-class` object, explained below.
+     - a DOM Element node, with the `data-bid` attribute which declares its bid in string.
+       - clone of the given node will be used instead of the DOM node itself.
+   - return value: a Promise, resolved when this action is done.
  - `getUrl({ns,name,version,path})`: get url for a block corresponding to the given block identifier.
  - `get({ns,name,version,path,force,ctx})`: return a `block-class` object corresponding to the given block identifier.
    - `force`: by default, `block.manager` caches result. set `force` to true to force `block.manager` re-fetch data.

@@ -162,8 +162,16 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
       @_reg = r.block or ''
       if typeof(@_reg) == \string and @_reg and @_reg[* - 1] != \/ => @_reg += \/
   set: (opt = {}) ->
-    opts = if Array.isArray(opt) => opt else [opt]
+    opts = if Array.isArray(opt) => opt
+    else if typeof opt[Symbol.iterator] == \function or !isNaN opt.length => Array.from opt
+    else [opt]
     Promise.all(opts.map (obj) ~>
+      if obj instanceof Element =>
+        bid = obj.dataset.bid or ''
+        root = if (obj.nodeName or '').toLowerCase! == \template and obj.content.childNodes.0
+          obj.content.childNodes.0.cloneNode true
+        else obj.cloneNode true
+        obj = block.id2obj(bid) <<< block: new block.class {manager: @, root}
       {ns, name, version, path} = obj
       if !ns => ns = ''
       b = if obj instanceof block.class => obj else obj.block

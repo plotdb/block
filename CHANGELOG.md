@@ -2,6 +2,7 @@
 
 ## v5.6.0 (upcoming)
 
+ - extend `manager.set` to support `NodeList` directly
  - support multiple event names in pubsub listener api
  - upgrade dependencies
  - fix bug: transform failed if registry is not well-defined.

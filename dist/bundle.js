@@ -344,9 +344,21 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
     opt == null && (opt = {});
     opts = Array.isArray(opt)
       ? opt
-      : [opt];
+      : typeof opt[Symbol.iterator] === 'function' || !isNaN(opt.length)
+        ? Array.from(opt)
+        : [opt];
     return Promise.all(opts.map(function(obj){
-      var ns, name, version, path, b, ref$, ref1$, ref2$;
+      var bid, root, ref$, ns, name, version, path, b, ref1$, ref2$;
+      if (obj instanceof Element) {
+        bid = obj.dataset.bid || '';
+        root = (obj.nodeName || '').toLowerCase() === 'template' && obj.content.childNodes[0]
+          ? obj.content.childNodes[0].cloneNode(true)
+          : obj.cloneNode(true);
+        obj = (ref$ = block.id2obj(bid), ref$.block = new block['class']({
+          manager: this$,
+          root: root
+        }), ref$);
+      }
       ns = obj.ns, name = obj.name, version = obj.version, path = obj.path;
       if (!ns) {
         ns = '';
