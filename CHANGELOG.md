@@ -1,6 +1,6 @@
 # Change Logs
 
-## v5.6.0 (upcoming)
+## v5.6.0
 
  - extend `manager.set` to support `NodeList` directly
  - support multiple event names in pubsub listener api
