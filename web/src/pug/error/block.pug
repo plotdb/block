@@ -1,9 +1,0 @@
-div
-  script(type="@plotdb/block"): :lsc
-    module.exports =
-      pkg:
-        dependencies: [ {name: "error"} ]
-      init: ({ctx}) ->
-        {run} = ctx
-        run!
-        return Promise.reject new Error! #lderror.reject 100

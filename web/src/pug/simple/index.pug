@@ -1,8 +1,0 @@
-extends /base.pug
-block body
-  .w-1024.rwd.mx-auto.my-4
-    h3 Simple Block Loader
-    p this page load blocks from a local template and separated defined block under `/block/` folder.
-  template(ld="template",data-name="simple"): include simple/index.pug
-block script
-  script(type="module"): include:lsc index.ls
