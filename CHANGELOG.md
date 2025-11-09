@@ -5,6 +5,9 @@
  - extend `manager.set` to support `NodeList` directly
  - support multiple event names in pubsub listener api
  - support `client` and `clients` API, host counterpart of a block
+   - while we can use interface for client, we client to return based on the given bid,
+     and most use cases of interface doesn't care parameters.
+     For for backward compatibility, we decide to create a new API.
  - fix bug: transform failed if registry is not well-defined.
  - upgrade dependencies
 
