@@ -421,9 +421,9 @@ As shown as above, users are responsible for providing the host object. A host o
 
 Hosts provided here will be in turn provided to `host` parameter of block instance's `init` function with following rules:
 
- - when `pkg.host` is not defined, all available hosts are provided as an array.
- - when `pkg.host` is a block identifier object, either an object matching that bid or a dummy object with `interface` function is provided.
+ - when `pkg.host` is a block identifier object, return the object matching that bid, or null if nothing matched.
  - when `pkg.host` is a list of bid, all matched hosts are provided as specified order in an array.
+ - when `pkg.host` is not defined, all available hosts are provided as an array.
 
 
 ##### Typical Host Compoments
