@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.6.1
+
+ - fix bug: host should return null if no match, considering list returns empty list if nothing matches.
+
+
 ## v5.6.0
 
  - extend `manager.set` to support `NodeList` directly

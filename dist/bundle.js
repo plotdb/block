@@ -1236,9 +1236,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     });
     return Array.isArray(accept)
       ? ret
-      : ret[0] || {
-        'interface': function(){}
-      };
+      : ret[0] || null;
   },
   i18n: function(v, o){
     var id, t, r;

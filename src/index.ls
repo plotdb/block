@@ -682,7 +682,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     if !accepts.length => return host
     ret = accepts.map (a) ->
       (host or []).filter((h) -> (if h.bid => block.id2obj h.bid else h).name == a.name).0
-    return if Array.isArray(accept) => ret else ret.0 or {interface:->}
+    return if Array.isArray(accept) => ret else (ret.0 or null)
 
   i18n: (v, o) ->
     if !@_i18n-module => return @block.i18n v, o
