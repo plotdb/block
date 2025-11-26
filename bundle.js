@@ -421,6 +421,7 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
   _get: function(opt){
     var ref$, ns, n, v, p, obj, ref1$, that, key$, ver, c, ref2$, this$ = this;
     ref$ = [opt.ns || '', opt.name, opt.version || 'main', opt.path || 'index.html'], ns = ref$[0], n = ref$[1], v = ref$[2], p = ref$[3];
+    p = p.replace(/\/(index\.html)?$/, '');
     obj = {
       ns: ns,
       name: n,
@@ -431,7 +432,6 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
     if (!(n && v)) {
       return err("", 1015);
     }
-    p = p.replace(/\/(index\.html)?$/, '');
     (ref$ = (ref1$ = this.hash)[ns] || (ref1$[ns] = {}))[n] || (ref$[n] = {});
     if (/[^0-9.]/.exec(v) && !opt.force) {
       if (((ref$ = this._ver.map)[ns] || (ref$[ns] = {}))[n] && this._ver.map[ns][n][v]) {
