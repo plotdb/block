@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.6.2
+
+ - fix bug: block cache doesn't work if path contains `index.html`
+
+
 ## v5.6.1
 
  - fix bug: host should return null if no match, considering list returns empty list if nothing matches.
