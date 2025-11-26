@@ -204,10 +204,10 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
 
   _get: (opt) ->
     [ns, n, v, p] = [opt.ns or '', opt.name, opt.version or \main, opt.path or 'index.html']
-    obj = {ns: ns, name: n, version: v, path: p, ctx: opt.ctx}
-    if !(n and v) => return err("",1015)
     # unify path as key to prevent from duplicate key confusion. see `get`.
     p = p.replace /\/(index\.html)?$/, ''
+    obj = {ns: ns, name: n, version: v, path: p, ctx: opt.ctx}
+    if !(n and v) => return err("",1015)
     @hash{}[ns]{}[n]
     if /[^0-9.]/.exec(v) and !opt.force =>
       if @_ver.map{}[ns][n] and @_ver.map[ns][n][v] => if @hash[ns][n]{}[@_ver.map[ns][n][v]][p] => return that
