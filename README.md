@@ -240,6 +240,7 @@ A `block.manager` instance provides following methods:
        - `block`: a `block-class` object, explained below.
      - a DOM Element node, with the `data-bid` attribute which declares its bid in string.
        - clone of the given node will be used instead of the DOM node itself.
+       - Note: if a given node is template, its content (`node.content`) will be used.
    - return value: a Promise, resolved when this action is done.
  - `getUrl({ns,name,version,path})`: get url for a block corresponding to the given block identifier.
  - `get({ns,name,version,path,force,ctx})`: return a `block-class` object corresponding to the given block identifier.
