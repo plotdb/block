@@ -175,7 +175,9 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
       {ns, name, version, path} = obj
       if !ns => ns = ''
       b = if obj instanceof block.class => obj else obj.block
-      @hash{}[ns]{}[name]{}[version][path or 'index.html'] = b
+      p = path
+      p = (p or 'index.html').replace /\/(index\.html)?$/, ''
+      @hash{}[ns]{}[name]{}[version][p] = b
     )
 
   _get-url: ({url,name,version,path,type}) ->
@@ -204,10 +206,10 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
 
   _get: (opt) ->
     [ns, n, v, p] = [opt.ns or '', opt.name, opt.version or \main, opt.path or 'index.html']
-    # unify path as key to prevent from duplicate key confusion. see `get`.
-    p = p.replace /\/(index\.html)?$/, ''
     obj = {ns: ns, name: n, version: v, path: p, ctx: opt.ctx}
     if !(n and v) => return err("",1015)
+    # unify path as key to prevent from duplicate key confusion. see `get`.
+    p = p.replace /\/(index\.html)?$/, ''
     @hash{}[ns]{}[n]
     if /[^0-9.]/.exec(v) and !opt.force =>
       if @_ver.map{}[ns][n] and @_ver.map[ns][n][v] => if @hash[ns][n]{}[@_ver.map[ns][n][v]][p] => return that

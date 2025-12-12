@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.6.3
+
+ - fix bug: change in 5.6.2 cause path transform fails with index.html in path.
+
+
 ## v5.6.2
 
  - fix bug: block cache doesn't work if path contains `index.html`
