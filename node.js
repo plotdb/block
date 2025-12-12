@@ -363,7 +363,7 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
         ? Array.from(opt)
         : [opt];
     return Promise.all(opts.map(function(obj){
-      var bid, root, ref$, ns, name, version, path, b, ref1$, ref2$;
+      var bid, root, ref$, ns, name, version, path, b, p, ref1$, ref2$;
       if (obj instanceof Element) {
         bid = obj.dataset.bid || '';
         root = (obj.nodeName || '').toLowerCase() === 'template' && obj.content.childNodes[0]
@@ -381,7 +381,9 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
       b = obj instanceof block['class']
         ? obj
         : obj.block;
-      return ((ref$ = (ref1$ = (ref2$ = this$.hash)[ns] || (ref2$[ns] = {}))[name] || (ref1$[name] = {}))[version] || (ref$[version] = {}))[path || 'index.html'] = b;
+      p = path;
+      p = (p || 'index.html').replace(/\/(index\.html)?$/, '');
+      return ((ref$ = (ref1$ = (ref2$ = this$.hash)[ns] || (ref2$[ns] = {}))[name] || (ref1$[name] = {}))[version] || (ref$[version] = {}))[p] = b;
     }));
   },
   _getUrl: function(arg$){
@@ -436,7 +438,6 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
   _get: function(opt){
     var ref$, ns, n, v, p, obj, ref1$, that, key$, ver, c, ref2$, this$ = this;
     ref$ = [opt.ns || '', opt.name, opt.version || 'main', opt.path || 'index.html'], ns = ref$[0], n = ref$[1], v = ref$[2], p = ref$[3];
-    p = p.replace(/\/(index\.html)?$/, '');
     obj = {
       ns: ns,
       name: n,
@@ -447,6 +448,7 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
     if (!(n && v)) {
       return err("", 1015);
     }
+    p = p.replace(/\/(index\.html)?$/, '');
     (ref$ = (ref1$ = this.hash)[ns] || (ref1$[ns] = {}))[n] || (ref$[n] = {});
     if (/[^0-9.]/.exec(v) && !opt.force) {
       if (((ref$ = this._ver.map)[ns] || (ref$[ns] = {}))[n] && this._ver.map[ns][n][v]) {
