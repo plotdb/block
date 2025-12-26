@@ -1027,7 +1027,7 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
         name = p.getAttribute('name');
         p.removeAttribute('name');
         p.setAttribute('plug', name);
-        n = document.createElement('div');
+        n = doc.createElement('div');
         for (i$ = 0, len$ = (ref$ = p.attributes).length; i$ < len$; ++i$) {
           attr = ref$[i$];
           n.setAttribute(attr.name, attr.value);

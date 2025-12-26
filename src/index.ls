@@ -367,7 +367,7 @@ block.class = (opt={}) ->
   @
 
 # use document fragment ( yet datadom doesn't work with #document-fragment )
-# @frag = document.createRange!.createContextualFragment(code)
+# @frag = doc.createRange!.createContextualFragment(code)
 # domtree = @frag.cloneNode(true)
 
 block.class.prototype = Object.create(Object.prototype) <<< do
@@ -562,7 +562,7 @@ block.class.prototype = Object.create(Object.prototype) <<< do
         name = p.getAttribute(\name)
         p.removeAttribute(\name)
         p.setAttribute \plug, name
-        n = document.createElement \div
+        n = doc.createElement \div
         for attr in p.attributes => n.setAttribute attr.name, attr.value
         while p.firstChild => n.appendChild p.firstChild
         p.replaceWith n

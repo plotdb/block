@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.6.5
+
+ - fix bug: `resolve-plug-and-clone-node` use `document`, which should be `doc`
+
+
 ## v5.6.4
 
  - fix bug: `manager.set` uses `Element`, which should be `win.Element`
