@@ -166,7 +166,7 @@ block.manager.prototype = Object.create(Object.prototype) <<< do
     else if typeof opt[Symbol.iterator] == \function or !isNaN opt.length => Array.from opt
     else [opt]
     Promise.all(opts.map (obj) ~>
-      if obj instanceof Element =>
+      if obj instanceof win.Element =>
         bid = obj.dataset.bid or ''
         root = if (obj.nodeName or '').toLowerCase! == \template and obj.content.childNodes.0
           obj.content.childNodes.0.cloneNode true

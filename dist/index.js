@@ -349,7 +349,7 @@ block.manager.prototype = import$(Object.create(Object.prototype), {
         : [opt];
     return Promise.all(opts.map(function(obj){
       var bid, root, ref$, ns, name, version, path, b, p, ref1$, ref2$;
-      if (obj instanceof Element) {
+      if (obj instanceof win.Element) {
         bid = obj.dataset.bid || '';
         root = (obj.nodeName || '').toLowerCase() === 'template' && obj.content.childNodes[0]
           ? obj.content.childNodes[0].cloneNode(true)

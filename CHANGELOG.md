@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.6.4
+
+ - fix bug: `manager.set` uses `Element`, which should be `win.Element`
+
+
 ## v5.6.3
 
  - fix bug: change in 5.6.2 cause path transform fails with index.html in path.
