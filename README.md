@@ -181,8 +181,8 @@ Additionally, `block` itself provides following functions:
        - `resource`: resource to add
        - `deep`: default true.
        - `overwrite`: default true. whether overwrite existing resource or not.
-
  - `block.env(win)` - set current environment to `win`.
+ - `block.compatible({required, current})`: check if the given `current` bid is compatible with the required bid `required`. return true if compatible, else return false.
 
 
 ### block.manager

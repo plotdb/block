@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.7.0
+
+ - add `compatible({current, required})` function to determine if a given bid is compatible with requirement
+
+
 ## v5.6.5
 
  - fix bug: `resolve-plug-and-clone-node` use `document`, which should be `doc`

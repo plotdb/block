@@ -113,6 +113,14 @@ Object.defineProperty block.i18n, \language, do
 Object.defineProperty block.i18n.module, \language, do
   get: -> block.i18n.module.lng
 
+block.compatible = ({required, current} = {}) ->
+  [o1, o2] = [required or '', current or '']
+  if typeof o1 == \string => o1 = block.id2obj o1
+  if typeof o2 == \string => o2 = block.id2obj o2
+  if !(o1.ns == o2.ns and o1.name == o2.name) => return false
+  if o1.version == \main or o2.version == \main => return true
+  return semver.fit o2.version, o1.version
+
 block.global =
   csscope:
     hash: {}

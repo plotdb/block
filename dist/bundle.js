@@ -235,6 +235,26 @@ Object.defineProperty(block.i18n.module, 'language', {
     return block.i18n.module.lng;
   }
 });
+block.compatible = function(arg$){
+  var ref$, required, current, o1, o2;
+  ref$ = arg$ != null
+    ? arg$
+    : {}, required = ref$.required, current = ref$.current;
+  ref$ = [required || '', current || ''], o1 = ref$[0], o2 = ref$[1];
+  if (typeof o1 === 'string') {
+    o1 = block.id2obj(o1);
+  }
+  if (typeof o2 === 'string') {
+    o2 = block.id2obj(o2);
+  }
+  if (!(o1.ns === o2.ns && o1.name === o2.name)) {
+    return false;
+  }
+  if (o1.version === 'main' || o2.version === 'main') {
+    return true;
+  }
+  return semver.fit(o2.version, o1.version);
+};
 block.global = {
   csscope: {
     hash: {},
