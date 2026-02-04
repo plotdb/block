@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.7.2
+
+ - fix bug: i18n proxy is implemented incorrectly and may lead to exception when i18n object is used.
+
+
 ## v5.7.1
 
  - use proxy to override and correctly support the full i18nmodule in block instance functions
