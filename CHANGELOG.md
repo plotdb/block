@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.7.1
+
+ - use proxy to override and correctly support the full i18nmodule in block instance functions
+
+
 ## v5.7.0
 
  - add `compatible({current, required})` function to determine if a given bid is compatible with requirement

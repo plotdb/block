@@ -1,5 +1,5 @@
 (function(){
-var win, doc, err, _fetch, rid, sanitize, pubsub, block;
+var win, doc, err, _fetch, rid, sanitize, pubsub, block, slice$ = [].slice, arrayFrom$ = Array.from || function(x){return slice$.call(x);};
 err = function(o, id){
   var ref$;
   o == null && (o = "");
@@ -1273,7 +1273,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     return (r || '').replace(/\uf8ff/g, ':');
   },
   run: function(arg$){
-    var node, type, cs, ps, c, i18nObj, this$ = this;
+    var node, type, cs, ps, c, _i18nObj, i18nObj, this$ = this;
     node = arg$.node, type = arg$.type;
     cs = [];
     ps = [];
@@ -1284,7 +1284,7 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     if (!this.pubsub) {
       this.pubsub = new pubsub();
     }
-    i18nObj = {
+    _i18nObj = {
       t: function(v, o){
         return this$.i18n(v, o);
       },
@@ -1304,9 +1304,26 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
         return results$;
       }
     };
-    Object.defineProperty(i18nObj, 'language', {
-      get: function(){
-        return this$._i18nModule.language;
+    i18nObj = new Proxy(this._i18nModule
+      ? this._i18nModule
+      : this.block.i18n.module, {
+      get: function(obj, prop, receiver){
+        return obj[prop] != null
+          ? Reflect.get(obj, prop, receiver)
+          : _i18nObj[prop];
+      },
+      ownKeys: function(obj){
+        return arrayFrom$(Reflect.ownKyes(obj)).concat(arrayFrom$(Reflect.ownKeys(_i18nObj)));
+      },
+      getOwnPropertyDescriptor: function(obj, prop){
+        if (obj[prop] != null) {
+          return Reflect.getOwnPropertyDescriptor(obj, prop);
+        }
+        return {
+          enumerable: true,
+          configurable: true,
+          value: _i18nObj[prop]
+        };
       }
     });
     while (c) {

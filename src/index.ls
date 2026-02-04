@@ -715,7 +715,7 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     # however we may also want to provide a subset of i18n object
     # when user doesn't use i18next or compatible module, so this may still be needed.
     # anyway it should be good to remove these extended api (getLanguage and addResourceBundles)
-    i18n-obj =
+    _i18n-obj =
       t: (v, o) ~> @i18n(v, o)
       on: (n,cb) ~> @_i18n-module.on n, cb
       # not standard api. keep it for now for backward compatibility
@@ -723,7 +723,16 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
       add-resource-bundles: (resources = {}) ~>
         for lng, res of resources =>
           @_i18n-module.add-resource-bundle lng, @block._id_t, res, true, true
-    Object.defineProperty i18n-obj, \language, {get: ~>@_i18n-module.language}
+    # we only need this when we don't have i18n-module proxy
+    #Object.defineProperty i18n-obj, \language, {get: ~>@_i18n-module.language}
+    i18n-obj = new Proxy (if @_i18n-module => @_i18n-module else @block.i18n.module), do
+      get: (obj, prop, receiver) ->
+        return if obj[prop]? => Reflect.get obj, prop, receiver else _i18n-obj[prop]
+      ownKeys: (obj) -> return [...Reflect.ownKyes(obj), ...Reflect.ownKeys(_i18n-obj)]
+      getOwnPropertyDescriptor: (obj, prop) ->
+        if obj[prop]? => return Reflect.getOwnPropertyDescriptor obj, prop
+        return enumerable: true, configurable: true, value: _i18n-obj[prop]
+
     while c =>
       cs = [c] ++ cs
       c = c.extend
