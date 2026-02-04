@@ -710,28 +710,37 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     c = @block
     if !@obj => @obj = []
     if !@pubsub => @pubsub = new pubsub!
-    # this is kinda confusing. it's actually a customized i18n object inside @plotdb/block
-    # so kinda not standard one. we may want to use a standard i18n object for consistency
-    # however we may also want to provide a subset of i18n object
-    # when user doesn't use i18next or compatible module, so this may still be needed.
-    # anyway it should be good to remove these extended api (getLanguage and addResourceBundles)
+    /* local i18n object issue
+       this was confusing, since it's actually a customized i18n object inside @plotdb/block
+       we need a namespace version of i18n for translate ( `t` ) and adding resource bundles
+       so that block can query layer by layer based on the extension chain.
+       so overwriting `t` and provide an mean to add resource based on namespace is necessary.
+
+       however, while extending `t` may be a acceptable approach, adding `addResourceBundles`
+       as a new API pollute the original i18n object interface. We should consider alternative approaches.
+       and `getLanguage()` can now be replaced by `lanaguage` so we mark it as deprecated,
+       and expect to remove it in the future.
+    */
     _i18n-obj =
+      # we used to have `on()` but it's indentical to the one in original object,
+      # so we skip it and keep the original api here for now for a while.
+      #on: (n,cb) ~> (@_i18n-module or @block.i18n.module).on n, cb
       t: (v, o) ~> @i18n(v, o)
-      on: (n,cb) ~> @_i18n-module.on n, cb
       # not standard api. keep it for now for backward compatibility
-      get-language: ~> @_i18n-module.language
+      get-language: -> @language
       add-resource-bundles: (resources = {}) ~>
         for lng, res of resources =>
-          @_i18n-module.add-resource-bundle lng, @block._id_t, res, true, true
+          (@_i18n-module or @block.i18n.module).add-resource-bundle lng, @block._id_t, res, true, true
     # we only need this when we don't have i18n-module proxy
-    #Object.defineProperty i18n-obj, \language, {get: ~>@_i18n-module.language}
+    #   Object.defineProperty i18n-obj, \language, {get: ~>@_i18n-module.language}
+    # local _i18n-obj serves first if available.
     i18n-obj = new Proxy (if @_i18n-module => @_i18n-module else @block.i18n.module), do
       get: (obj, prop, receiver) ->
-        return if obj[prop]? => Reflect.get obj, prop, receiver else _i18n-obj[prop]
-      ownKeys: (obj) -> return [...Reflect.ownKyes(obj), ...Reflect.ownKeys(_i18n-obj)]
+        return if _i18n-obj[prop] => that else Reflect.get obj, prop, receiver
+      ownKeys: (obj) -> return [...Reflect.ownKeys(_i18n-obj), ...Reflect.ownKeys(obj)]
       getOwnPropertyDescriptor: (obj, prop) ->
-        if obj[prop]? => return Reflect.getOwnPropertyDescriptor obj, prop
-        return enumerable: true, configurable: true, value: _i18n-obj[prop]
+        return if _i18n-obj[prop] => enumerable: true, configurable: true, value: _i18n-obj[prop]
+        else Reflect.getOwnPropertyDescriptor obj, prop
 
     while c =>
       cs = [c] ++ cs

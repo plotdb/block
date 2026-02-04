@@ -1284,22 +1284,30 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
     if (!this.pubsub) {
       this.pubsub = new pubsub();
     }
+    /* local i18n object issue
+       this was confusing, since it's actually a customized i18n object inside @plotdb/block
+       we need a namespace version of i18n for translate ( `t` ) and adding resource bundles
+       so that block can query layer by layer based on the extension chain.
+       so overwriting `t` and provide an mean to add resource based on namespace is necessary.
+    
+       however, while extending `t` may be a acceptable approach, adding `addResourceBundles`
+       as a new API pollute the original i18n object interface. We should consider alternative approaches.
+       and `getLanguage()` can now be replaced by `lanaguage` so we mark it as deprecated,
+       and expect to remove it in the future.
+    */
     _i18nObj = {
       t: function(v, o){
         return this$.i18n(v, o);
       },
-      on: function(n, cb){
-        return this$._i18nModule.on(n, cb);
-      },
       getLanguage: function(){
-        return this$._i18nModule.language;
+        return this.language;
       },
       addResourceBundles: function(resources){
         var lng, res, results$ = [];
         resources == null && (resources = {});
         for (lng in resources) {
           res = resources[lng];
-          results$.push(this$._i18nModule.addResourceBundle(lng, this$.block._id_t, res, true, true));
+          results$.push((this$._i18nModule || this$.block.i18n.module).addResourceBundle(lng, this$.block._id_t, res, true, true));
         }
         return results$;
       }
@@ -1308,22 +1316,22 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
       ? this._i18nModule
       : this.block.i18n.module, {
       get: function(obj, prop, receiver){
-        return obj[prop] != null
-          ? Reflect.get(obj, prop, receiver)
-          : _i18nObj[prop];
+        var that;
+        return (that = _i18nObj[prop])
+          ? that
+          : Reflect.get(obj, prop, receiver);
       },
       ownKeys: function(obj){
-        return arrayFrom$(Reflect.ownKyes(obj)).concat(arrayFrom$(Reflect.ownKeys(_i18nObj)));
+        return arrayFrom$(Reflect.ownKeys(_i18nObj)).concat(arrayFrom$(Reflect.ownKeys(obj)));
       },
       getOwnPropertyDescriptor: function(obj, prop){
-        if (obj[prop] != null) {
-          return Reflect.getOwnPropertyDescriptor(obj, prop);
-        }
-        return {
-          enumerable: true,
-          configurable: true,
-          value: _i18nObj[prop]
-        };
+        return _i18nObj[prop]
+          ? {
+            enumerable: true,
+            configurable: true,
+            value: _i18nObj[prop]
+          }
+          : Reflect.getOwnPropertyDescriptor(obj, prop);
       }
     });
     while (c) {
