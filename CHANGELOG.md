@@ -1,5 +1,10 @@
 # Change Logs
 
+## v5.7.3 (upcoming)
+
+ - add a random ID in block instance.
+
+
 ## v5.7.2
 
  - fix bug: i18n proxy is implemented incorrectly and may lead to exception when i18n object is used.

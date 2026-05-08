@@ -582,6 +582,8 @@ block.class.prototype = Object.create(Object.prototype) <<< do
 
 block.instance = (opt = {}) ->
   @ <<< opt{ns, name, version, path, block, data}
+  # [IID] id for each instance. helpful for instance-specific data, such as customized i18n
+  @_id = "#{opt.block?_id_t}=#{Date.now!}-#{Math.random!toString(36)substring(2)}"
   @init = proxise.once ~> @_init!
   @
 
@@ -695,12 +697,32 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
     return if Array.isArray(accept) => ret else (ret.0 or null)
 
   i18n: (v, o) ->
+    # NOTE and TODO [IID]
+    # i18n.t(v, o): fallbackNS isn't supported in o, so we can't disable / override fallbackNS.
+    # yet, fallbackNS provides fallbacks for each entry;
+    # e.g., when fallbackNS = 'a', and we run i18n.t(<[b:b c:b b]>):
+    #  - b:b fails -> check a:b > return if found
+    #  - c:b and b never run
+    # so we may want to set fallbackNS = false in most cases.
+    # ( for text without ns such as i18n.t('b') it will use defaultNS so we can keep defaultNS. )
+    # removing fallbackNS will cause i18n.t('b:b') fails if 1. b:b isn't available. 2. we rely on fallback
+    # yet currently there isn't much this kind of cases so it probably will be safe to patch.
+    # since "#{@_id}:t" usually fallbacks to "t", we should add this instance-based i18n res
+    # when we confirm all fallbackNS is patched, and we still have to mark the version upgrade as major change.
     if !@_i18n-module => return @block.i18n v, o
     id = @block._id_t
     # see class.i18n for more information about this colon replace thing.
     t = v.replace /:/g, '\uf8ff'
+    # [IID] See NOTE above. skip @_id:t for now.
+    # r = @_i18n-module.t(["#{@_id}:#t"] ++ ["#id:#t"] ++ (@block.extends.map(-> "#{it._id_t}:#t") ++ ["#t"]), o)
     r = @_i18n-module.t( ["#id:#t"] ++ (@block.extends.map -> "#{it._id_t}:#t") ++ ["#t"], o )
     (r or '').replace /\uf8ff/g, \:
+
+  /* TODO [IID] a way to extend instance-based i18n resource
+  add-resource-bundles: (resources = {}) ~>
+    for lng, res of resources =>
+      (@_i18n-module or @block.i18n.module).add-resource-bundle lng, @_id, res, true, true
+  */
 
   # run factory methods, recursively.
   # we will need a bus for communication.
@@ -729,7 +751,11 @@ block.instance.prototype = Object.create(Object.prototype) <<< do
       # not standard api. keep it for now for backward compatibility
       get-language: -> @language
       add-resource-bundles: (resources = {}) ~>
+        # TODO [IID] actually this should be added to @_id (instance-based) instead of @block._id_t (class-based)
+        # however this will be a huge change so we will do it later.
         for lng, res of resources =>
+          # [IID] instance-based is better but will be a breaking change
+          #(@_i18n-module or @block.i18n.module).add-resource-bundle lng, @_id, res, true, true
           (@_i18n-module or @block.i18n.module).add-resource-bundle lng, @block._id_t, res, true, true
     # we only need this when we don't have i18n-module proxy
     #   Object.defineProperty i18n-obj, \language, {get: ~>@_i18n-module.language}
