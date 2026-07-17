@@ -1,0 +1,12 @@
+<div>
+  <h3>Hello, World!</h3>
+  <p>This content is rendered by a <strong>@plotdb/block</strong> block.</p>
+  <script type="@plotdb/block">
+    module.exports = {
+      pkg: { name: 'hello-world', version: 'main' },
+      init: function(opt) {
+        console.log('[hello-world] init, root:', opt.root);
+      }
+    };
+  </script>
+</div>

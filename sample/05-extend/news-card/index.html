@@ -1,0 +1,19 @@
+<div>
+  <div plug="header">📰 Breaking News</div>
+  <div plug="body">
+    <p>This card <strong>extends</strong> <code>base-card</code> and fills both plug slots with custom content.</p>
+    <small style="color:#7f8c8d">Published: 2024-01-01</small>
+  </div>
+  <script type="@plotdb/block">
+    module.exports = {
+      pkg: {
+        name: 'news-card',
+        version: 'main',
+        extend: { name: 'base-card' }
+      },
+      init: function(opt) {
+        console.log('[news-card] init, parent:', opt.parent);
+      }
+    };
+  </script>
+</div>

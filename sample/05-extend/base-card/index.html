@@ -1,0 +1,37 @@
+<div>
+  <div class="card-header">
+    <plug name="header">Default Header</plug>
+  </div>
+  <div class="card-body">
+    <plug name="body">Default body — override me!</plug>
+  </div>
+  <style>
+    div {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    .card-header {
+      background: #2c3e50;
+      color: #fff;
+      padding: 10px 14px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      border: none;
+    }
+    .card-body {
+      padding: 14px;
+      font-size: 0.9rem;
+      border: none;
+    }
+  </style>
+  <script type="@plotdb/block">
+    module.exports = {
+      pkg: { name: 'base-card', version: 'main' },
+      init: function(opt) {
+        console.log('[base-card] init');
+      }
+    };
+  </script>
+</div>

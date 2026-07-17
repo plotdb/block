@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>@plotdb/block — Samples</title>
+  <link rel="stylesheet" href="/assets/lib/bootstrap/main/dist/css/bootstrap.min.css">
+  <style>
+    body { padding: 24px; background: #f8f9fa; }
+    h1 { margin-bottom: 4px; }
+    .subtitle { color: #6c757d; margin-bottom: 32px; }
+    .sample { margin-bottom: 40px; }
+    .sample h2 { font-size: 1.2rem; margin-bottom: 4px; }
+    .sample p.desc { color: #555; font-size: 0.9rem; margin-bottom: 10px; }
+    .sample .controls { margin-bottom: 8px; }
+    .demo { border: 1px solid #dee2e6; border-radius: 6px; padding: 16px; background: #fff; }
+    .demo-row { display: flex; gap: 16px; }
+    .demo-row > * { flex: 1; }
+
+    /* For 02-scoped-style: show that global .badge is not overridden */
+    .badge-global { background: #888; color: #fff; padding: 2px 8px; border-radius: 99px; font-size: 12px; }
+
+    /* For 07-headless log */
+    #bus-log { font-family: monospace; font-size: 0.85rem; min-height: 60px; background: #f1f3f5; border-radius: 4px; padding: 8px 12px; margin-top: 8px; }
+    #bus-log .entry::before { content: '▶ '; color: #27ae60; }
+  </style>
+</head>
+<body>
+
+  <h1>@plotdb/block — Samples</h1>
+  <p class="subtitle">A tour of core @plotdb/block features. See the source of each block file in <code>sample/</code>.</p>
+
+  <!-- ─── 00 Inline ──────────────────────────────────────────────────── -->
+  <div class="sample">
+    <h2>00 — Inline Block</h2>
+    <p class="desc">
+      A block can be defined directly in the page as a <code>&lt;template&gt;</code> tag,
+      then registered via <code>mgr.set()</code> — no server round-trip needed.
+      This is the fastest way to try out the API.
+    </p>
+    <div class="demo" id="demo-00"></div>
+  </div>
+
+  <!-- ─── 01 Hello World ────────────────────────────────────────────── -->
+  <div class="sample">
+    <h2>01 — Hello World</h2>
+    <p class="desc">
+      The most basic block: a plain HTML file loaded from a URL via the registry.
+      The block's <code>init(opt)</code> receives <code>opt.root</code> (the mounted DOM node).
+    </p>
+    <div class="demo" id="demo-01"></div>
+  </div>
+
+  <!-- ─── 02 Scoped Style ───────────────────────────────────────────── -->
+  <div class="sample">
+    <h2>02 — Scoped Style</h2>
+    <p class="desc">
+      CSS inside a block is automatically scoped by <code>@plotdb/csscope</code>.
+      The global <code>.badge-global</code> (grey) is unaffected by the block's blue <code>.badge</code> rule.
+      Both block instances share the same scoped style without conflicts.
+    </p>
+    <p>Outside block: <span class="badge-global">global badge</span></p>
+    <div class="demo-row">
+      <div class="demo" id="demo-02a"></div>
+      <div class="demo" id="demo-02b"></div>
+    </div>
+  </div>
+
+  <!-- ─── 03 Interface ──────────────────────────────────────────────── -->
+  <div class="sample">
+    <h2>03 — Interface</h2>
+    <p class="desc">
+      A block exposes a public API via <code>interface()</code>.
+      <code>mgr.from()</code> resolves to <code>{ instance, interface }</code>;
+      the host calls methods on <code>interface</code> to control the block.
+    </p>
+    <div class="controls">
+      <button class="btn btn-sm btn-outline-secondary" onclick="counterIf && counterIf.decrement()">− Decrement</button>
+      <button class="btn btn-sm btn-outline-primary"   onclick="counterIf && counterIf.increment()">+ Increment</button>
+      <button class="btn btn-sm btn-outline-danger"    onclick="counterIf && counterIf.reset()">Reset</button>
+      <button class="btn btn-sm btn-outline-dark"      onclick="counterIf && alert('Count: ' + counterIf.getCount())">Get Count</button>
+    </div>
+    <div class="demo" id="demo-03"></div>
+  </div>
+
+  <!-- ─── 04 Data ───────────────────────────────────────────────────── -->
+  <div class="sample">
+    <h2>04 — Data</h2>
+    <p class="desc">
+      Pass a <code>data</code> object at <code>cls.create({ data })</code>.
+      The block reads it from <code>opt.data</code> in <code>init()</code>.
+      Three instances of the same class, each rendering different content.
+    </p>
+    <div class="demo-row" id="demo-04"></div>
+  </div>
+
+  <!-- ─── 05 Extend ─────────────────────────────────────────────────── -->
+  <div class="sample">
+    <h2>05 — Extend (Inheritance &amp; Plugs)</h2>
+    <p class="desc">
+      Blocks can extend other blocks. The base defines <code>&lt;plug name="…"&gt;</code> slots;
+      children fill them with <code>plug="…"</code> attributes.
+      You can also fill plugs from host HTML (no child block needed).
+    </p>
+    <div class="demo-row">
+      <div>
+        <small class="text-muted">base-card (default plugs)</small>
+        <div class="demo mt-1" id="demo-05a"></div>
+      </div>
+      <div>
+        <small class="text-muted">news-card extends base-card</small>
+        <div class="demo mt-1" id="demo-05b"></div>
+      </div>
+      <div>
+        <small class="text-muted">base-card + host DOM plugs</small>
+        <div class="demo mt-1" id="demo-05c">
+          <div plug="header" style="color:#8e44ad">Host-Provided Header</div>
+          <div plug="body"><em>Content injected from host HTML — no child block needed.</em></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── 06 i18n ───────────────────────────────────────────────────── -->
+  <div class="sample">
+    <h2>06 — i18n</h2>
+    <p class="desc">
+      Blocks bundle their own translations in <code>pkg.i18n</code>.
+      HTML elements with <code>t="key"</code> are translated at attach time.
+      Pass <code>autoTransform:'i18n'</code> to re-translate when the language changes.
+    </p>
+    <div class="controls">
+      <button class="btn btn-sm btn-outline-secondary" id="btn-en"   onclick="switchLang('en')">English</button>
+      <button class="btn btn-sm btn-outline-secondary" id="btn-zh"   onclick="switchLang('zh-TW')">繁體中文</button>
+      <button class="btn btn-sm btn-outline-secondary" id="btn-ja"   onclick="switchLang('ja')">日本語</button>
+    </div>
+    <div class="demo mt-2" id="demo-06"></div>
+  </div>
+
+  <!-- ─── 07 Headless ───────────────────────────────────────────────── -->
+  <div class="sample">
+    <h2>07 — Headless Block</h2>
+    <p class="desc">
+      Call <code>inst.attach()</code> without a <code>root</code> to run a block in headless mode —
+      <code>init()</code> runs but no DOM is inserted.
+      Useful for pure-logic blocks (event buses, timers, services).
+    </p>
+    <div class="controls">
+      <input id="bus-input" type="text" class="form-control form-control-sm d-inline-block w-auto" placeholder="Message…">
+      <button class="btn btn-sm btn-primary" onclick="sendBusMsg()">Publish</button>
+      <button class="btn btn-sm btn-outline-secondary" onclick="clearBusLog()">Clear</button>
+    </div>
+    <div id="bus-log"><em class="text-muted">Waiting for messages…</em></div>
+  </div>
+
+  <!-- ─── 08 Remote ─────────────────────────────────────────────────── -->
+  <div class="sample">
+    <h2>08 — Remote Block</h2>
+    <p class="desc">
+      The registry function maps a BID to a URL; the manager fetches the HTML,
+      parses it, and caches the resulting class. Here <code>clock</code> is
+      fetched from <code>/sample/08-remote/index.html</code>.
+    </p>
+    <div class="demo d-inline-block" id="demo-08"></div>
+  </div>
+
+  <!-- Inline block definition — demonstrates the template-based registration approach -->
+  <template id="inline-block">
+    <div>
+      <p>✅ This block was <strong>defined inline</strong> in the loader page as a <code>&lt;template&gt;</code> tag and registered via <code>mgr.set()</code>.</p>
+      <script type="@plotdb/block">
+        module.exports = {
+          init: function(opt) { console.log('[inline] init'); }
+        };
+      </script>
+    </div>
+  </template>
+
+  <!-- Dependencies from /assets/lib/ -->
+  <script src="/assets/lib/proxise/main/index.min.js"></script>
+  <script src="/assets/lib/@plotdb/semver/main/index.min.js"></script>
+  <script src="/assets/lib/@plotdb/csscope/main/index.min.js"></script>
+  <script src="/assets/lib/@plotdb/rescope/main/index.min.js"></script>
+  <script src="/assets/lib/@plotdb/block/dev/index.min.js"></script>
+
+  <script>
+    var counterIf = null;
+    var busIf     = null;
+
+    // Block name → file path mapping (relative to /sample/).
+    var blockPaths = {
+      'hello-world':  '01-hello-world/index.html',
+      'scoped-style': '02-scoped-style/index.html',
+      'counter':      '03-interface/index.html',
+      'profile-card': '04-data/index.html',
+      'base-card':    '05-extend/base-card/index.html',
+      'news-card':    '05-extend/news-card/index.html',
+      'i18n-demo':    '06-i18n/index.html',
+      'event-bus':    '07-headless/index.html',
+      'clock':        '08-remote/index.html'
+    };
+
+    var mgr = new block.manager({
+      registry: function(o) {
+        if (o.type === 'block') {
+          var p = blockPaths[o.name];
+          return p ? '/sample/' + p : null;
+        }
+        // Lib dependencies (JS/CSS) resolved from /assets/lib/.
+        return '/assets/lib/' + o.name + '/' + (o.version || 'main') + '/' + (o.path || 'index.min.js');
+      }
+    });
+
+    // ── 00: Register the inline block from <template> and attach ──────
+    (function() {
+      var tmpl = document.getElementById('inline-block');
+      var bc = new block.class({ root: tmpl.content.firstElementChild, manager: mgr });
+      mgr.set({ name: 'inline', version: 'main', block: bc });
+      mgr.from({ name: 'inline' }, { root: document.getElementById('demo-00') });
+    }());
+
+    // ── 01: Hello World ───────────────────────────────────────────────
+    mgr.from({ name: 'hello-world' }, { root: document.getElementById('demo-01') });
+
+    // ── 02: Scoped Style — two instances ──────────────────────────────
+    mgr.get({ name: 'scoped-style' }).then(function(cls) {
+      return cls.create().then(function(inst) {
+        return inst.attach({ root: document.getElementById('demo-02a') });
+      }).then(function() {
+        return cls.create().then(function(inst) {
+          return inst.attach({ root: document.getElementById('demo-02b') });
+        });
+      });
+    });
+
+    // ── 03: Interface ─────────────────────────────────────────────────
+    mgr.from({ name: 'counter' }, { root: document.getElementById('demo-03') })
+      .then(function(r) { counterIf = r.interface; });
+
+    // ── 04: Data — three profile instances ────────────────────────────
+    var profiles = [
+      { emoji: '🧑‍💻', name: 'Alice Chen', role: 'Frontend Engineer', bio: 'Loves UI components and design systems.' },
+      { emoji: '🧑‍🔬', name: 'Bob Kim',   role: 'Data Scientist',    bio: 'ML models and data visualisations.' },
+      { emoji: '🧑‍🎨', name: 'Carol Wang', role: 'UX Designer',       bio: 'Accessible, human-centred design.' }
+    ];
+    var demo04 = document.getElementById('demo-04');
+    profiles.reduce(function(p, data) {
+      return p.then(function() {
+        return mgr.get({ name: 'profile-card' }).then(function(cls) {
+          return cls.create({ data: data });
+        }).then(function(inst) {
+          var cell = document.createElement('div');
+          demo04.appendChild(cell);
+          return inst.attach({ root: cell });
+        });
+      });
+    }, Promise.resolve());
+
+    // ── 05: Extend ────────────────────────────────────────────────────
+    // Pre-load base-card so news-card can resolve its pkg.extend immediately.
+    mgr.get({ name: 'base-card' }).then(function() {
+      return mgr.from({ name: 'base-card' }, { root: document.getElementById('demo-05a') });
+    }).then(function() {
+      return mgr.from({ name: 'news-card' }, { root: document.getElementById('demo-05b') });
+    }).then(function() {
+      return mgr.from({ name: 'base-card' }, { root: document.getElementById('demo-05c') });
+    });
+
+    // ── 06: i18n ──────────────────────────────────────────────────────
+    mgr.from(
+      { name: 'i18n-demo' },
+      { root: document.getElementById('demo-06'), autoTransform: 'i18n' }
+    );
+
+    function switchLang(lng) {
+      ['en','zh','ja'].forEach(function(k) {
+        document.getElementById('btn-' + k).classList.remove('btn-secondary');
+        document.getElementById('btn-' + k).classList.add('btn-outline-secondary');
+      });
+      var idMap = { 'en': 'en', 'zh-TW': 'zh', 'ja': 'ja' };
+      var btn = document.getElementById('btn-' + idMap[lng]);
+      btn.classList.remove('btn-outline-secondary');
+      btn.classList.add('btn-secondary');
+      block.i18n.changeLanguage(lng);
+    }
+
+    // ── 07: Headless ──────────────────────────────────────────────────
+    mgr.get({ name: 'event-bus' }).then(function(cls) {
+      return cls.create();
+    }).then(function(inst) {
+      // attach() without root = headless mode
+      return inst.attach().then(function() { return inst; });
+    }).then(function(inst) {
+      busIf = inst.interface();
+      busIf.subscribe(function(msg) {
+        var log = document.getElementById('bus-log');
+        var em = log.querySelector('em');
+        if (em) em.remove();
+        var div = document.createElement('div');
+        div.className = 'entry';
+        div.textContent = msg;
+        log.appendChild(div);
+      });
+    });
+
+    function sendBusMsg() {
+      var input = document.getElementById('bus-input');
+      var msg = input.value.trim();
+      if (msg && busIf) { busIf.publish(msg); input.value = ''; }
+    }
+    function clearBusLog() {
+      document.getElementById('bus-log').innerHTML = '<em class="text-muted">Waiting for messages…</em>';
+    }
+
+    // ── 08: Remote (clock) ────────────────────────────────────────────
+    mgr.from({ name: 'clock' }, { root: document.getElementById('demo-08') });
+  </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<div>
+  <p>Inside block: <span class="badge">item one</span> <span class="badge">item two</span></p>
+  <p class="note">The <code>.badge</code> style below only applies inside this block.</p>
+  <style>
+    /* This rule is scoped by @plotdb/csscope — it won't affect .badge outside this block. */
+    .badge {
+      background: #3498db;
+      color: #fff;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 12px;
+    }
+    .note { font-size: 0.85em; color: #777; margin-top: 6px; }
+  </style>
+  <script type="@plotdb/block">
+    module.exports = { pkg: { name: 'scoped-style', version: 'main' } };
+  </script>
+</div>

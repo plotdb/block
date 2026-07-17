@@ -1,0 +1,20 @@
+<div>
+  <script type="@plotdb/block">
+    module.exports = {
+      pkg: { name: 'event-bus', version: 'main' },
+      init: function() {
+        this.listeners = [];
+      },
+      destroy: function() {
+        this.listeners = [];
+      },
+      interface: function() {
+        var self = this;
+        return {
+          subscribe: function(fn) { self.listeners.push(fn); },
+          publish:   function(msg) { self.listeners.forEach(function(fn) { fn(msg); }); }
+        };
+      }
+    };
+  </script>
+</div>
