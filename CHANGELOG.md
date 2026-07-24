@@ -1,8 +1,10 @@
 # Change Logs
 
-## v5.7.3 (upcoming)
+## v5.7.3
 
  - add a random ID in block instance.
+ - fix bug: typo in head.ls
+ - upgrade dependencies
 
 
 ## v5.7.2

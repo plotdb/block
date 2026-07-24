@@ -9,7 +9,7 @@ proxise = typeof window != 'undefined' && window !== null
   ? window.proxise
   : (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null) ? require("proxise") : null;
 semver = typeof window != 'undefined' && window !== null
-  ? window.proxise
+  ? window.semver
   : (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null) ? require("@plotdb/semver") : null;
 fetch = typeof window != 'undefined' && window !== null
   ? window.fetch
