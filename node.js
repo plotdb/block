@@ -9,7 +9,7 @@ proxise = typeof window != 'undefined' && window !== null
   ? window.proxise
   : (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null) ? require("proxise") : null;
 semver = typeof window != 'undefined' && window !== null
-  ? window.proxise
+  ? window.semver
   : (typeof module != 'undefined' && module !== null) && (typeof require != 'undefined' && require !== null) ? require("@plotdb/semver") : null;
 fetch = typeof window != 'undefined' && window !== null
   ? window.fetch
@@ -1066,7 +1066,7 @@ block['class'].prototype = import$(Object.create(Object.prototype), {
   }
 });
 block.instance = function(opt){
-  var this$ = this;
+  var ref$, this$ = this;
   opt == null && (opt = {});
   this.ns = opt.ns;
   this.name = opt.name;
@@ -1074,6 +1074,7 @@ block.instance = function(opt){
   this.path = opt.path;
   this.block = opt.block;
   this.data = opt.data;
+  this._id = ((ref$ = opt.block) != null ? ref$._id_t : void 8) + "=" + Date.now() + "-" + Math.random().toString(36).substring(2);
   this.init = proxise.once(function(){
     return this$._init();
   });
@@ -1286,7 +1287,12 @@ block.instance.prototype = import$(Object.create(Object.prototype), {
       return it._id_t + ":" + t;
     }), [t + ""]), o);
     return (r || '').replace(/\uf8ff/g, ':');
-  },
+  }
+  /* TODO [IID] a way to extend instance-based i18n resource
+  add-resource-bundles: (resources = {}) ~>
+    for lng, res of resources =>
+      (@_i18n-module or @block.i18n.module).add-resource-bundle lng, @_id, res, true, true
+  */,
   run: function(arg$){
     var node, type, cs, ps, c, _i18nObj, i18nObj, this$ = this;
     node = arg$.node, type = arg$.type;

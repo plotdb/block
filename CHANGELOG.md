@@ -1,5 +1,12 @@
 # Change Logs
 
+## v5.7.3
+
+ - add a random ID in block instance.
+ - fix bug: typo in head.ls
+ - upgrade dependencies
+
+
 ## v5.7.2
 
  - fix bug: i18n proxy is implemented incorrectly and may lead to exception when i18n object is used.
